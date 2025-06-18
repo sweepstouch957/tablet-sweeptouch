@@ -2,9 +2,13 @@
 
 import { Store } from "@/services/store.service";
 import {
+  Avatar,
   Box,
   Button,
   Checkbox,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   FormControlLabel,
   Stack,
   TextField,
@@ -28,7 +32,7 @@ interface FathersDayPromoProps {
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   const [index, setIndex] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const nextSlide = () => setIndex((prev) => (prev + 1) % images.length);
   const prevSlide = () =>
     setIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -55,13 +59,13 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       <Box
         bgcolor="#f43789"
         color="white"
-        py={3}
+        py={{xs:0,md:3}}
         px={3}
         display="flex"
         flexDirection={{ xs: "row", md: "column" }}
         alignItems="center"
         justifyContent={{ xs: "space-between", md: "flex-start" }}
-        width={{ xs: "100%", md: "35%" }}
+        width={{ xs: "100%", md: "30%" }}
         gap={2}
         minHeight={{ xs: "31vh", md: "100vh" }}
       >
@@ -154,6 +158,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
                 <Box
                   component="span"
                   sx={{ textDecoration: "underline", cursor: "pointer" }}
+                  onClick={() => setPrivacyOpen(true)}
                 >
                   Privacy Policy
                 </Box>
@@ -168,26 +173,26 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
             display="flex"
             justifyContent="center"
             alignItems="center"
-            gap={2}
-            mb={3}
             flexWrap="wrap"
+            flexDirection={"column"}
           >
+            <Stack justifyContent={"center"} alignItems={"center"} gap={1}>
+              <Avatar sx={{
+                width:84,
+                height:84
+              }}/>
+              <Typography>cajera@gmail.com</Typography>
+            </Stack>
+
             {store?.image && (
               <Image
                 src={store.image}
                 alt="Store Logo"
                 width={150}
-                height={150}
+                height={100}
                 style={{ objectFit: "contain" }}
               />
             )}
-            <Image
-              src="https://res.cloudinary.com/proyectos-personales/image/upload/v1750187948/Bravo_Supermarket_402_S_Main_St_Wilkes-Barre_Township_PA_18702_bhdrkg.png"
-              alt="QR Code"
-              width={150}
-              height={150}
-              style={{ objectFit: "contain" }}
-            />
           </Box>
 
           <Box width={"100%"} mt={2}>
@@ -207,7 +212,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
 
       {/* Right Section */}
       <Box
-        width={{ xs: "100%", md: "65%" }}
+        width={{ xs: "100%", md: "70%" }}
         position="relative"
         minHeight={{ xs: "69vh", md: "100vh" }}
         overflow="hidden"
@@ -236,7 +241,60 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
             />
           </Box>
         ))}
+        {store?.name && (
+          <Box position="absolute" bottom={16} right={16} zIndex={2}>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0,0,0,0.8)",
+                opacity: 0.8,
+                color: "white",
+                borderRadius: "16px",
+                px: 2,
+                py: 0.5,
+                fontSize: "0.9rem",
+                fontWeight: "bold",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {store.name}
+            </Box>
+          </Box>
+        )}
       </Box>
+
+      <Dialog open={privacyOpen} onClose={() => setPrivacyOpen(false)}>
+        <DialogTitle>Privacy Policy</DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="body2" paragraph>
+            By entering your phone number, you are opting in to receive
+            promotional messages from sweepsTOUCH. These may include special
+            offers, store promotions, and sweepstakes alerts. You can text STOP
+            at any time to opt out, or HELP for assistance. MSG & data rates may
+            apply.
+          </Typography>
+          <Typography variant="body2">
+            We respect your privacy. Your data will not be shared with third
+            parties, and is used exclusively to provide updates from sweepsTOUCH
+            and affiliated stores.
+          </Typography>
+
+          <Box>
+            <Button
+              variant="outlined"
+              onClick={() => setPrivacyOpen(false)}
+              sx={{ mt: 2 }}
+            >
+              Close
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
