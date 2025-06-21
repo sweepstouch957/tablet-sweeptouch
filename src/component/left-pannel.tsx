@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
 import {
-  Avatar,
   Box,
   Button,
   Checkbox,
@@ -14,7 +13,6 @@ import {
   Typography,
   Menu,
   MenuItem,
-  IconButton,
 } from "@mui/material";
 import { Store } from "@/services/store.service";
 import { useAuth } from "@/context/auth-context";
@@ -26,6 +24,8 @@ import {
   getActiveSweepstakeByStore,
 } from "@/services/sweepstake.service";
 import { validatePhone } from "@/libs/utils/formatPhone";
+
+import Woman from "@public/woman.jpg";
 
 const MySwal = withReactContent(Swal);
 
@@ -80,16 +80,16 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     },
     onSuccess: () => {
       MySwal.fire({
-        title: "¡Registro exitoso!",
+        title: "Thank You!",
         html: `
-          <div style="font-size: 1.3rem;">
-            <p>🎉 ¡Gracias por participar!</p>
-            <p>📩 Revisa tu bandeja de SMS para más detalles sobre el sorteo y futuras promociones.</p>
-          </div>
+         <div style="font-size: 1.3rem;">
+    <p>🎉 Thank you for participating!</p>
+    <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
+  </div>
         `,
         icon: "success",
         confirmButtonColor: "#f43789",
-        confirmButtonText: "Entendido",
+        confirmButtonText: "Ok",
         timer: 6000, // ⏱️ 4 segundos
         timerProgressBar: true,
       });
@@ -127,7 +127,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         <Typography
           fontWeight="bold"
           textAlign="center"
-          fontSize={{ xs: "1.4rem", sm: "1.6rem", md: "2.5rem" }}
+          fontSize={{ xs: "1.4rem", sm: "1.6rem", md: "2.3rem" }}
         >
           Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span>{" "}
           <br />
@@ -180,7 +180,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             JOIN
           </Button>
         </Stack>
-    
 
         <FormControlLabel
           control={
@@ -236,12 +235,28 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           </Button>
         ) : (
           <>
-            <IconButton onClick={handleMenuClick} sx={{ mt: 1 }}>
-              <Avatar sx={{ width: 84, height: 84 }} />
-            </IconButton>
-            <Typography fontSize="0.9rem" mt={1} color="white">
-              {user?.email}
-            </Typography>
+            <Stack
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              sx={{ cursor: "pointer" }}
+              onClick={handleMenuClick}
+            >
+              <Image
+                src={Woman.src}
+                height={100}
+                width={100}
+                alt="User Avatar"
+                style={{
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  marginBottom: "10px",
+                }}
+              />
+              <Typography fontSize="0.9rem" mt={1} color="white">
+                {user?.email}
+              </Typography>
+            </Stack>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}

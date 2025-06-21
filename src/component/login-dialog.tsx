@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // LoginDialog.tsx
 import React, { useState } from "react";
 import {
@@ -17,15 +18,24 @@ interface LoginDialogProps {
 }
 
 const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const [accessCode, setAccessCode] = useState("");
+  const [localError, setLocalError] = useState<string | null>(null);
+  const { login, error } = useAuth();
 
-  const handleLogin = () => {
-    login(email);
-    onClose();
-    setEmail("");
-    setPassword("");
+  const handleLogin = async () => {
+    if (!accessCode) {
+      setLocalError("Por favor ingresa tu código de acceso.");
+      return;
+    }
+
+    setLocalError(null);
+    try {
+      await login("", "", accessCode); // Asegúrate que tu `login` soporte este tercer argumento
+      onClose();
+      setAccessCode("");
+    } catch (_) {
+      // El error ya lo maneja el contexto
+    }
   };
 
   return (
@@ -40,7 +50,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
           fontSize: "1.5rem",
         }}
       >
-        Bienvenido
+        Acceso para Cajeros
       </DialogTitle>
 
       <DialogContent sx={{ px: 4, pt: 3, pb: 1 }}>
@@ -49,37 +59,15 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
           gutterBottom
           sx={{ textAlign: "center", my: 2, color: "#555" }}
         >
-          Inicia sesión para continuar
+          Ingresa tu código de acceso
         </Typography>
 
         <TextField
-          label="Correo electrónico"
-          type="email"
+          label="Código de acceso"
           variant="outlined"
           fullWidth
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#f43789",
-              },
-            },
-            "& label.Mui-focused": {
-              color: "#f43789",
-            },
-          }}
-        />
-
-        <TextField
-          label="Contraseña"
-          type="password"
-          variant="outlined"
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={accessCode}
+          onChange={(e) => setAccessCode(e.target.value)}
           sx={{
             mb: 1,
             "& .MuiOutlinedInput-root": {
@@ -93,6 +81,12 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
             },
           }}
         />
+
+        {(localError || error) && (
+          <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+            {localError || error}
+          </Typography>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ px: 4, pb: 3, justifyContent: "space-between" }}>
@@ -111,7 +105,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
             px: 3,
           }}
         >
-          Iniciar sesión
+          Entrar
         </Button>
       </DialogActions>
     </Dialog>
