@@ -25,6 +25,7 @@ import {
   createSweepstake,
   getActiveSweepstakeByStore,
 } from "@/services/sweepstake.service";
+import { validatePhone } from "@/libs/utils/formatPhone";
 
 const MySwal = withReactContent(Swal);
 
@@ -51,7 +52,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -157,7 +157,12 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
           <Button
             variant="contained"
-            onClick={() => registerParticipant()}
+            onClick={() => {
+              if (!validatePhone(phoneNumber)) {
+                return;
+              }
+              registerParticipant();
+            }}
             sx={{
               bgcolor: "#fff200",
               color: "#000",
@@ -165,11 +170,17 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               fontWeight: "bold",
               borderRadius: 0,
             }}
-            disabled={!termsAccepted || isPending}
+            disabled={
+              !termsAccepted ||
+              isPending ||
+              !phoneNumber ||
+              validatePhone(phoneNumber) === false
+            }
           >
             JOIN
           </Button>
         </Stack>
+    
 
         <FormControlLabel
           control={
