@@ -102,7 +102,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         text: error || "Ocurrió un error inesperado.",
         icon: "error",
         confirmButtonColor: "#f43789",
-        timer: 6000, // ⏱️ 4 segundos
+        timer: 4000, // ⏱️ 4 segundos
         timerProgressBar: true,
       });
     },
