@@ -21,7 +21,10 @@ import { useAuth } from "@/context/auth-context";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { useMutation } from "@tanstack/react-query";
-import { createSweepstake, getActiveSweepstakeByStore } from "@/services/sweepstake.service";
+import {
+  createSweepstake,
+  getActiveSweepstakeByStore,
+} from "@/services/sweepstake.service";
 
 const MySwal = withReactContent(Swal);
 
@@ -33,6 +36,7 @@ interface LeftPanelProps {
   onLogin: () => void;
   handlePhoneChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   phoneNumber: string;
+  setPhoneNumber: (value: string) => void;
 }
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
@@ -41,6 +45,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   setTermsAccepted,
   setPrivacyOpen,
   onLogin,
+  setPhoneNumber,
   handlePhoneChange,
   phoneNumber,
 }) => {
@@ -60,7 +65,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     handleMenuClose();
   };
 
-  const { mutate: registerParticipant,isPending  } = useMutation({
+  const { mutate: registerParticipant, isPending } = useMutation({
     mutationFn: async () => {
       if (!store || !phoneNumber) return;
       const sweepstakeId = await getActiveSweepstakeByStore(store.id);
@@ -85,16 +90,22 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         icon: "success",
         confirmButtonColor: "#f43789",
         confirmButtonText: "Entendido",
+        timer: 6000, // ⏱️ 4 segundos
+        timerProgressBar: true,
       });
+      setPhoneNumber("");
+      setTermsAccepted(false);
     },
     onError: (error: any) => {
       MySwal.fire({
         title: "Oops...",
         text: error || "Ocurrió un error inesperado.",
         icon: "error",
-        confirmButtonColor: "#f43789"
+        confirmButtonColor: "#f43789",
+        timer: 6000, // ⏱️ 4 segundos
+        timerProgressBar: true,
       });
-    }
+    },
   });
 
   return (
@@ -118,7 +129,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           textAlign="center"
           fontSize={{ xs: "1.4rem", sm: "1.6rem", md: "2.5rem" }}
         >
-          Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span> <br />
+          Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span>{" "}
+          <br />
           <span style={{ color: "#fff200" }}>only customers</span>
         </Typography>
 
@@ -182,7 +194,9 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               maxWidth="300px"
               textAlign="left"
             >
-              By providing your phone number, you are consenting to receive messages about sales/coupons/promotors/etc. Text HELP for info. Text STOP to opt out. MSG&Data rates may apply. {" "}
+              By providing your phone number, you are consenting to receive
+              messages about sales/coupons/promotors/etc. Text HELP for info.
+              Text STOP to opt out. MSG&Data rates may apply.{" "}
               <Box
                 component="span"
                 sx={{ textDecoration: "underline", cursor: "pointer" }}
@@ -217,7 +231,11 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <Typography fontSize="0.9rem" mt={1} color="white">
               {user?.email}
             </Typography>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
               <MenuItem disabled>{user?.email}</MenuItem>
               <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
             </Menu>

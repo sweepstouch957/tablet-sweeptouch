@@ -30,7 +30,8 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const nextSlide = () => setIndex((prev) => (prev + 1) % images.length);
-  const prevSlide = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
+  const prevSlide = () =>
+    setIndex((prev) => (prev - 1 + images.length) % images.length);
 
   const handlers = useSwipeable({
     onSwipedLeft: nextSlide,
@@ -39,35 +40,42 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   });
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        const formattedValue = formatPhone(value); // Allow only digits and limit to 10 characters
-        setPhoneNumber(formattedValue);
-    }
-
-
-
+    const value = event.target.value;
+    const formattedValue = formatPhone(value); // Allow only digits and limit to 10 characters
+    setPhoneNumber(formattedValue);
+  };
 
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
   }, []);
 
-
   return (
-      <Box display="flex" flexDirection={{ xs: "column", md: "row" }} minHeight="100vh" overflow="hidden">
-        <LeftPanel
-          store={store}
-          termsAccepted={termsAccepted}
-          setTermsAccepted={setTermsAccepted}
-          setPrivacyOpen={setPrivacyOpen}
-          handlePhoneChange={handlePhoneChange}
-            phoneNumber={phoneNumber}
-          onLogin={() => setLoginOpen(true)}
-        />
-        <RightCarousel store={store} images={images} index={index} handlers={handlers} />
-        <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-        <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
-      </Box>
+    <Box
+      display="flex"
+      flexDirection={{ xs: "column", md: "row" }}
+      minHeight="100vh"
+      overflow="hidden"
+    >
+      <LeftPanel
+        store={store}
+        termsAccepted={termsAccepted}
+        setTermsAccepted={setTermsAccepted}
+        setPrivacyOpen={setPrivacyOpen}
+        handlePhoneChange={handlePhoneChange}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        onLogin={() => setLoginOpen(true)}
+      />
+      <RightCarousel
+        store={store}
+        images={images}
+        index={index}
+        handlers={handlers}
+      />
+      <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+    </Box>
   );
 };
 
