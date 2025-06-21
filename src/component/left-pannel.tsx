@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // LeftPanel.tsx
 import React, { useState } from "react";
 import Image from "next/image";
@@ -17,6 +18,12 @@ import {
 } from "@mui/material";
 import { Store } from "@/services/store.service";
 import { useAuth } from "@/context/auth-context";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { useMutation } from "@tanstack/react-query";
+import { createSweepstake, getActiveSweepstakeByStore } from "@/services/sweepstake.service";
+
+const MySwal = withReactContent(Swal);
 
 interface LeftPanelProps {
   store?: Store;
@@ -53,6 +60,43 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     handleMenuClose();
   };
 
+  const { mutate: registerParticipant,isPending  } = useMutation({
+    mutationFn: async () => {
+      if (!store || !phoneNumber) return;
+      const sweepstakeId = await getActiveSweepstakeByStore(store.id);
+      await createSweepstake({
+        sweepstakeId,
+        storeId: store.id,
+        customerPhone: phoneNumber,
+        customerName: "",
+        method: "tablet",
+        createdBy: store.id,
+      });
+    },
+    onSuccess: () => {
+      MySwal.fire({
+        title: "¡Registro exitoso!",
+        html: `
+          <div style="font-size: 1.3rem;">
+            <p>🎉 ¡Gracias por participar!</p>
+            <p>📩 Revisa tu bandeja de SMS para más detalles sobre el sorteo y futuras promociones.</p>
+          </div>
+        `,
+        icon: "success",
+        confirmButtonColor: "#f43789",
+        confirmButtonText: "Entendido",
+      });
+    },
+    onError: (error: any) => {
+      MySwal.fire({
+        title: "Oops...",
+        text: error || "Ocurrió un error inesperado.",
+        icon: "error",
+        confirmButtonColor: "#f43789"
+      });
+    }
+  });
+
   return (
     <Box
       bgcolor="#f43789"
@@ -74,8 +118,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           textAlign="center"
           fontSize={{ xs: "1.4rem", sm: "1.6rem", md: "2.5rem" }}
         >
-          Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span>{" "}
-          <br />
+          Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span> <br />
           <span style={{ color: "#fff200" }}>only customers</span>
         </Typography>
 
@@ -102,6 +145,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
           <Button
             variant="contained"
+            onClick={() => registerParticipant()}
             sx={{
               bgcolor: "#fff200",
               color: "#000",
@@ -109,7 +153,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               fontWeight: "bold",
               borderRadius: 0,
             }}
-            disabled={!termsAccepted}
+            disabled={!termsAccepted || isPending}
           >
             JOIN
           </Button>
@@ -138,9 +182,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               maxWidth="300px"
               textAlign="left"
             >
-              By providing your phone number, you are consenting to receive
-              messages about sales/coupons/promotors/etc. Text HELP for info.
-              Text STOP to opt out. MSG&Data rates may apply.{" "}
+              By providing your phone number, you are consenting to receive messages about sales/coupons/promotors/etc. Text HELP for info. Text STOP to opt out. MSG&Data rates may apply. {" "}
               <Box
                 component="span"
                 sx={{ textDecoration: "underline", cursor: "pointer" }}
@@ -175,11 +217,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <Typography fontSize="0.9rem" mt={1} color="white">
               {user?.email}
             </Typography>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
               <MenuItem disabled>{user?.email}</MenuItem>
               <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
             </Menu>

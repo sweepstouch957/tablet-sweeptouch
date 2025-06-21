@@ -20,7 +20,9 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
-    "react-swipeable": "^7.0.2"
+    "react-swipeable": "^7.0.2",
+    "sweetalert2": "^11.22.0",
+    "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
