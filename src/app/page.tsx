@@ -6,6 +6,9 @@ import { getStoreBySlug } from "@/services/store.service";
 import { Suspense } from "react";
 import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import FathersDayPromo from "@/component/tablet";
+import Tuerca from "@public/tuerca.webp";
+import Logo from "@public/logo.webp";
+import Image from "next/image";
 
 function WinACarFormContainer() {
   const searchParams = useSearchParams();
@@ -47,8 +50,30 @@ function WinACarFormContainer() {
         minHeight="100vh"
         color="#fff"
         textAlign={"center"}
+        gap={2}
       >
-        <Typography variant="h1">MODO Mantenimiento</Typography>
+        <Image
+          src={Tuerca}
+          alt="Tuerca"
+          width={400}
+          style={{
+            objectFit: "contain",
+          }}
+          height={398}
+        />
+        <Typography variant="h3" mb={1}>
+          MAINTENANCE
+          <br />
+          MODE
+        </Typography>
+        <Typography variant="h5">Powered by </Typography>
+        <Image
+          src={Logo.src}
+          alt="Sweepstouch logo"
+          width={240}
+          height={40}
+          style={{ objectFit: "contain"}}
+        />
       </Box>
     );
   }
@@ -57,7 +82,7 @@ function WinACarFormContainer() {
 }
 
 export default function WinACarPage() {
-return (
+  return (
     <Suspense
       fallback={
         <Container
