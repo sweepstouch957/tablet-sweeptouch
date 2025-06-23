@@ -258,7 +258,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   marginBottom: "10px",
                 }}
               />
-              <Typography fontSize="0.9rem" mt={1} color="white">
+              <Typography fontSize="0.9rem" mt={0} color="white">
                 {user?.email}
               </Typography>
             </Stack>
