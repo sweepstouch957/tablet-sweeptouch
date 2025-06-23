@@ -79,10 +79,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    const token = Cookies.get("auth_token");
+    const token = Cookies.get("auth_token") || localStorage.getItem("auth_token");
     if (token) {
       getMe()
-        .then(setUser)
+        .then((data: any) => {
+          setUser(data.user);
+          setError(null);
+        })
         .catch(() => Cookies.remove("auth_token"));
     }
   }, []);

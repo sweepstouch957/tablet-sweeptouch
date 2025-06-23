@@ -12,6 +12,7 @@ export const loginWithAccessCode = async (accessCode: string) => {
   const res = await api.post("/auth/login", { accessCode });
   const token = res.data.token;
   Cookies.set("auth_token", token);
+  localStorage.setItem("auth_token", token);
   return res.data;
 };
 export const getMe = async () => {
@@ -21,5 +22,4 @@ export const getMe = async () => {
 
 export const logout = () => {
   Cookies.remove("auth_token");
-
 };
