@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getStoreBySlug } from "@/services/store.service";
 import { Suspense } from "react";
-import { CircularProgress, Container } from "@mui/material";
+import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import FathersDayPromo from "@/component/tablet";
 function WinACarFormContainer() {
   const searchParams = useSearchParams();
@@ -19,11 +19,24 @@ function WinACarFormContainer() {
     staleTime: 1000 * 60 * 5,
   });
 
-  console.log("Store data:", store);
-
   return (
     <>
-      {store && <FathersDayPromo store={store} />}
+      {store ? (
+        <FathersDayPromo store={store} />
+      ) : (
+        <Box
+          bgcolor={"#f43789"}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          minHeight="100vh"
+          color="#fff"
+          textAlign={"center"}
+        >
+          <Typography variant="h1">MODO Mantenimiento</Typography>
+        </Box>
+      )}
       {isLoading && <CircularProgress />}
     </>
   );
