@@ -4,7 +4,13 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getStoreBySlug } from "@/services/store.service";
 import { Suspense } from "react";
-import { Box, CircularProgress, Container, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Container,
+  Stack,
+  Typography,
+} from "@mui/material";
 import FathersDayPromo from "@/component/tablet";
 import Tuerca from "@public/tuerca.webp";
 import Logo from "@public/logo.webp";
@@ -66,14 +72,16 @@ function WinACarFormContainer() {
           <br />
           MODE
         </Typography>
-        <Typography variant="h5">Powered by </Typography>
-        <Image
-          src={Logo.src}
-          alt="Sweepstouch logo"
-          width={240}
-          height={40}
-          style={{ objectFit: "contain"}}
-        />
+        <Stack>
+          <Typography mb={-0.8}>Powered by </Typography>
+          <Image
+            src={Logo.src}
+            alt="Sweepstouch logo"
+            width={240}
+            height={40}
+            style={{ objectFit: "contain" }}
+          />
+        </Stack>
       </Box>
     );
   }
