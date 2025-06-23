@@ -127,7 +127,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         <Typography
           fontWeight="bold"
           textAlign="center"
-          fontSize={{ xs: "1.4rem", sm: "1.4rem", md: "2rem" }}
+          fontSize={{ xs: "1.7rem", sm: "1.7rem", md: "2rem" }}
           lineHeight={1}
           mb={"8px"}
         >
