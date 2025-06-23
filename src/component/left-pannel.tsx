@@ -74,7 +74,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         storeId: store.id,
         customerPhone: phoneNumber,
         customerName: "",
-        method: "tablet",
+        method: user ? "cashier" : "tablet",
         createdBy: store.id,
       });
     },
