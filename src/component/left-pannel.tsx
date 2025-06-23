@@ -241,6 +241,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               justifyContent="center"
               sx={{ cursor: "pointer" }}
               onClick={handleMenuClick}
+              mt={1}
             >
               <Image
                 src={Woman.src}
