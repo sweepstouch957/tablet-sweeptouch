@@ -145,6 +145,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             variant="standard"
             placeholder="Phone Number"
             fullWidth
+            type="tel"
             InputProps={{
               disableUnderline: true,
               sx: {
