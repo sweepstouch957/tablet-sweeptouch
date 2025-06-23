@@ -22,4 +22,5 @@ export const getMe = async () => {
 
 export const logout = () => {
   Cookies.remove("auth_token");
+  localStorage.removeItem("auth_token");
 };
