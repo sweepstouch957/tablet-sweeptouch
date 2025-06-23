@@ -249,8 +249,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             >
               <Image
                 src={Woman.src}
-                height={100}
-                width={100}
+                height={80}
+                width={80}
                 alt="User Avatar"
                 style={{
                   borderRadius: "50%",
