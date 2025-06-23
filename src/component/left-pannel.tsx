@@ -277,11 +277,12 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             alt="Store Logo"
             width={150}
             height={100}
-            style={{ objectFit: "contain",marginTop:"8px" }}
+            style={{ objectFit: "contain", marginTop: "8px" }}
           />
         )}
 
-        <Box width="100%" mt={2}>
+        <Stack width="100%" mt={1}>
+          <Typography mb={-0.8}>Powered by</Typography>
           <Image
             src={Logo.src}
             alt="Sweepstouch logo"
@@ -289,11 +290,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             height={40}
             style={{ objectFit: "contain", width: "100%", height: "auto" }}
           />
-        </Box>
-
-        <Typography fontSize="0.95rem" mt={1}>
-          Contact Us: (201) 982-4102
-        </Typography>
+          <Typography fontSize="0.95rem" mt={-0.8}>
+            Contact Us: (201) 982-4102
+          </Typography>
+        </Stack>
       </Stack>
     </Box>
   );
