@@ -284,7 +284,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         )}
 
         <Stack
-          width="100%"
+          width="90%"
           mt={2}
           justifyContent={"center"}
           alignItems="center"
