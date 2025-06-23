@@ -127,8 +127,9 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         <Typography
           fontWeight="bold"
           textAlign="center"
-          fontSize={{ xs: "1rem", sm: "1rem", md: "2rem" }}
-          lineHeight={0.8}
+          fontSize={{ xs: "1.4rem", sm: "1.4rem", md: "2rem" }}
+          lineHeight={1}
+          mb={"8px"}
         >
           Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span>{" "}
           <br />
@@ -200,7 +201,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           label={
             <Typography
               variant="caption"
-              fontSize="0.8rem"
+              fontSize="0.6rem"
               lineHeight={1.4}
               maxWidth="300px"
               textAlign="left"
@@ -217,7 +218,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               </Box>
             </Typography>
           }
-          sx={{ alignSelf: "flex-start", mb: 2 }}
+          sx={{ alignSelf: "flex-start", mb: 1 }}
         />
       </Stack>
 
