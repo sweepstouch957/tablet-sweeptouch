@@ -241,7 +241,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               justifyContent="center"
               sx={{ cursor: "pointer" }}
               onClick={handleMenuClick}
-              mt={1}
             >
               <Image
                 src={Woman.src}
@@ -275,7 +274,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             alt="Store Logo"
             width={150}
             height={100}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain",marginTop:"8px" }}
           />
         )}
 
