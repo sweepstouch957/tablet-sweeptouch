@@ -281,8 +281,13 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
         )}
 
-        <Stack width="100%" mt={1}>
-          <Typography mb={-0.8}>Powered by</Typography>
+        <Stack
+          width="100%"
+          mt={1}
+          justifyContent={"center"}
+          alignItems="center"
+        >
+          <Typography mb={"1px"}>Powered by</Typography>
           <Image
             src={Logo.src}
             alt="Sweepstouch logo"
@@ -290,7 +295,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             height={40}
             style={{ objectFit: "contain", width: "100%", height: "auto" }}
           />
-          <Typography fontSize="0.95rem" mt={-0.8}>
+          <Typography fontSize="0.95rem" mt={"2px"}>
             Contact Us: (201) 982-4102
           </Typography>
         </Stack>
