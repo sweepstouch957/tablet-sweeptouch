@@ -127,7 +127,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         <Typography
           fontWeight="bold"
           textAlign="center"
-          fontSize={{ xs: "1rem", sm: "1rem", md: "2.3rem" }}
+          fontSize={{ xs: "1rem", sm: "1rem", md: "2rem" }}
           lineHeight={0.8}
         >
           Participate <br /> for <span style={{ color: "#fff200" }}>FREE!</span>{" "}
