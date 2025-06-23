@@ -219,7 +219,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               </Box>
             </Typography>
           }
-          sx={{ alignSelf: "flex-start", mb: 1 }}
+          sx={{ alignSelf: "flex-start", mb: 0}}
         />
       </Stack>
 
@@ -232,7 +232,9 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               color: "white",
               borderColor: "white",
               "&:hover": { borderColor: "#fff200", color: "#fff200" },
+              mb: 1,
             }}
+            
           >
             Admin Login
           </Button>
@@ -283,15 +285,15 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
 
         <Stack
           width="100%"
-          mt={1}
+          mt={2}
           justifyContent={"center"}
           alignItems="center"
         >
-          <Typography mb={"1px"}>Powered by</Typography>
+          <Typography mb={"2px"}>Powered by</Typography>
           <Image
             src={Logo.src}
             alt="Sweepstouch logo"
-            width={240}
+            width={200}
             height={40}
             style={{ objectFit: "contain", width: "100%", height: "auto" }}
           />
