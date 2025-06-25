@@ -115,7 +115,7 @@ PLEASE KEEP THIS RECEIPT`;
         icon: "success",
         confirmButtonColor: "#f43789",
         confirmButtonText: "Ok",
-        timer: 20000, // ⏱️ 2 segundos
+        timer: 5000, // ⏱️ 2 segundos
         timerProgressBar: true,
       });
 
