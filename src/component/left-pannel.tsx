@@ -63,16 +63,15 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   }) {
     const date = new Date().toLocaleString();
 
-    const ticket = `========================================
+    const ticket = `=============================
 ${data.storeName.toUpperCase()}
-========================================
+=============================
 PHONE   : ${data.phone}
 COUPON  : ${data.couponCode}
 DATE    : ${date}
-----------------------------------------
+-----------------------------
 THANK YOU FOR PARTICIPATING
-PLEASE KEEP THIS RECEIPT
-========================================`;
+PLEASE KEEP THIS RECEIPT`;
 
     const encoded = encodeURIComponent(ticket);
     window.location.href = `rawbt:${encoded}`;
