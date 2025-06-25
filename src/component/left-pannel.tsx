@@ -99,7 +99,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     onError: (error: any) => {
       MySwal.fire({
         title: "Oops...",
-        text: error || "Ocurrió un error inesperado.",
+        text: error || "An error occurred while registering.",
         icon: "error",
         confirmButtonColor: "#f43789",
         timer: 4000, // ⏱️ 4 segundos
