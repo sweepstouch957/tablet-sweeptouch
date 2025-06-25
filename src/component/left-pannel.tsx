@@ -61,18 +61,24 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     phone: string;
     couponCode: string;
   }) {
+    const date = new Date().toLocaleString();
+
     const ticket = `
-${data.storeName.toUpperCase()}
-------------------------
-SORTEO ACTIVO
-Cliente: ${data.phone}
-Código: ${data.couponCode}
-------------------------
-¡Gracias por participar!
-`;
+         ${data.storeName.toUpperCase()}
+       ==========================
+             SWEEPSTAKE ENTRY
+       --------------------------
+  PHONE        : ${data.phone}
+  PARTICIPANT ID : ${data.couponCode}
+  DATE         : ${date}
+       --------------------------
+         THANK YOU FOR JOINING
+         KEEP THIS RECEIPT
+       ==========================
+  `;
 
     const encoded = encodeURIComponent(ticket);
-    window.location.href = `rawbt:print?text=${encoded}`;
+    window.location.href = `rawbt:${encoded}`;
   }
 
   const handleMenuClose = () => {
