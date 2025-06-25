@@ -68,9 +68,9 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
        ==========================
              SWEEPSTAKE ENTRY
        --------------------------
-  PHONE        : ${data.phone}
-  PARTICIPANT ID : ${data.couponCode}
-  DATE         : ${date}
+  PHONE  : ${data.phone}
+  COUPON : ${data.couponCode}
+  DATE   : ${date}
        --------------------------
          THANK YOU FOR JOINING
          KEEP THIS RECEIPT
