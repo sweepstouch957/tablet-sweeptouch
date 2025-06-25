@@ -56,6 +56,25 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     setAnchorEl(event.currentTarget);
   };
 
+  function printWithRawBT(data: {
+    storeName: string;
+    phone: string;
+    couponCode: string;
+  }) {
+    const ticket = `
+${data.storeName.toUpperCase()}
+------------------------
+SORTEO ACTIVO
+Cliente: ${data.phone}
+Código: ${data.couponCode}
+------------------------
+¡Gracias por participar!
+`;
+
+    const encoded = encodeURIComponent(ticket);
+    window.location.href = `rawbt:print?text=${encoded}`;
+  }
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -78,24 +97,36 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         createdBy: store.id,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, __, context) => {
+      const { couponCode } = context as any; // si querés usarlo más limpio, podés retornarlo en createSweepstake
+
+      console.log("✅ Participant registered successfully", couponCode);
+      
       MySwal.fire({
         title: "Thank You!",
         html: `
-         <div style="font-size: 1.3rem;">
-    <p>🎉 Thank you for participating!</p>
-    <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
-  </div>
-        `,
+     <div style="font-size: 1.3rem;">
+        <p>🎉 Thank you for participating!</p>
+        <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
+     </div>
+    `,
         icon: "success",
         confirmButtonColor: "#f43789",
         confirmButtonText: "Ok",
-        timer: 6000, // ⏱️ 4 segundos
+        timer: 20000, // ⏱️ 2 segundos
         timerProgressBar: true,
       });
+
+      printWithRawBT({
+        storeName: store?.name || "Sorteo",
+        phone: phoneNumber,
+        couponCode: couponCode || "XXXXXX",
+      });
+
       setPhoneNumber("");
       setTermsAccepted(false);
     },
+
     onError: (error: any) => {
       MySwal.fire({
         title: "Oops...",
@@ -219,7 +250,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               </Box>
             </Typography>
           }
-          sx={{ alignSelf: "flex-start", mb: 0}}
+          sx={{ alignSelf: "flex-start", mb: 0 }}
         />
       </Stack>
 
@@ -234,7 +265,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               "&:hover": { borderColor: "#fff200", color: "#fff200" },
               mb: 1,
             }}
-            
           >
             Admin Login
           </Button>
@@ -283,12 +313,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
         )}
 
-        <Stack
-          width="90%"
-          mt={2}
-          justifyContent={"center"}
-          alignItems="center"
-        >
+        <Stack width="90%" mt={2} justifyContent={"center"} alignItems="center">
           <Typography mb={"2px"}>Powered by</Typography>
           <Image
             src={Logo.src}
