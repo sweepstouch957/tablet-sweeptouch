@@ -88,7 +88,7 @@ Código: ${data.couponCode}
     mutationFn: async () => {
       if (!store || !phoneNumber) return;
       const sweepstakeId = await getActiveSweepstakeByStore(store.id);
-      await createSweepstake({
+      const resp = await createSweepstake({
         sweepstakeId,
         storeId: store.id,
         customerPhone: phoneNumber,
@@ -96,12 +96,12 @@ Código: ${data.couponCode}
         method: user ? "cashier" : "tablet",
         createdBy: store.id,
       });
-    },
-    onSuccess: (_, __, context) => {
-      const { couponCode } = context as any; // si querés usarlo más limpio, podés retornarlo en createSweepstake
 
-      console.log("✅ Participant registered successfully", couponCode);
-      
+      return resp;
+    },
+    onSuccess: (resp) => {
+      console.log("✅ Participant registered successfully", resp);
+
       MySwal.fire({
         title: "Thank You!",
         html: `
@@ -120,7 +120,7 @@ Código: ${data.couponCode}
       printWithRawBT({
         storeName: store?.name || "Sorteo",
         phone: phoneNumber,
-        couponCode: couponCode || "XXXXXX",
+        couponCode: resp.coupon || "XXXXXX",
       });
 
       setPhoneNumber("");
