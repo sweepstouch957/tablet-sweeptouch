@@ -24,6 +24,7 @@ import {
   getActiveSweepstakeByStore,
 } from "@/services/sweepstake.service";
 import { validatePhone } from "@/libs/utils/formatPhone";
+import { FormHelperText } from "@mui/material";
 
 import Woman from "@public/woman.jpg";
 
@@ -55,6 +56,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const [termsTouched, setTermsTouched] = useState(false);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -94,7 +96,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         timerProgressBar: true,
       });
       setPhoneNumber("");
-      setTermsAccepted(false);
+      setTermsAccepted(true);
     },
     onError: (error: any) => {
       MySwal.fire({
@@ -161,9 +163,13 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           <Button
             variant="contained"
             onClick={() => {
+              setTermsTouched(true); // Marca que intentaron enviar
+
               if (!validatePhone(phoneNumber)) {
                 return;
               }
+              if (!termsAccepted) return; // Evita enviar si no aceptó términos
+
               registerParticipant();
             }}
             sx={{
@@ -174,53 +180,58 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               borderRadius: 0,
             }}
             disabled={
-              !termsAccepted ||
-              isPending ||
-              !phoneNumber ||
-              validatePhone(phoneNumber) === false
+              isPending || !phoneNumber || validatePhone(phoneNumber) === false
             }
           >
             JOIN
           </Button>
         </Stack>
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              sx={{
-                color: "white",
-                "& .MuiSvgIcon-root": { borderRadius: 1, fontSize: 24 },
-                "&.Mui-checked .MuiSvgIcon-root": {
-                  backgroundColor: "white",
-                  color: "#f43789",
-                },
-              }}
-            />
-          }
-          label={
-            <Typography
-              variant="caption"
-              fontSize="0.6rem"
-              lineHeight={1.4}
-              maxWidth="300px"
-              textAlign="left"
-            >
-              By providing your phone number, you are consenting to receive
-              messages about sales/coupons/promotors/etc. Text HELP for info.
-              Text STOP to opt out. MSG&Data rates may apply.{" "}
-              <Box
-                component="span"
-                sx={{ textDecoration: "underline", cursor: "pointer" }}
-                onClick={() => setPrivacyOpen(true)}
+        <Box sx={{ alignSelf: "flex-start", mb: 0 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                sx={{
+                  color: "white",
+                  "& .MuiSvgIcon-root": { borderRadius: 1, fontSize: 24 },
+                  "&.Mui-checked .MuiSvgIcon-root": {
+                    backgroundColor: "white",
+                    color: "#f43789",
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography
+                variant="caption"
+                fontSize="0.6rem"
+                lineHeight={1.4}
+                maxWidth="300px"
+                textAlign="left"
               >
-                Privacy Policy
-              </Box>
-            </Typography>
-          }
-          sx={{ alignSelf: "flex-start", mb: 0}}
-        />
+                By providing your phone number, you are consenting to receive
+                messages about sales/coupons/promotors/etc. Text HELP for info.
+                Text STOP to opt out. MSG&Data rates may apply.{" "}
+                <Box
+                  component="span"
+                  sx={{ textDecoration: "underline", cursor: "pointer" }}
+                  onClick={() => setPrivacyOpen(true)}
+                >
+                  Privacy Policy
+                </Box>
+              </Typography>
+            }
+          />
+          {termsTouched && !termsAccepted && (
+            <FormHelperText
+              sx={{ color: "#fff200", fontSize: "0.7rem", ml: "32px" }}
+            >
+              You must accept the terms and conditions.
+            </FormHelperText>
+          )}
+        </Box>  
       </Stack>
 
       <Stack justifyContent="center" alignItems="center">
@@ -234,7 +245,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               "&:hover": { borderColor: "#fff200", color: "#fff200" },
               mb: 1,
             }}
-            
           >
             Admin Login
           </Button>
@@ -283,12 +293,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
         )}
 
-        <Stack
-          width="90%"
-          mt={2}
-          justifyContent={"center"}
-          alignItems="center"
-        >
+        <Stack width="90%" mt={2} justifyContent={"center"} alignItems="center">
           <Typography mb={"2px"}>Powered by</Typography>
           <Image
             src={Logo.src}
