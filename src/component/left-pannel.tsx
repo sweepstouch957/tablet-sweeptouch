@@ -58,6 +58,26 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   };
   const [termsTouched, setTermsTouched] = useState(false);
 
+  function printWithRawBT(data: {
+    storeName: string;
+    phone: string;
+    couponCode: string;
+  }) {
+    const date = new Date().toLocaleString();
+
+    const ticket = `=============================
+${data.storeName.toUpperCase()}
+=============================
+PHONE : ${data.phone}
+COUPON: ${data.couponCode}
+DATE  : ${date}
+-----------------------------
+THANK YOU FOR PARTICIPATING
+PLEASE KEEP THIS RECEIPT`;
+
+    const encoded = encodeURIComponent(ticket);
+    window.location.href = `rawbt:${encoded}`;
+  }
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -71,7 +91,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     mutationFn: async () => {
       if (!store || !phoneNumber) return;
       const sweepstakeId = await getActiveSweepstakeByStore(store.id);
-      await createSweepstake({
+      const resp = await createSweepstake({
         sweepstakeId,
         storeId: store.id,
         customerPhone: phoneNumber,
@@ -79,29 +99,39 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         method: user ? "cashier" : "tablet",
         createdBy: store.id,
       });
+
+      return resp;
     },
-    onSuccess: () => {
+    onSuccess: (resp) => {
       MySwal.fire({
         title: "Thank You!",
         html: `
-         <div style="font-size: 1.3rem;">
-    <p>🎉 Thank you for participating!</p>
-    <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
-  </div>
-        `,
+     <div style="font-size: 1.3rem;">
+        <p>🎉 Thank you for participating!</p>
+        <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
+     </div>
+    `,
         icon: "success",
         confirmButtonColor: "#f43789",
         confirmButtonText: "Ok",
-        timer: 6000, // ⏱️ 4 segundos
+        timer: 5000, // ⏱️ 2 segundos
         timerProgressBar: true,
       });
+
+      printWithRawBT({
+        storeName: store?.name || "Sorteo",
+        phone: phoneNumber,
+        couponCode: resp.coupon || "XXXXXX",
+      });
+
       setPhoneNumber("");
       setTermsAccepted(true);
     },
+
     onError: (error: any) => {
       MySwal.fire({
         title: "Oops...",
-        text: error || "Ocurrió un error inesperado.",
+        text: error || "An error occurred while registering.",
         icon: "error",
         confirmButtonColor: "#f43789",
         timer: 4000, // ⏱️ 4 segundos
@@ -231,7 +261,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               You must accept the terms and conditions.
             </FormHelperText>
           )}
-        </Box>  
+        </Box>
       </Stack>
 
       <Stack justifyContent="center" alignItems="center">
