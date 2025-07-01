@@ -62,18 +62,25 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
     storeName: string;
     phone: string;
     couponCode: string;
+    pariticpantNumber?: string;
   }) {
-    const date = new Date().toLocaleString();
+    const now = new Date();
+    const date = now.toLocaleDateString(); // Solo la fecha (ej: 7/1/2025)
+    const time = now.toLocaleTimeString(); // Solo la hora (ej: 3:45 PM)
 
     const ticket = `=============================
 ${data.storeName.toUpperCase()}
 =============================
+°PARTICIPANT: ${data.pariticpantNumber}
 PHONE : ${data.phone}
 COUPON: ${data.couponCode}
 DATE  : ${date}
------------------------------
+TIME  : ${time}
+=============================
 THANK YOU FOR PARTICIPATING
-PLEASE KEEP THIS RECEIPT`;
+PLEASE KEEP THIS RECEIPT
+=============================
+`;
 
     const encoded = encodeURIComponent(ticket);
     window.location.href = `rawbt:${encoded}`;
@@ -94,7 +101,7 @@ PLEASE KEEP THIS RECEIPT`;
       const resp = await createSweepstake({
         sweepstakeId,
         storeId: store.id,
-        customerPhone: phoneNumber,
+        customerPhone: phoneNumber.replace(/\D/g, ""),
         customerName: "",
         method: user ? "cashier" : "tablet",
         createdBy: store.id,
@@ -122,6 +129,7 @@ PLEASE KEEP THIS RECEIPT`;
         storeName: store?.name || "Sorteo",
         phone: phoneNumber,
         couponCode: resp.coupon || "XXXXXX",
+        pariticpantNumber: resp.participantNumber || "N/A",
       });
 
       setPhoneNumber("");
