@@ -21,7 +21,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   return (
     <Box
-      width={{ xs: "100%", md: "70%" }}
+      width={{ xs: "100%", md: "75%" }}
       position="relative"
       minHeight={{ xs: "69vh", md: "100vh" }}
       maxHeight={{ xs: "69vh", md: "100vh" }}

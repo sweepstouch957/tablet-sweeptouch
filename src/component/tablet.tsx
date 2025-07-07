@@ -11,6 +11,7 @@ import RightCarousel from "./right-pannel";
 import PrivacyDialog from "./pannel";
 import LoginDialog from "./login-dialog";
 import { formatPhone } from "@/libs/utils/formatPhone";
+import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 
 interface FathersDayPromoProps {
   store?: Store;
@@ -28,6 +29,13 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+
+  const { data } = useActiveSweepstake(store?._id);
+
+
+  const prize = data?.prize[0] || undefined;
+
+  
 
   const nextSlide = () => setIndex((prev) => (prev + 1) % images.length);
   const prevSlide = () =>
@@ -66,6 +74,8 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         phoneNumber={phoneNumber}
         setPhoneNumber={setPhoneNumber}
         onLogin={() => setLoginOpen(true)}
+        prize={prize}
+        
       />
       <RightCarousel
         store={store}

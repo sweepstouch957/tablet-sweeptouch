@@ -16,11 +16,11 @@ export interface Sweepstake {
  */
 export const getActiveSweepstakeByStore = async (
   storeId: string
-): Promise<string> => {
-  const resp = await api.get<{ sweepstakeId: string }>(
+): Promise<any> => {
+  const resp = await api.get(
     `/sweepstakes/active/${storeId}`
   );
-  return resp.data.sweepstakeId;
+  return resp.data;
 };
 
 export interface CreateParticipantPayload {
