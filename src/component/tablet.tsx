@@ -75,6 +75,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         setPhoneNumber={setPhoneNumber}
         onLogin={() => setLoginOpen(true)}
         prize={prize}
+        sweeptakeId={data?._id || ""}
         
       />
       <RightCarousel

@@ -100,7 +100,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           <Typography fontSize={"4rem"} fontWeight={800} lineHeight={0.9}>
             {brand}
           </Typography>
-          <Typography fontWeight="medium" fontSize="2.5rem">
+          <Typography fontWeight="medium" fontSize="2.5rem" lineHeight={1}>
             {model}
           </Typography>
         </Stack>
@@ -130,7 +130,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           />
         )}
 
-        <Typography fontSize="1rem" mt={"8px"}>
+        <Typography fontSize="0.8rem" mt={"8px"}>
           Contact Us: (201) 982-4102
         </Typography>
 

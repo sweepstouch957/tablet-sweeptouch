@@ -22,7 +22,8 @@ import { createSweepstake } from "@/services/sweepstake.service";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Image from "next/image";
-import Logo from "@public/logo.webp";
+import Logo from "@public/LogoPink.webp";
+import { ThankYouModal } from "./success-dialog";
 
 const MySwal = withReactContent(Swal);
 
@@ -65,6 +66,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [showThanks, setShowThanks] = useState(true);
 
   function printWithRawBT(data: {
     storeName: string;
@@ -76,16 +78,16 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     const time = now.toLocaleTimeString();
 
     const ticket = `=============================
-${data.storeName.toUpperCase()}
-=============================
-PHONE : ${data.phone}
-COUPON: ${data.couponCode}
-DATE  : ${date}
-TIME  : ${time}
-=============================
-THANK YOU FOR PARTICIPATING
-PLEASE KEEP THIS RECEIPT
-=============================`;
+  ${data.storeName.toUpperCase()}
+  =============================
+  PHONE : ${data.phone}
+  COUPON: ${data.couponCode}
+  DATE  : ${date}
+  TIME  : ${time}
+  =============================
+  THANK YOU FOR PARTICIPATING
+  PLEASE KEEP THIS RECEIPT
+  =============================`;
 
     const encoded = encodeURIComponent(ticket);
     window.location.href = `rawbt:${encoded}`;
@@ -104,14 +106,16 @@ PLEASE KEEP THIS RECEIPT
       return resp;
     },
     onSuccess: (resp) => {
+      setShowThanks(true); // 👈 mostrar modal
+
       MySwal.fire({
         title: "Thank You!",
         html: `
-      <div style="font-size: 1.3rem;">
-          <p>🎉 Thank you for participating!</p>
-          <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
-      </div>
-      `,
+        <div style="font-size: 1.3rem;">
+            <p>🎉 Thank you for participating!</p>
+            <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
+        </div>
+        `,
         icon: "success",
         confirmButtonColor: "#f43789",
         confirmButtonText: "Ok",
@@ -162,151 +166,161 @@ PLEASE KEEP THIS RECEIPT
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      sx={{
-        "& .MuiPaper-root": {
-          background: "transparent",
-        },
-      }}
-    >
-      <Box sx={{ bgcolor: "#2a1a1d", p: 3, borderRadius: "16px" }}>
-        <Box
-          sx={{
-            bgcolor: "#f43789",
-            borderRadius: "32px",
-            px: 2,
-            py: 3,
-            boxShadow: 6,
-          }}
-        >
-          <DialogTitle
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          "& .MuiPaper-root": {
+            background: "transparent",
+          },
+        }}
+      >
+        <Box sx={{ bgcolor: "#2a1a1d", p: 3, borderRadius: "16px" }}>
+          <Box
             sx={{
-              color: "white",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "1.3rem",
-              pb: 1,
+              bgcolor: "#f43789",
+              borderRadius: "32px",
+              px: 2,
+              py: 3,
+              boxShadow: 6,
             }}
           >
-            ENTER YOUR PHONE NUMBER
-            <IconButton
-              onClick={onClose}
-              sx={{ position: "absolute", right: 16, top: 16, color: "white" }}
+            <DialogTitle
+              sx={{
+                color: "white",
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "1.3rem",
+                pb: 1,
+              }}
             >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-
-          <DialogContent>
-            <Stack spacing={2} alignItems="center">
-              <TextField
-                value={phone}
-                variant="outlined"
+              ENTER YOUR PHONE NUMBER
+              <IconButton
+                onClick={onClose}
                 sx={{
-                  input: {
-                    textAlign: "center",
-                    fontSize: "1.8rem",
-                    color: "black",
-                    backgroundColor: "white",
-                    borderRadius: 2,
-                  },
-                }}
-                inputProps={{ maxLength: 14, inputMode: "numeric" }}
-                fullWidth
-              />
-
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 1.5,
-                  width: "100%",
+                  position: "absolute",
+                  right: 24,
+                  top: 24,
+                  color: "white",
                 }}
               >
-                {keypad.map((key) => (
-                  <Button
-                    key={key}
-                    variant="contained"
-                    disabled={key === "Send" && isPending}
-                    onClick={() => handleKeyPress(key)}
-                    sx={{
-                      backgroundColor:
-                        key === "Send"
-                          ? "#4CAF50"
-                          : key === "Delete"
-                          ? "#E53935"
-                          : "white",
-                      color:
-                        key === "Send" || key === "Delete" ? "white" : "black",
-                      fontSize: "1.5rem",
-                      width: "100%",
-                      height: "65px",
-                      borderRadius: "12px",
-                      fontWeight: "bold",
-                      boxShadow: 3,
-                      "&:hover": {
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+
+            <DialogContent>
+              <Stack spacing={2} alignItems="center">
+                <TextField
+                  value={phone}
+                  variant="outlined"
+                  sx={{
+                    input: {
+                      textAlign: "center",
+                      fontSize: "1.8rem",
+                      color: "black",
+                      backgroundColor: "white",
+                      borderRadius: 2,
+                    },
+                  }}
+                  inputProps={{ maxLength: 14, inputMode: "numeric" }}
+                  fullWidth
+                />
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: 1.5,
+                    width: "100%",
+                  }}
+                >
+                  {keypad.map((key) => (
+                    <Button
+                      key={key}
+                      variant="contained"
+                      disabled={key === "Send" && isPending}
+                      onClick={() => handleKeyPress(key)}
+                      sx={{
                         backgroundColor:
                           key === "Send"
-                            ? "#45a049"
+                            ? "#4CAF50"
                             : key === "Delete"
-                            ? "#d32f2f"
-                            : "#f1f1f1",
-                      },
-                    }}
-                  >
-                    {key}
-                  </Button>
-                ))}
-              </Box>
+                            ? "#E53935"
+                            : "white",
+                        color:
+                          key === "Send" || key === "Delete"
+                            ? "white"
+                            : "black",
+                        fontSize: "1.5rem",
+                        width: "100%",
+                        height: "65px",
+                        borderRadius: "12px",
+                        fontWeight: "bold",
+                        boxShadow: 3,
+                        "&:hover": {
+                          backgroundColor:
+                            key === "Send"
+                              ? "#45a049"
+                              : key === "Delete"
+                              ? "#d32f2f"
+                              : "#f1f1f1",
+                        },
+                      }}
+                    >
+                      {key}
+                    </Button>
+                  ))}
+                </Box>
 
-              {error && (
-                <Typography color="white" fontSize="0.9rem">
-                  {error}
-                </Typography>
-              )}
-            </Stack>
-          </DialogContent>
-        </Box>
+                {error && (
+                  <Typography color="white" fontSize="0.9rem">
+                    {error}
+                  </Typography>
+                )}
+              </Stack>
+            </DialogContent>
+          </Box>
 
-        <FormControlLabel
-          sx={{
-            mt: 1,
-          }}
-          control={
-            <Checkbox
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              sx={{
-                color: "#fff",
-                "&.Mui-checked": {
+          <FormControlLabel
+            sx={{
+              mt: 1,
+            }}
+            control={
+              <Checkbox
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                sx={{
                   color: "#fff",
-                },
-              }}
-            />
-          }
-          label={
-            <Typography color="white" fontSize={"0.8rem"}>
-              By providing your phone number, you are consenting to receive
-              messages about sales/coupons/promotors/etc. Text HELP for info.
-              Text STOP to opt out. MSG&Data rates may apply.
-            </Typography>
-          }
-        />
-
-        <Box mt={2} display="flex" justifyContent="center">
-          <Image
-            src={Logo.src}
-            alt="Sweepstouch logo"
-            width={200}
-            height={60}
-            style={{ objectFit: "contain" }}
+                  "&.Mui-checked": {
+                    color: "#fff",
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography color="white" fontSize={"0.8rem"}>
+                By providing your phone number, you are consenting to receive
+                messages about sales/coupons/promotors/etc. Text HELP for info.
+                Text STOP to opt out. MSG&Data rates may apply.
+              </Typography>
+            }
           />
+
+          <Box mt={2} display="flex" justifyContent="center">
+            <Image
+              src={Logo.src}
+              alt="Sweepstouch logo"
+              width={200}
+              height={60}
+              style={{ objectFit: "contain" }}
+            />
+          </Box>
         </Box>
-      </Box>
-    </Dialog>
+      </Dialog>
+      <ThankYouModal open={showThanks} onClose={() => setShowThanks(false)} />
+    </>
   );
 };
