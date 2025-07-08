@@ -153,7 +153,7 @@ export function printTicketWithImage(imageUrl: string, data: {
     });
 
     // Imagen a la derecha
-    ctx.drawImage(img, 400, 20, 150, 150); // puedes ajustar tamaño y posición
+    ctx.drawImage(img, 250, 40, 150, 150);  // puedes ajustar tamaño y posición
 
     // Convertir canvas a base64
     const base64Image = canvas.toDataURL("image/png");
