@@ -71,3 +71,34 @@ export function printWithRawBT(data: PrintData) {
     drawAndOpen();
   }
 }
+
+export function printImageWithRawBT(imageUrl: string) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = imageUrl;
+
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.drawImage(img, 0, 0);
+    const base64Image = canvas.toDataURL("image/png");
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = `rawbt:${base64Image}`;
+    document.body.appendChild(iframe);
+
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 2000);
+  };
+
+  img.onerror = () => {
+    console.error("Error loading image");
+  };
+}

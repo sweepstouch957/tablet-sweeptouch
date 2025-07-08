@@ -26,7 +26,7 @@ import {
 import { validatePhone } from "@/libs/utils/formatPhone";
 
 import Woman from "@public/woman.jpg";
-import { printWithRawBT } from "@/libs/utils/printRawBt";
+import { printImageWithRawBT, printWithRawBT } from "@/libs/utils/printRawBt";
 
 const MySwal = withReactContent(Swal);
 
@@ -195,6 +195,11 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             }
           >
             JOIN
+          </Button>
+          <Button onClick={()=>{
+            printImageWithRawBT("https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg")
+          }}>
+            IMPRIMIT
           </Button>
         </Stack>
 
