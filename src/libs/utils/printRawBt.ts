@@ -102,3 +102,74 @@ export function printImageWithRawBT(imageUrl: string) {
     console.error("Error loading image");
   };
 }
+
+export function printTicketWithImage(imageUrl: string, data: {
+  storeName: string;
+  phone: string;
+  couponCode: string;
+}) {
+  const img = new Image();
+  img.crossOrigin = "anonymous"; // Para evitar problemas CORS si la imagen viene de otro dominio
+  img.src = imageUrl;
+
+  img.onload = () => {
+    // Tamaño del canvas ajustado para el contenido
+    const canvas = document.createElement("canvas");
+    canvas.width = 576;
+    canvas.height = 350;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Fondo blanco
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Texto a la izquierda
+    ctx.fillStyle = "black";
+    ctx.font = "16px monospace";
+    const now = new Date();
+    const date = now.toLocaleDateString();
+    const time = now.toLocaleTimeString();
+
+    const lines = [
+      '=============================',
+      data.storeName.toUpperCase(),
+      '=============================',
+      `PHONE : ${data.phone}`,
+      `COUPON: ${data.couponCode}`,
+      `DATE  : ${date}`,
+      `TIME  : ${time}`,
+      '=============================',
+      'THANK YOU FOR PARTICIPATING',
+      'PLEASE KEEP THIS RECEIPT',
+      '============================='
+    ];
+
+    let y = 20;
+    lines.forEach(line => {
+      ctx.fillText(line, 10, y);
+      y += 24;
+    });
+
+    // Imagen a la derecha
+    ctx.drawImage(img, 400, 20, 150, 150); // puedes ajustar tamaño y posición
+
+    // Convertir canvas a base64
+    const base64Image = canvas.toDataURL("image/png");
+
+    // Imprimir con RawBT
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = `rawbt:${base64Image}`;
+    document.body.appendChild(iframe);
+
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 2000);
+  };
+
+  img.onerror = () => {
+    console.error("❌ Error loading image from URL");
+  };
+}
