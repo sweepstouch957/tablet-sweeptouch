@@ -2,16 +2,24 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Store } from "@/services/store.service";
 import { useAuth } from "@/context/auth-context";
 
 import BgImage from "@public/BgBlack.webp";
 
 import NewYearImage from "@public/2026.webp";
+import VipImage from "@public/VipImage.webp";
 
 import RibbonBanner from "./title-box";
 import { PhoneInputModal } from "./inputModal";
+import CallToActionButton from "./button";
 
 interface LeftPanelProps {
   store?: Store;
@@ -27,6 +35,7 @@ interface LeftPanelProps {
     image: string;
   };
   sweeptakeId?: string;
+  optinType?: string;
 }
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
@@ -34,12 +43,15 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   setTermsAccepted,
   sweeptakeId = "",
   prize = { name: "No Prize", image: "" }, // Default prize if not provided
+  optinType,
 }) => {
   const [brand, ...restParts] = prize.name.split(" ");
   const model = restParts.join(" ");
   const { user } = useAuth();
 
   const [openModal, setOpenModal] = useState(false);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
@@ -49,102 +61,125 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
       alignItems="center"
       justifyContent={{ xs: "space-between", md: "flex-start" }}
       width={{ xs: "100%", md: "25%" }}
-      minHeight={{ xs: "31vh", md: "100vh" }}
-      maxHeight={{ xs: "31vh", md: "100vh" }}
+      minHeight={{ xs: "28vh", md: "100vh" }}
+      maxHeight={{ xs: "28vh", md: "100vh" }}
       sx={{
         backgroundImage: `url(${BgImage.src})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
+      pt={2}
+      pl={{ xs: 2, md: 0 }}
       gap={1}
     >
-      <Stack pt={{ xs: 0, md: 3 }} px={3}>
+      <Stack order={{ xs: 1, md: 0 }} px={1}>
         <RibbonBanner />
         <Image
-          src={NewYearImage.src}
+          src={optinType === "generic" ? VipImage.src : NewYearImage.src}
           alt="New Year 2026"
           width={200}
           height={150}
           style={{
             objectFit: "contain",
-            marginBottom: "10px",
             width: "100%",
             height: "auto",
           }}
         />
-
-        <Button
-          variant="contained"
-          sx={{
-            bgcolor: "#BF171B",
-            color: "#ffffff",
-            my: 2,
-            borderRadius: "32px",
-
-            "&:hover": {
-              bgcolor: "#bf171a",
-              color: "#fff",
-            },
-          }}
+        <CallToActionButton
           onClick={() => {
             setOpenModal(true); // Abre el modal de términos
-          }}
-        >
-          <Typography fontSize="1rem" fontWeight="bold">
-            Participate and Win!
-          </Typography>
-        </Button>
-
-        <Stack textAlign={"center"} mb={0}>
-          <Typography fontSize={"4rem"} fontWeight={800} lineHeight={0.9}>
-            {brand}
-          </Typography>
-          <Typography fontWeight="medium" fontSize="2.5rem" lineHeight={1}>
-            {model}
-          </Typography>
-        </Stack>
-      </Stack>
-      <Stack alignItems={"flex-end"} width={"100%"}>
-        <Image
-          src={prize.image || Logo.src}
-          alt="Prize Image"
-          width={150}
-          height={100}
-          style={{
-            objectFit: "contain",
-            width: "80%",
-            height: "auto",
           }}
         />
       </Stack>
 
-      <Stack justifyContent="center" alignItems="center">
-        {store?.image && (
+      <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
+        {optinType !== "generic" && (
+          <Stack>
+            <Typography fontSize={"4rem"} fontWeight={800} lineHeight={0.9}>
+              {brand}
+            </Typography>
+            <Typography fontWeight="medium" fontSize="2.5rem" lineHeight={1}>
+              {model}
+            </Typography>
+          </Stack>
+        )}
+
+        <Stack
+          justifyContent="center"
+          alignItems="center"
+          display={{ xs: "flex", md: "none" }}
+        >
+          {store?.image && (
+            <Box>
+              <Image
+                src={store.image}
+                alt="Store Logo"
+                width={200}
+                height={120}
+                style={{ objectFit: "contain", marginTop: "8px" }}
+              />
+            </Box>
+          )}
+
+          <Typography fontSize="0.8rem" mt={"8px"}>
+            Contact Us: (201) 982-4102
+          </Typography>
+        </Stack>
+      </Stack>
+      {optinType !== "generic" && (
+        <Stack
+          alignItems={"flex-end"}
+          width={{ xs: "30%", md: "100%" }}
+          order={{ xs: 3, md: 2 }}
+        >
           <Image
-            src={store.image}
-            alt="Store Logo"
-            width={200}
-            height={120}
-            style={{ objectFit: "contain", marginTop: "8px" }}
+            src={prize.image || Logo.src}
+            alt="Prize Image"
+            width={150}
+            height={100}
+            style={{
+              objectFit: "contain",
+              width: matches ? "100%" : "80%",
+              height: "auto",
+              marginTop: "-10px",
+            }}
           />
+        </Stack>
+      )}
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        display={{ xs: "none", md: "flex" }}
+        order={4}
+        mt={-3}
+      >
+        {store?.image && (
+          <Box>
+            <Image
+              src={store.image}
+              alt="Store Logo"
+              width={200}
+              height={120}
+              style={{ objectFit: "contain", marginTop: "8px" }}
+            />
+          </Box>
         )}
 
         <Typography fontSize="0.8rem" mt={"8px"}>
           Contact Us: (201) 982-4102
         </Typography>
-
-        <PhoneInputModal
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          sweepstakeId={sweeptakeId}
-          storeId={store?.id}
-          storeName={store?.name}
-          createdBy={store?.id}
-          method={user ? "cashier" : "tablet"}
-          onSuccessRegister={() => setTermsAccepted(true)}
-        />
       </Stack>
+      <PhoneInputModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        sweepstakeId={sweeptakeId}
+        storeId={store?.id}
+        storeName={store?.name}
+        createdBy={store?.id}
+        method={user ? "cashier" : "tablet"}
+        onSuccessRegister={() => setTermsAccepted(true)}
+      />
     </Box>
   );
 };

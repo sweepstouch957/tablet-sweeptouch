@@ -66,7 +66,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
-  const [showThanks, setShowThanks] = useState(true);
+  const [showThanks, setShowThanks] = useState(false);
 
   function printWithRawBT(data: {
     storeName: string;
@@ -107,33 +107,21 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     },
     onSuccess: (resp) => {
       setShowThanks(true); // 👈 mostrar modal
-
-      MySwal.fire({
-        title: "Thank You!",
-        html: `
-        <div style="font-size: 1.3rem;">
-            <p>🎉 Thank you for participating!</p>
-            <p>📩 Check your SMS inbox for more details about the sweepstake and upcoming promotions.</p>
-        </div>
-        `,
-        icon: "success",
-        confirmButtonColor: "#f43789",
-        confirmButtonText: "Ok",
-        timer: 5000,
-        timerProgressBar: true,
-      });
-
       printWithRawBT({
         storeName,
         phone,
         couponCode: resp.coupon || "XXXXXX",
       });
 
+      setTimeout(() => {        
+        setShowThanks(false);
+        onClose()
+      }, 5000);
       setPhone("");
       onSuccessRegister();
-      onClose();
     },
     onError: (error: any) => {
+      onClose()
       MySwal.fire({
         title: "Oops...",
         text: error || "An error occurred while registering.",

@@ -4,26 +4,40 @@ export default function RibbonBanner() {
   return (
     <Box
       sx={{
-        py: "2px",
+        px: 3,
+        py: "4px",
         backgroundColor: "#BF171B",
         color: "#fff",
-        clipPath: "polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)",
-        display: "flex",
+        clipPath: `
+          polygon(
+            0% 0%,                     /* esquina superior izquierda */
+            calc(100% - 12px) 0%,      /* corte antes de la derecha */
+            100% 50%,                  /* corte en medio derecha */
+            calc(100% - 12px) 100%,    /* corte abajo derecha */
+            0% 100%,                   /* esquina inferior izquierda */
+            12px 50%                   /* corte en medio izquierda */
+          )
+        `,
+        display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        position: "relative",
-        zIndex: 1,
+        width: "90%",
+        mx: "auto",
+        mt: { xs: 1, md: 2 },
+        mb: { xs: 1, md: 2 },
+        height: "32px",
       }}
     >
       <Typography
         component="span"
-        fontWeight="800"
-        fontSize={"0.9rem"}
+        fontWeight="900"
+        fontSize={{ xs: "0.8rem", md: "1rem" }}
         sx={{
-          position: "relative",
+          whiteSpace: "nowrap",
+          lineHeight: 1,
         }}
       >
-        PARTICIPATE FOR FREE!
+        PARTICIPATE FOR FREE
       </Typography>
     </Box>
   );

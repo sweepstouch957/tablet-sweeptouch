@@ -32,10 +32,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
 
   const { data } = useActiveSweepstake(store?._id);
 
-
   const prize = data?.prize[0] || undefined;
-
-  
 
   const nextSlide = () => setIndex((prev) => (prev + 1) % images.length);
   const prevSlide = () =>
@@ -76,7 +73,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         onLogin={() => setLoginOpen(true)}
         prize={prize}
         sweeptakeId={data?._id || ""}
-        
+        optinType={data?.optinType}
       />
       <RightCarousel
         store={store}

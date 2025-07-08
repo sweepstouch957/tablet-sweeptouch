@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { Dialog, DialogContent, Box, Typography, Fade } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  Box,
+  Typography,
+  Fade,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
 import ThankYouImage from "@public/ThankYou.webp";
 import Logo from "@public/LogoPink.webp";
@@ -15,20 +22,6 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
   open,
   onClose,
 }) => {
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-
-    if (open) {
-      // 🔊 Reproducir sonido
-      // ⏳ Cerrar después de 5 segundos
-      timer = setTimeout(() => {
-        onClose();
-      }, 6000);
-    }
-
-    return () => clearTimeout(timer);
-  }, [open, onClose]);
-
   return (
     <Dialog
       open={open}
@@ -37,9 +30,28 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
       fullWidth
       TransitionComponent={Fade}
       transitionDuration={500}
-      
     >
-      <DialogContent sx={{ backgroundColor: "black", p: 0 }}>
+      <DialogContent
+        sx={{ backgroundColor: "#00000080", p: 0, position: "relative" }}
+      >
+        {/* Botón cerrar */}
+        <IconButton
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 1,
+            color: "white",
+            backgroundColor: "#f43789",
+            "&:hover": {
+              backgroundColor: "#e32574",
+            },
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+
         <Box
           sx={{
             width: "100%",
@@ -55,15 +67,27 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
             style={{ width: "70%", height: "auto" }}
           />
 
-          <Typography color="white" fontSize="2rem" mt={2} fontWeight={800} lineHeight={1}textTransform={"uppercase"}  >
+          <Typography
+            color="white"
+            fontSize="2rem"
+            mt={2}
+            fontWeight={800}
+            lineHeight={1}
+            textTransform={"uppercase"}
+          >
             Thank you for participating in our sweepstake!
           </Typography>
-          <Typography color="white" fontSize="1.5rem" mt={1}  lineHeight={1} textTransform={"uppercase"} >
+          <Typography
+            color="white"
+            fontSize="1.5rem"
+            mt={1}
+            lineHeight={1}
+            textTransform={"uppercase"}
+          >
             Winner Will Be announced soon
           </Typography>
 
-
-          <Box mt={1    }>
+          <Box mt={2}>
             <Image
               src={Logo}
               alt="Sweepstouch logo"
