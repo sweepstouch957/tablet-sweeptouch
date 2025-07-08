@@ -2,13 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
-import {
-  Box,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Store } from "@/services/store.service";
 import { useAuth } from "@/context/auth-context";
 
@@ -36,6 +30,7 @@ interface LeftPanelProps {
   };
   sweeptakeId?: string;
   optinType?: string;
+  sweepstakeName?: string;
 }
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
@@ -44,6 +39,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   sweeptakeId = "",
   prize = { name: "No Prize", image: "" }, // Default prize if not provided
   optinType,
+  sweepstakeName,
 }) => {
   const [brand, ...restParts] = prize.name.split(" ");
   const model = restParts.join(" ");
@@ -176,7 +172,9 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         sweepstakeId={sweeptakeId}
         storeId={store?.id}
         storeName={store?.name}
+        type={optinType}
         createdBy={store?.id}
+        sweepstakeName={sweepstakeName || ""}
         method={user ? "cashier" : "tablet"}
         onSuccessRegister={() => setTermsAccepted(true)}
       />

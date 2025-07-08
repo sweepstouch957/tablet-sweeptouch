@@ -24,6 +24,7 @@ import withReactContent from "sweetalert2-react-content";
 import Image from "next/image";
 import Logo from "@public/LogoPink.webp";
 import { ThankYouModal } from "./success-dialog";
+import { printTicketWithImage } from "@/libs/utils/rawBt";
 
 const MySwal = withReactContent(Swal);
 
@@ -35,6 +36,8 @@ interface PhoneInputModalProps {
   storeName?: string;
   createdBy?: string;
   method: "cashier" | "tablet";
+  sweepstakeName: string;
+  type?: string;
   onSuccessRegister: () => void;
 }
 
@@ -62,36 +65,13 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   createdBy = "",
   method,
   onSuccessRegister,
+  sweepstakeName,
+  type = "",
 }) => {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
-
-  function printWithRawBT(data: {
-    storeName: string;
-    phone: string;
-    couponCode: string;
-  }) {
-    const now = new Date();
-    const date = now.toLocaleDateString();
-    const time = now.toLocaleTimeString();
-
-    const ticket = `=============================
-  ${data.storeName.toUpperCase()}
-  =============================
-  PHONE : ${data.phone}
-  COUPON: ${data.couponCode}
-  DATE  : ${date}
-  TIME  : ${time}
-  =============================
-  THANK YOU FOR PARTICIPATING
-  PLEASE KEEP THIS RECEIPT
-  =============================`;
-
-    const encoded = encodeURIComponent(ticket);
-    window.location.href = `rawbt:${encoded}`;
-  }
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -107,21 +87,26 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     },
     onSuccess: (resp) => {
       setShowThanks(true); // 👈 mostrar modal
-      printWithRawBT({
-        storeName,
-        phone,
-        couponCode: resp.coupon || "XXXXXX",
-      });
-
-      setTimeout(() => {        
+      if (type !== "generic") {
+        printTicketWithImage(
+          "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
+          {
+            storeName: storeName,
+            phone: phone,
+            couponCode: resp.coupon || "XXXXXX",
+            sweepstakeName,
+          }
+        );
+      }
+      setTimeout(() => {
         setShowThanks(false);
-        onClose()
+        onClose();
       }, 5000);
       setPhone("");
       onSuccessRegister();
     },
     onError: (error: any) => {
-      onClose()
+      onClose();
       MySwal.fire({
         title: "Oops...",
         text: error || "An error occurred while registering.",
