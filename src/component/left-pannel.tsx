@@ -26,6 +26,7 @@ import {
 import { validatePhone } from "@/libs/utils/formatPhone";
 
 import Woman from "@public/woman.jpg";
+import { printWithRawBT } from "@/libs/utils/printRawBt";
 
 const MySwal = withReactContent(Swal);
 
@@ -55,27 +56,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
-  function printWithRawBT(data: {
-    storeName: string;
-    phone: string;
-    couponCode: string;
-  }) {
-    const date = new Date().toLocaleString();
-
-    const ticket = `=============================
-${data.storeName.toUpperCase()}
-=============================
-PHONE : ${data.phone}
-COUPON: ${data.couponCode}
-DATE  : ${date}
------------------------------
-THANK YOU FOR PARTICIPATING
-PLEASE KEEP THIS RECEIPT`;
-
-    const encoded = encodeURIComponent(ticket);
-    window.location.href = `rawbt:${encoded}`;
-  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
