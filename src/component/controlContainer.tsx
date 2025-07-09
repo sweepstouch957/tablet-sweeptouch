@@ -117,7 +117,7 @@ const ControlSoporte = () => {
                 <AccessTimeIcon color="success" />
                 <Typography fontWeight={700}>Horarios</Typography>
               </Box>
-              <Stack spacing={1} pl={4}>
+              <Stack spacing={1}>
                 <Box
                   sx={{
                     backgroundColor: "#eaffea",
