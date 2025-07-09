@@ -1,4 +1,4 @@
-"use client";
+// pages/control-soporte.tsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -29,6 +29,14 @@ interface Entry {
   Descripcion: string;
 }
 
+const actionColors: Record<string, string> = {
+  "Instalación": "#d4edbc",
+  "Reprogramación": "#ffc8aa",
+  "Desinstalación": "#ffcfc9",
+  "Soporte Rutinario": "#bfe1f6",
+  "Configuración": "#e6e6e6",
+};
+
 const CardBox = ({ children }: { children: React.ReactNode }) => (
   <Paper
     elevation={4}
@@ -43,7 +51,7 @@ const CardBox = ({ children }: { children: React.ReactNode }) => (
   </Paper>
 );
 
-const ControlSoporte = () => {
+const ControlSoportePage = () => {
   const [entry, setEntry] = useState<Entry | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +71,7 @@ const ControlSoporte = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 5 }}>
       <Typography
-        variant="h6"
+        variant="h4"
         fontWeight="bold"
         color="#fc0680"
         mb={4}
@@ -95,56 +103,53 @@ const ControlSoporte = () => {
       ) : entry ? (
         <Stack spacing={3}>
           {/* Supermercado */}
-          <Stack direction={{xs:"column",md:"row"}} gap={2}>
-            <CardBox>
-              <Box display="flex" alignItems="center" gap={1} mb={1}>
-                <StoreIcon color="primary" />
-                <Typography fontWeight={700}>Supermercado</Typography>
-              </Box>
-              <Typography variant="h6" color="#0066cc" fontWeight={700}>
-                {entry.nombre_supermercado}
-              </Typography>
-              <Box display="flex" alignItems="center" gap={1} mt={1}>
-                <LocationOnIcon color="action" />
-                <Typography color="text.secondary">
-                  {entry.direccion}
+          <CardBox>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <StoreIcon color="primary" />
+              <Typography fontWeight={700}>Supermercado</Typography>
+            </Box>
+            <Typography variant="h6" color="#0066cc" fontWeight={700}>
+              {entry.nombre_supermercado}
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1} mt={1}>
+              <LocationOnIcon color="action" />
+              <Typography color="text.secondary">{entry.direccion}</Typography>
+            </Box>
+          </CardBox>
+
+          {/* Horarios */}
+          <CardBox>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <AccessTimeIcon color="success" />
+              <Typography fontWeight={700}>Horarios</Typography>
+            </Box>
+            <Stack spacing={1} pl={4}>
+              <Box
+                sx={{
+                  backgroundColor: "#eaffea",
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography fontWeight={600} color="green">
+                  Hora de Llegada: {entry.hora_llegada}
                 </Typography>
               </Box>
-            </CardBox>
-            {/* Horarios */}
-            <CardBox>
-              <Box display="flex" alignItems="center" gap={1} mb={1}>
-                <AccessTimeIcon color="success" />
-                <Typography fontWeight={700}>Horarios</Typography>
+              <Box
+                sx={{
+                  backgroundColor: "#ffeaea",
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                }}
+              >
+                <Typography fontWeight={600} color="red">
+                  Hora de Salida: {entry.hora_salida}
+                </Typography>
               </Box>
-              <Stack spacing={1}>
-                <Box
-                  sx={{
-                    backgroundColor: "#eaffea",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                  }}
-                >
-                  <Typography fontWeight={600} color="green">
-                    Hora de Llegada: {entry.hora_llegada}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    backgroundColor: "#ffeaea",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                  }}
-                >
-                  <Typography fontWeight={600} color="red">
-                    Hora de Salida: {entry.hora_salida}
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardBox>
-          </Stack>
+            </Stack>
+          </CardBox>
 
           {/* Trabajo Realizado */}
           <CardBox>
@@ -159,8 +164,8 @@ const ControlSoporte = () => {
                   px: 2,
                   py: 0.5,
                   borderRadius: 2,
-                  backgroundColor: "#4caf50",
-                  color: "white",
+                  backgroundColor: actionColors[entry.tipo_accion] || "#4caf50",
+                  color: "#333",
                   fontWeight: "bold",
                   mb: 1,
                 }}
@@ -191,4 +196,4 @@ const ControlSoporte = () => {
   );
 };
 
-export default ControlSoporte;
+export default ControlSoportePage;
