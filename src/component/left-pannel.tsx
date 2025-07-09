@@ -65,7 +65,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
-      pt={2}
       pl={{ xs: 2, md: 0 }}
       gap={1}
     >

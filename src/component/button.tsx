@@ -30,7 +30,7 @@ export default function CallToActionButton({
           bgcolor: "#BF171B",
           color: "#ffffff",
           borderRadius: "32px",
-          px: 4,
+          px: 2,
           py: 1.5,
           width:"100%",
           textTransform: "uppercase",

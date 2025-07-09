@@ -19,14 +19,11 @@ import { useState } from "react";
 import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import Image from "next/image";
 import Logo from "@public/LogoPink.webp";
 import { ThankYouModal } from "./success-dialog";
 import { printTicketWithImage } from "@/libs/utils/rawBt";
 
-const MySwal = withReactContent(Swal);
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -98,23 +95,18 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           }
         );
       }
+      onClose();
       setTimeout(() => {
         setShowThanks(false);
-        onClose();
       }, 5000);
       setPhone("");
       onSuccessRegister();
     },
     onError: (error: any) => {
-      onClose();
-      MySwal.fire({
-        title: "Oops...",
-        text: error || "An error occurred while registering.",
-        icon: "error",
-        confirmButtonColor: "#f43789",
-        timer: 4000,
-        timerProgressBar: true,
-      });
+        setError(error || "An error occurred while registering.")
+        setTimeout(() => {
+        setError("");
+      }, 5000);
     },
   });
 
@@ -249,7 +241,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 </Box>
 
                 {error && (
-                  <Typography color="white" fontSize="0.9rem">
+                  <Typography color="white" fontSize="1rem">
                     {error}
                   </Typography>
                 )}
