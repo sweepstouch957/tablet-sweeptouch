@@ -35,6 +35,8 @@ const actionColors: Record<string, string> = {
   "Soporte Rutinario": "#bfe1f6",
   Configuración: "#e6e6e6",
 };
+
+
 const CardBox = ({ children }: { children: React.ReactNode }) => (
   <Paper
     elevation={4}
@@ -171,7 +173,7 @@ const ControlSoporte = () => {
                   borderRadius: 2,
                   backgroundColor: actionColors[entry.tipo_accion] || "#4caf50",
 
-                  color: "white",
+                  color: "#000000",
                   fontWeight: "bold",
                   mb: 1,
                 }}
