@@ -77,15 +77,17 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           height={150}
           style={{
             objectFit: "contain",
-            width: "100%",
+            width: matches && optinType === "generic" ? "80%" : "100%",
             height: "auto",
           }}
         />
-        <CallToActionButton
-          onClick={() => {
-            setOpenModal(true); // Abre el modal de términos
-          }}
-        />
+        {!matches && optinType === "generic" && (
+          <CallToActionButton
+            onClick={() => {
+              setOpenModal(true); // Abre el modal de términos
+            }}
+          />
+        )}
       </Stack>
 
       <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
@@ -122,6 +124,16 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           </Typography>
         </Stack>
       </Stack>
+
+      {optinType === "generic" && matches && (
+        <Stack alignItems={"center"}>
+          <CallToActionButton
+            onClick={() => {
+              setOpenModal(true); // Abre el modal de términos
+            }}
+          />
+        </Stack>
+      )}
       {optinType !== "generic" && (
         <Stack
           alignItems={"flex-end"}
