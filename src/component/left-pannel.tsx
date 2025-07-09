@@ -73,8 +73,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         <Image
           src={optinType === "generic" ? VipImage.src : NewYearImage.src}
           alt="New Year 2026"
-          width={200}
-          height={150}
+          width={150}
+          height={80}
           style={{
             objectFit: "contain",
             width: matches && optinType === "generic" ? "80%" : "100%",
