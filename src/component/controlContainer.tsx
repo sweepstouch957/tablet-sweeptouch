@@ -43,7 +43,8 @@ const CardBox = ({ children }: { children: React.ReactNode }) => (
       borderRadius: 4,
       background: "#fff",
       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-      minWidth:"320px"
+      minWidth:"320px",
+      borderColor:"#aaaaaa"
     }}
   >
     {children}
@@ -68,18 +69,18 @@ const ControlSoporte = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
+    <Container maxWidth="md" sx={{ py: 2 }}>
       <Typography
         variant="h6"
         fontWeight="bold"
         color="#fc0680"
-        mb={4}
+        mb={1}
         textAlign="center"
       >
         Control de Soporte Técnico
       </Typography>
 
-      <Box display="flex" justifyContent="center" mb={3}>
+      <Box display="flex" justifyContent="center" mb={2}>
         <Button
           variant="contained"
           startIcon={<ReplayIcon />}
@@ -135,7 +136,7 @@ const ControlSoporte = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography fontWeight={600} color="green">
+                  <Typography fontWeight={600} color="green" variant="h6">
                     Hora de Llegada: {entry.hora_llegada}
                   </Typography>
                 </Box>
@@ -147,7 +148,7 @@ const ControlSoporte = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography fontWeight={600} color="red">
+                  <Typography fontWeight={600} color="red"  variant="h6">
                     Hora de Salida: {entry.hora_salida}
                   </Typography>
                 </Box>
@@ -178,16 +179,16 @@ const ControlSoporte = () => {
                 {entry.tipo_accion}
               </Box>
               <Box>
-                <Typography fontWeight={600} mb={0.5} variant="h6">
+                <Typography fontWeight={600} mb={0.5} variant="h5">
                   Descripción
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" variant="h6">
                   {entry.Descripcion}
                 </Typography>
               </Box>
               <Box mt={2} display="flex" alignItems="center" gap={1}>
                 <PersonIcon color="action" />
-                <Typography fontSize="0.9rem">
+                <Typography fontSize="1.2rem" >
                   Técnico: {entry.nombre_del_tecnico}
                 </Typography>
               </Box>
