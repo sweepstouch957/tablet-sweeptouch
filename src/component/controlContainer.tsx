@@ -63,7 +63,7 @@ const ControlSoporte = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 5 }}>
       <Typography
-        variant="h4"
+        variant="h6"
         fontWeight="bold"
         color="#fc0680"
         mb={4}
