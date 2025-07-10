@@ -81,13 +81,11 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             height: "auto",
           }}
         />
-        {!matches && optinType !== "generic" && (
           <CallToActionButton
             onClick={() => {
               setOpenModal(true); // Abre el modal de términos
             }}
           />
-        )}
       </Stack>
 
       <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
