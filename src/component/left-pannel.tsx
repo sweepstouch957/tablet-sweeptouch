@@ -81,7 +81,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             height: "auto",
           }}
         />
-        {!matches && optinType === "generic" && (
+        {!matches && optinType !== "generic" && (
           <CallToActionButton
             onClick={() => {
               setOpenModal(true); // Abre el modal de términos
