@@ -20,7 +20,6 @@ export default function CallToActionButton({
     <Box
       sx={{
         position: "relative",
-        mb:{xs:0,md:2}
       }}
     >
       <Button

@@ -24,7 +24,6 @@ export default function RibbonBanner() {
         width: "90%",
         mx: "auto",
         mt: { xs: 1, md: 2 },
-        mb: { xs: 1, md: 2 },
         height: "32px",
       }}
     >
