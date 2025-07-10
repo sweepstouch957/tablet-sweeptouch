@@ -91,7 +91,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
       <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
         {optinType !== "generic" && (
           <Stack>
-            <Typography fontSize={"4rem"} fontWeight={800} lineHeight={0.9}>
+            <Typography fontSize={"3.5rem"} fontWeight={800} lineHeight={0.9}>
               {brand}
             </Typography>
             <Typography fontWeight="medium" fontSize="2.5rem" lineHeight={1}>
@@ -166,7 +166,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               alt="Store Logo"
               width={200}
               height={80}
-              style={{ objectFit: "cover", marginTop: "8px" }}
+              style={{ objectFit: "contain", marginTop: "8px" }}
             />
           </Box>
         )}
