@@ -109,29 +109,14 @@ export function printTicketWithImage(
     storeName: string;
     phone: string;
     couponCode: string;
-    sweepstakeName:string
+    sweepstakeName: string;
   }
 ) {
   const img = new Image();
-  img.crossOrigin = "anonymous"; // Para evitar problemas CORS si la imagen viene de otro dominio
+  img.crossOrigin = "anonymous";
   img.src = imageUrl;
 
   img.onload = () => {
-    // Tamaño del canvas ajustado para el contenido
-    const canvas = document.createElement("canvas");
-    canvas.width = 576;
-    canvas.height = 350;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    // Fondo blanco
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Texto a la izquierda
-    ctx.fillStyle = "black";
-    ctx.font = "16px monospace";
     const now = new Date();
     const date = now.toLocaleDateString();
     const time = now.toLocaleTimeString();
@@ -140,32 +125,52 @@ export function printTicketWithImage(
     const address = match?.[2]?.trim() || "";
 
     const lines = [
-      "=============================",
+      "==============================",
       store.toUpperCase(),
       address,
-      "=============================",
+      "==============================",
       `PHONE : ${data.phone}`,
       `COUPON: ${data.couponCode}`,
       `DATE  : ${date}`,
       `TIME  : ${time}`,
-      "=============================",
+      "==============================",
       data.sweepstakeName.toUpperCase(),
-      "=============================",
+      "==============================",
     ];
 
-    let y = 20;
+    const lineHeight = 28;
+    const imageHeight = 180;
+    const padding = 40;
+    const totalHeight = lines.length * lineHeight + imageHeight + padding;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 576;
+    canvas.height = totalHeight;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "black";
+    ctx.font = "20px monospace";
+    ctx.textBaseline = "top";
+
+    let y = 10;
     lines.forEach((line) => {
-      ctx.fillText(line, 10, y);
-      y += 24;
+      const textWidth = ctx.measureText(line).width;
+      const x = (canvas.width - textWidth) / 2;
+      ctx.fillText(line, x, y);
+      y += lineHeight;
     });
 
-    // Imagen a la derecha
-    ctx.drawImage(img, 250, 40, 150, 150); // puedes ajustar tamaño y posición
+    // Imagen centrada al final
+    const imgX = (canvas.width - 180) / 2;
+    ctx.drawImage(img, imgX, y, 180, imageHeight);
 
-    // Convertir canvas a base64
     const base64Image = canvas.toDataURL("image/png");
 
-    // Imprimir con RawBT
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.src = `rawbt:${base64Image}`;
@@ -177,6 +182,6 @@ export function printTicketWithImage(
   };
 
   img.onerror = () => {
-    console.error("❌ Error loading image from URL");
+    console.error("❌ Error cargando la imagen del ticket");
   };
 }
