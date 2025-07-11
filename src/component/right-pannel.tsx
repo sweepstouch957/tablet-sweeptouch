@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // RightCarousel.tsx
+
 import React from "react";
 import Image from "next/image";
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { Store } from "@/services/store.service";
 
 interface RightCarouselProps {
@@ -10,6 +11,7 @@ interface RightCarouselProps {
   images: string[];
   index: number;
   handlers: any;
+  isLoading?: boolean;
 }
 
 const RightCarousel: React.FC<RightCarouselProps> = ({
@@ -17,8 +19,10 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   images,
   index,
   handlers,
+  isLoading = false,
 }) => {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
   return (
     <Box
       width={{ xs: "100%", md: "75%" }}
@@ -26,33 +30,55 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       minHeight={{ xs: "69vh", md: "100vh" }}
       maxHeight={{ xs: "69vh", md: "100vh" }}
       overflow="hidden"
+      bgcolor="black"
       {...handlers}
     >
-      {images.map((src, i) => (
+      {isLoading ? (
         <Box
-          key={i}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+          width="100%"
           position="absolute"
           top={0}
           left={0}
-          width="100%"
-          height="100%"
-          sx={{
-            opacity: i === index ? 1 : 0,
-            visibility: i === index ? "visible" : "hidden",
-            transition: "opacity 1s ease-in-out, visibility 1s",
-            zIndex: i === index ? 1 : 0,
-          }}
+          zIndex={10}
+          bgcolor="rgba(0,0,0,0.85)"
         >
-          <Image
-            src={src}
-            alt={`Slide ${i + 1}`}
-            fill
-            style={{ objectFit: isMobile ? "contain" : "fill" }}
-          />
+          <CircularProgress size={60} thickness={4} sx={{ color: "#fc0680" }} />
+          <Typography mt={2} fontWeight={600} color="white">
+            Cargando Promos...
+          </Typography>
         </Box>
-      ))}
+      ) : (
+        images.map((src, i) => (
+          <Box
+            key={i}
+            position="absolute"
+            top={0}
+            left={0}
+            width="100%"
+            height="100%"
+            sx={{
+              opacity: i === index ? 1 : 0,
+              visibility: i === index ? "visible" : "hidden",
+              transition: "opacity 1s ease-in-out, visibility 1s",
+              zIndex: i === index ? 1 : 0,
+            }}
+          >
+            <Image
+              src={src}
+              alt={`Slide ${i + 1}`}
+              fill
+              style={{ objectFit: isMobile ? "contain" : "fill" }}
+            />
+          </Box>
+        ))
+      )}
 
-      {store?.name && (
+      {store?.name && !isLoading && (
         <Box position="absolute" bottom={16} right={16} zIndex={2}>
           <Box
             sx={{
