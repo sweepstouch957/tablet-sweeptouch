@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
-import ThankYouImage from "@public/ThankYou.webp";
+import ThankYouImage from "@public/ThankYou.png";
 import Logo from "@public/LogoPink.webp";
 
 interface ThankYouModalProps {
