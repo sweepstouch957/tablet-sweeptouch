@@ -19,11 +19,8 @@ import { useState } from "react";
 import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
-import Image from "next/image";
-import Logo from "@public/LogoPink.webp";
 import { ThankYouModal } from "./success-dialog";
 import { printTicketWithImage } from "@/libs/utils/rawBt";
-
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -103,8 +100,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       onSuccessRegister();
     },
     onError: (error: any) => {
-        setError(error || "An error occurred while registering.")
-        setTimeout(() => {
+      setError(error || "An error occurred while registering.");
+      setTimeout(() => {
         setError("");
       }, 5000);
     },
@@ -139,7 +136,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         fullWidth
         sx={{
           "& .MuiPaper-root": {
+            minHeight: "560px",
             background: "transparent",
+            overflow:"hidden"
           },
         }}
       >
@@ -148,8 +147,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             sx={{
               bgcolor: "#f43789",
               borderRadius: "32px",
-              px: 2,
-              py: 3,
               boxShadow: 6,
             }}
           >
@@ -273,16 +270,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               </Typography>
             }
           />
-
-          <Box mt={2} display="flex" justifyContent="center">
-            <Image
-              src={Logo.src}
-              alt="Sweepstouch logo"
-              width={200}
-              height={60}
-              style={{ objectFit: "contain" }}
-            />
-          </Box>
         </Box>
       </Dialog>
       <ThankYouModal open={showThanks} onClose={() => setShowThanks(false)} />

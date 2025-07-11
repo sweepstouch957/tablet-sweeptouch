@@ -65,6 +65,7 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
             src={ThankYouImage}
             alt="Thank you for participating"
             style={{ width: "70%", height: "auto" }}
+            priority
           />
 
           <Typography
