@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import OopsSVG from "./OpSvg";
 
 const NoInternet = () => {
@@ -15,6 +15,7 @@ const NoInternet = () => {
       height="100vh"
       textAlign="center"
       px={2}
+      gap={"16px"}
     >
       <Stack direction={"row"} gap={2} mt={2}>
         <Typography variant="h2" fontWeight="bold">
@@ -39,17 +40,34 @@ const NoInternet = () => {
         </svg>
       </Stack>
 
-      <Box
-        position="relative"
-        maxWidth="100vw"
-        minWidth={"100vw"}
-        mt={3}
-      >
-        <OopsSVG  style={{
-            width:"100%",
-            height:"auto"
-        }}/>
+      <Box position="relative" maxWidth="650px" mt={3}>
+        <OopsSVG
+          style={{
+            width: "100%",
+            height: "auto",
+          }}
+        />
       </Box>
+      <Typography variant="h4" fontWeight="bold">
+        ¡Oops! Sin Conexión
+      </Typography>
+      <Typography variant="body2">
+        Parece que perdiste el acesso a internet
+      </Typography>
+
+      <Button
+        onClick={() => window.location.reload()}
+        sx={{
+          backgroundColor: "white",
+          color: "#ff0080", // Rosado
+          "&:hover": {
+            backgroundColor: "#fce4ec", // Ligero rosado al hover
+          },
+          fontWeight: "bold",
+        }}
+      >
+        Reload
+      </Button>
     </Box>
   );
 };
