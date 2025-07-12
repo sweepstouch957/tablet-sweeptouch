@@ -33,7 +33,10 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
 
   const { data } = useActiveSweepstake(store?._id);
   const { data: promosData, isLoading } = usePromos("tablet", store?._id);
-  const images = promosData?.map((promo) => promo.imageMobile) || imagesDummy;
+  const images =
+    promosData && promosData.length > 0
+      ? promosData.map((promo) => promo.imageMobile)
+      : imagesDummy;
 
   const prize = data?.prize[0] || undefined;
 
