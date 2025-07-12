@@ -165,7 +165,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               alt="Store Logo"
               width={200}
               height={80}
-              style={{ objectFit: "contain", marginTop: "8px" }}
+              style={{ objectFit: "contain", marginTop: "16px" }}
             />
           </Box>
         )}
