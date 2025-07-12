@@ -104,7 +104,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           justifyContent="center"
           alignItems="center"
           display={{ xs: "flex", md: "none" }}
-          mt={"4px"}
         >
           {store?.image && (
             <Box>
@@ -158,7 +157,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         alignItems="center"
         display={{ xs: "none", md: "flex" }}
         order={4}
-        mt={-3}
       >
         {store?.image && (
           <Box>
