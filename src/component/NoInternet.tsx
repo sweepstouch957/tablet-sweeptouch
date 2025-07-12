@@ -43,10 +43,12 @@ const NoInternet = () => {
         position="relative"
         maxWidth="100vw"
         minWidth={"100vw"}
-        flex={1}
-        mb={2}
+        mt={3}
       >
-        <OopsSVG />
+        <OopsSVG  style={{
+            width:"100%",
+            height:"auto"
+        }}/>
       </Box>
     </Box>
   );
