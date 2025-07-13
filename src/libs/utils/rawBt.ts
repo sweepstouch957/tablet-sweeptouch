@@ -109,29 +109,18 @@ export function printTicketWithImage(
     storeName: string;
     phone: string;
     couponCode: string;
-    sweepstakeName:string
+    sweepstakeName: string;
   }
 ) {
   const img = new Image();
-  img.crossOrigin = "anonymous"; // Para evitar problemas CORS si la imagen viene de otro dominio
+  img.crossOrigin = "anonymous";
   img.src = imageUrl;
 
   img.onload = () => {
-    // Tamaño del canvas ajustado para el contenido
     const canvas = document.createElement("canvas");
-    canvas.width = 704;
-    canvas.height = 350;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Fondo blanco
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Texto a la izquierda
-    ctx.fillStyle = "black";
-    ctx.font = "24px monospace";
     const now = new Date();
     const date = now.toLocaleDateString();
     const time = now.toLocaleTimeString();
@@ -140,32 +129,51 @@ export function printTicketWithImage(
     const address = match?.[2]?.trim() || "";
 
     const lines = [
-      "=============================",
+      "==============================",
       store.toUpperCase(),
       address,
-      "=============================",
+      "==============================",
       `PHONE : ${data.phone}`,
       `COUPON: ${data.couponCode}`,
       `DATE  : ${date}`,
       `TIME  : ${time}`,
-      "=============================",
+      "==============================",
       data.sweepstakeName.toUpperCase(),
-      "=============================",
+      "==============================",
+      "GOOD LUCK",
     ];
 
-    let y = 20;
+    const lineHeight = 28;
+    const padding = 20;
+    const textBlockHeight = lines.length * lineHeight;
+
+    const imageHeight = 150;
+    const imageSpacing = 20;
+
+    // Altura total dinámica: texto + espacio + imagen
+    canvas.width = 704;
+    canvas.height = padding * 2 + textBlockHeight + imageSpacing + imageHeight;
+
+    // Fondo blanco
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Texto
+    ctx.fillStyle = "black";
+    ctx.font = "32px monospace";
+
+    let y = padding;
     lines.forEach((line) => {
-      ctx.fillText(line, 10, y);
-      y += 24;
+      ctx.fillText(line, 30, y); // margen a la izquierda
+      y += lineHeight;
     });
 
-    // Imagen a la derecha
-    ctx.drawImage(img, 250, 40, 150, 150); // puedes ajustar tamaño y posición
+    // Imagen centrada abajo
+    const imageX = (canvas.width - 180) / 2; // imagen de 180px
+    ctx.drawImage(img, imageX, y + imageSpacing, 180, imageHeight);
 
-    // Convertir canvas a base64
+    // Imprimir
     const base64Image = canvas.toDataURL("image/png");
-
-    // Imprimir con RawBT
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.src = `rawbt:${base64Image}`;
@@ -180,3 +188,4 @@ export function printTicketWithImage(
     console.error("❌ Error loading image from URL");
   };
 }
+
