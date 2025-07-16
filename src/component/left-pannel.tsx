@@ -30,7 +30,9 @@ interface LeftPanelProps {
   };
   sweeptakeId?: string;
   optinType?: string;
+  imageYear?: string;
   sweepstakeName?: string;
+  hasQR?: boolean;
 }
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
@@ -40,6 +42,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   prize = { name: "No Prize", image: "" }, // Default prize if not provided
   optinType,
   sweepstakeName,
+  imageYear = NewYearImage.src,
+  hasQR,
 }) => {
   const [brand, ...restParts] = prize.name.split(" ");
   const model = restParts.join(" ");
@@ -71,7 +75,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
       <Stack order={{ xs: 1, md: 0 }} px={1}>
         <RibbonBanner />
         <Image
-          src={optinType === "generic" ? VipImage.src : NewYearImage.src}
+          src={optinType === "generic" ? VipImage.src : imageYear}
           alt="New Year 2026"
           width={200}
           height={150}
@@ -81,17 +85,17 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             height: "auto",
           }}
         />
-          <CallToActionButton
-            onClick={() => {
-              setOpenModal(true); // Abre el modal de términos
-            }}
-          />
+        <CallToActionButton
+          onClick={() => {
+            setOpenModal(true); // Abre el modal de términos
+          }}
+        />
       </Stack>
 
       <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
         {optinType !== "generic" && (
           <Stack>
-            <Typography fontSize={"3.5rem"} fontWeight={800} lineHeight={0.9}>
+            <Typography fontSize={"3rem"} fontWeight={800} lineHeight={0.9}>
               {brand}
             </Typography>
             <Typography fontWeight="medium" fontSize="2.5rem" lineHeight={1}>
@@ -110,8 +114,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               <Image
                 src={store.image}
                 alt="Store Logo"
-                width={200}
-                height={120}
+                width={matches ? 100 : 200}
+                height={matches ? 60 : 120}
                 style={{ objectFit: "contain", marginTop: "8px" }}
               />
             </Box>
@@ -163,8 +167,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <Image
               src={store.image}
               alt="Store Logo"
-              width={200}
-              height={80}
+              width={matches ? 100 : 200}
+              height={matches ? 60 : 120}
               style={{ objectFit: "contain", marginTop: "16px" }}
             />
           </Box>
@@ -185,6 +189,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         sweepstakeName={sweepstakeName || ""}
         method={user ? "cashier" : "tablet"}
         onSuccessRegister={() => setTermsAccepted(true)}
+        hasQR={hasQR}
       />
     </Box>
   );

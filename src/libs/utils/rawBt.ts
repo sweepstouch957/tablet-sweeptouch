@@ -1,3 +1,4 @@
+import QRCode from 'qrcode';
 interface PrintData {
   storeName: string;
   phone: string;
@@ -189,3 +190,84 @@ export function printTicketWithImage(
   };
 }
 
+export async function printTicketWithQRCodeOnly(data: {
+  storeName: string;
+  phone: string;
+  couponCode: string;
+  sweepstakeName: string;
+}) {
+  const qrData = {
+    phone: data.phone,
+    coupon: data.couponCode,
+  };
+  console.log("📦 Generating QR code with data:", qrData);
+  
+
+  // Generar QR code como canvas
+  const qrCanvas = document.createElement("canvas");
+  await QRCode.toCanvas(qrCanvas, JSON.stringify(qrData), {
+    errorCorrectionLevel: "H",
+    margin: 1,
+    scale: 4,
+  });
+
+  // Crear canvas principal
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const now = new Date();
+  const date = now.toLocaleDateString();
+  const time = now.toLocaleTimeString();
+
+  canvas.width = 576;
+  canvas.height = 600;
+
+  // 🎨 Fondo blanco
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 🎯 Centro de texto
+  const centerText = (text: string, y: number, font = "24px monospace") => {
+    ctx.font = font;
+    const textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, y);
+  };
+
+  ctx.fillStyle = "black";
+  let y = 40;
+  centerText(data.sweepstakeName.toUpperCase(), y, "bold 26px monospace");
+  y += 30;
+  centerText("TRADE SHOW", y, "24px monospace");
+  y += 25;
+  centerText("Your ticket QR code:", y, "20px monospace");
+
+  // 📦 QR code
+  y += 15;
+  ctx.drawImage(qrCanvas, (canvas.width - 180) / 2, y, 180, 180);
+  y += 200;
+
+  ctx.font = "20px monospace";
+  centerText(`code: ${data.couponCode}`, y);
+  y += 25;
+  centerText(data.storeName.toUpperCase(), y);
+  y += 25;
+  centerText(`PHONE: ${data.phone}`, y);
+  y += 25;
+  centerText(`DATE: ${date}`, y);
+  y += 25;
+  centerText(`TIME: ${time}`, y);
+  y += 25;
+  centerText("GOOD LUCK!", y);
+
+  // 🖨️ Imprimir con RawBT
+  const base64Image = canvas.toDataURL("image/png");
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = `rawbt:${base64Image}`;
+  document.body.appendChild(iframe);
+
+  setTimeout(() => {
+    document.body.removeChild(iframe);
+  }, 2000);
+}

@@ -20,7 +20,7 @@ import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
 import { ThankYouModal } from "./success-dialog";
-import { printTicketWithImage } from "@/libs/utils/rawBt";
+import { printTicketWithImage, printTicketWithQRCodeOnly } from "@/libs/utils/rawBt";
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -32,6 +32,7 @@ interface PhoneInputModalProps {
   method: "cashier" | "tablet";
   sweepstakeName: string;
   type?: string;
+  hasQR?: boolean;
   onSuccessRegister: () => void;
 }
 
@@ -61,6 +62,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   onSuccessRegister,
   sweepstakeName,
   type = "",
+  hasQR,
 }) => {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
@@ -82,6 +84,24 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     onSuccess: (resp) => {
       setShowThanks(true); // 👈 mostrar modal
       if (type !== "generic") {
+        console.log("📦 Printing ticket with image and QR code",hasQR);
+        
+
+        if (hasQR) {
+          printTicketWithQRCodeOnly({
+            storeName: storeName,
+            phone: phone.replace(/\D/g, ""),
+            couponCode: resp.coupon || "XXXXXX",
+            sweepstakeName,
+          });
+          printTicketWithQRCodeOnly({
+            storeName: storeName,
+            phone: phone.replace(/\D/g, ""),
+            couponCode: resp.coupon || "XXXXXX",
+            sweepstakeName,
+          });
+          return;
+        }
         printTicketWithImage(
           "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
           {

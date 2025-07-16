@@ -83,6 +83,8 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         sweeptakeId={data?._id || ""}
         optinType={data?.optinType}
         sweepstakeName={data?.name}
+        imageYear={data?.imageYear || ""}
+        hasQR={data?.hasQr || false}
       />
       <RightCarousel
         store={store}
