@@ -94,12 +94,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             couponCode: resp.coupon || "XXXXXX",
             sweepstakeName,
           });
-          printTicketWithQRCodeOnly({
-            storeName: storeName,
-            phone: phone.replace(/\D/g, ""),
-            couponCode: resp.coupon || "XXXXXX",
-            sweepstakeName,
-          });
           return;
         }
         printTicketWithImage(

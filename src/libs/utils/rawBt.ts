@@ -1,4 +1,4 @@
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
 interface PrintData {
   storeName: string;
   phone: string;
@@ -195,14 +195,12 @@ export async function printTicketWithQRCodeOnly(data: {
   phone: string;
   couponCode: string;
   sweepstakeName: string;
+  name?: string;
 }) {
   const qrData = {
     phone: data.phone,
     coupon: data.couponCode,
   };
-  console.log("📦 Generating QR code with data:", qrData);
-  
-
   // Generar QR code como canvas
   const qrCanvas = document.createElement("canvas");
   await QRCode.toCanvas(qrCanvas, JSON.stringify(qrData), {
@@ -248,11 +246,13 @@ export async function printTicketWithQRCodeOnly(data: {
   y += 200;
 
   ctx.font = "20px monospace";
-  centerText(`code: ${data.couponCode}`, y);
+  centerText(`CODE: ${data.couponCode}`, y);
   y += 25;
   centerText(data.storeName.toUpperCase(), y);
   y += 25;
   centerText(`PHONE: ${data.phone}`, y);
+  y += 25;
+  centerText(`NAME: ___________________`, y);
   y += 25;
   centerText(`DATE: ${date}`, y);
   y += 25;
@@ -261,13 +261,26 @@ export async function printTicketWithQRCodeOnly(data: {
   centerText("GOOD LUCK!", y);
 
   // 🖨️ Imprimir con RawBT
+  // 🖨️ Imprimir con RawBT dos veces
   const base64Image = canvas.toDataURL("image/png");
-  const iframe = document.createElement("iframe");
-  iframe.style.display = "none";
-  iframe.src = `rawbt:${base64Image}`;
-  document.body.appendChild(iframe);
+
+  // Primera impresión
+  const iframe1 = document.createElement("iframe");
+  iframe1.style.display = "none";
+  iframe1.src = `rawbt:${base64Image}`;
+  document.body.appendChild(iframe1);
 
   setTimeout(() => {
-    document.body.removeChild(iframe);
-  }, 2000);
+    document.body.removeChild(iframe1);
+
+    // Segunda impresión (después de que se quite la primera)
+    const iframe2 = document.createElement("iframe");
+    iframe2.style.display = "none";
+    iframe2.src = `rawbt:${base64Image}`;
+    document.body.appendChild(iframe2);
+
+    setTimeout(() => {
+      document.body.removeChild(iframe2);
+    }, 2000); // tiempo suficiente para que se dispare la impresión
+  }, 2000); // tiempo entre una impresión y otra
 }
