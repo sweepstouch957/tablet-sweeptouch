@@ -83,7 +83,8 @@ const ControlSoporte = () => {
       </Typography>
 
       <Box display="flex" justifyContent="center" mb={2} flexDirection={"column"}>
-        <Button
+        <Box>
+          <Button
           variant="contained"
           startIcon={<ReplayIcon />}
           sx={{ backgroundColor: "#fc0680", textTransform: "none" }}
@@ -92,6 +93,7 @@ const ControlSoporte = () => {
         >
           Actualizar
         </Button>
+        </Box>
         <Typography variant="body2" color="text.secondary" textAlign="center">
          Fecha de Hoy {new Date().toLocaleDateString()}
         </Typography>
