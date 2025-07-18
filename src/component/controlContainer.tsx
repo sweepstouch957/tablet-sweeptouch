@@ -17,7 +17,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import BuildIcon from "@mui/icons-material/Build";
 import ReplayIcon from "@mui/icons-material/Replay";
 
-const API_URL = "https://sheetdb.io/api/v1/olym1o09ig0di";
+const API_URL = "https://sheetdb.io/api/v1/2s3i4cw7ppvtr";
 
 interface Entry {
   nombre_del_tecnico: string;
