@@ -20,7 +20,10 @@ import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
 import { ThankYouModal } from "./success-dialog";
-import { printTicketWithImage, printTicketWithQRCodeOnly } from "@/libs/utils/rawBt";
+import {
+  printTicketWithImage,
+  printTicketWithQRCodeOnly,
+} from "@/libs/utils/rawBt";
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -65,28 +68,30 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   hasQR,
 }) => {
   const [phone, setPhone] = useState("");
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [nameError, setNameError] = useState("");
+
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ customerName }: { customerName: string }) => {
       const resp = await createSweepstake({
         sweepstakeId,
         storeId,
         customerPhone: phone.replace(/\D/g, ""),
-        customerName: "",
+        customerName,
         method,
         createdBy,
       });
       return resp;
     },
     onSuccess: (resp) => {
-      setShowThanks(true); // 👈 mostrar modal
-      if (type !== "generic") {
-        console.log("📦 Printing ticket with image and QR code",hasQR);
-        
+      setShowThanks(true);
 
+      if (type !== "generic") {
         if (hasQR) {
           printTicketWithQRCodeOnly({
             storeName: storeName,
@@ -94,7 +99,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             couponCode: resp.coupon || "XXXXXX",
             sweepstakeName,
           });
-          return;
         }
         printTicketWithImage(
           "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
@@ -106,12 +110,17 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           }
         );
       }
+
+      console.log("Registration successful:", resp);
+      
+      setShowNameModal(false);
       onClose();
+      setPhone("");
+      setCustomerName("");
+      onSuccessRegister();
       setTimeout(() => {
         setShowThanks(false);
       }, 5000);
-      setPhone("");
-      onSuccessRegister();
     },
     onError: (error: any) => {
       setError(error || "An error occurred while registering.");
@@ -130,8 +139,12 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         return;
       }
       if (validatePhone(phone)) {
-        mutate();
         setError("");
+        if (hasQR) {
+          setShowNameModal(true); // 👉 Mostrar modal de nombre si hay QR
+          return;
+        }
+        mutateWithName("");
       } else {
         setError("Please enter a valid phone number");
       }
@@ -139,6 +152,12 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       if (phone.replace(/\D/g, "").length < 10)
         setPhone(formatPhone(phone + key));
     }
+  };
+
+  const mutateWithName = (name: string) => {
+    mutate({
+      customerName: name,
+    });
   };
 
   return (
@@ -152,7 +171,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           "& .MuiPaper-root": {
             minHeight: "560px",
             background: "transparent",
-            overflow:"hidden"
+            overflow: "hidden",
           },
         }}
       >
@@ -287,6 +306,105 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         </Box>
       </Dialog>
       <ThankYouModal open={showThanks} onClose={() => setShowThanks(false)} />
+
+      <Dialog
+        open={showNameModal}
+        onClose={() => setShowNameModal(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <Box
+          sx={{
+            bgcolor: "#fefefe",
+            p: 4,
+            borderRadius: "16px",
+            boxShadow: 10,
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            mb={2}
+            sx={{ color: "#333", letterSpacing: 1 }}
+          >
+            ENTER YOUR NAME
+          </Typography>
+
+          <TextField
+            fullWidth
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            placeholder="FullName"
+            sx={{
+              mb: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                backgroundColor: "#fafafa",
+                "& fieldset": {
+                  borderColor: "#ccc",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#fc0680",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#fc0680",
+                },
+              },
+            }}
+            inputProps={{
+              maxLength: 40,
+              pattern: "[A-Za-z ]*",
+              style: { textAlign: "center", fontSize: "1.2rem" },
+            }}
+          />
+
+          {nameError && (
+            <Typography color="error" fontSize="0.9rem" mb={2}>
+              {nameError}
+            </Typography>
+          )}
+
+          <Stack direction="row" spacing={2} justifyContent="center">
+            <Button
+              variant="outlined"
+              onClick={() => setShowNameModal(false)}
+              sx={{
+                textTransform: "none",
+                borderRadius: "10px",
+                px: 4,
+                fontWeight: "bold",
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                const isValid = /^[A-Za-z\s]+$/.test(customerName.trim());
+                if (!isValid || customerName.trim().length < 2) {
+                  setNameError("Name must contain only letters and spaces.");
+                  return;
+                }
+                setNameError("");
+                mutateWithName(customerName.trim());
+              }}
+              sx={{
+                backgroundColor: "#fc0680",
+                textTransform: "none",
+                borderRadius: "10px",
+                px: 4,
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#e00572",
+                },
+              }}
+            >
+              Submit
+            </Button>
+          </Stack>
+        </Box>
+      </Dialog>
     </>
   );
 };
