@@ -82,15 +82,19 @@ const ControlSoporte = () => {
         Control de Soporte Técnico
       </Typography>
 
-      <Box display="flex" justifyContent="center" mb={2}>
+      <Box display="flex" justifyContent="center" mb={2} flexDirection={"column"}>
         <Button
           variant="contained"
           startIcon={<ReplayIcon />}
           sx={{ backgroundColor: "#fc0680", textTransform: "none" }}
           onClick={fetchData}
+          size="small"
         >
           Actualizar
         </Button>
+        <Typography variant="body2" color="text.secondary" textAlign="center">
+         Fecha de Hoy {new Date().toLocaleDateString()}
+        </Typography>
       </Box>
 
       {loading ? (
@@ -181,16 +185,16 @@ const ControlSoporte = () => {
                 {entry.tipo_accion}
               </Box>
               <Box>
-                <Typography fontWeight={600} mb={0.5} variant="h5">
+                <Typography fontWeight={600} mb={0.5} variant="h4">
                   Descripción
                 </Typography>
-                <Typography color="text.secondary" variant="h6">
+                <Typography color="text.secondary" variant="h5">
                   {entry.Descripcion}
                 </Typography>
               </Box>
               <Box mt={2} display="flex" alignItems="center" gap={1}>
                 <PersonIcon color="action" />
-                <Typography fontSize="1.2rem" >
+                <Typography fontSize="2rem" >
                   Técnico: {entry.nombre_del_tecnico}
                 </Typography>
               </Box>
