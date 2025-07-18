@@ -185,7 +185,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         storeId={store?.id}
         storeName={store?.name}
         type={optinType}
-        createdBy={store?.id}
+        createdBy={user?._id || store?.id}
         sweepstakeName={sweepstakeName || ""}
         method={user ? "cashier" : "tablet"}
         onSuccessRegister={() => setTermsAccepted(true)}

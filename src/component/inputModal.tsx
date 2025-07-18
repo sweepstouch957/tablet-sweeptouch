@@ -98,6 +98,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             phone: phone.replace(/\D/g, ""),
             couponCode: resp.coupon || "XXXXXX",
             sweepstakeName,
+            name:customerName || "",  
           });
         }
         printTicketWithImage(
@@ -110,8 +111,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           }
         );
       }
-
-      console.log("Registration successful:", resp);
       
       setShowNameModal(false);
       onClose();

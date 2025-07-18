@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // RightCarousel.tsx
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { Store } from "@/services/store.service";
+import LoginDialog from "./login-dialog";
+import CashierDrawer from "./cahierDrawer";
 
 interface RightCarouselProps {
   store?: Store;
@@ -22,6 +24,8 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   isLoading = false,
 }) => {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   return (
     <Box
@@ -81,6 +85,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       {store?.name && !isLoading && (
         <Box position="absolute" bottom={16} right={16} zIndex={2}>
           <Box
+            onClick={() => setOpenDrawer(true)}
             sx={{
               backgroundColor: "rgba(0,0,0,0.8)",
               color: "white",
@@ -90,12 +95,24 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
               fontSize: "0.9rem",
               fontWeight: "bold",
               whiteSpace: "nowrap",
+              cursor:"pointer"
             }}
           >
             {store.name}
           </Box>
         </Box>
       )}
+
+      <CashierDrawer
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        onOpenLoginDialog={() => setShowLoginDialog(true)}
+      />
+
+      <LoginDialog
+        open={showLoginDialog}
+        onClose={() => setShowLoginDialog(false)}
+      />
     </Box>
   );
 };

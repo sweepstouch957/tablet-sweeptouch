@@ -252,7 +252,7 @@ export async function printTicketWithQRCodeOnly(data: {
   y += 25;
   centerText(`PHONE: ${data.phone}`, y);
   y += 25;
-  centerText(`NAME: ___________________`, y);
+  centerText(`NAME: ${data?.name}`, y);
   y += 25;
   centerText(`DATE: ${date}`, y);
   y += 25;
