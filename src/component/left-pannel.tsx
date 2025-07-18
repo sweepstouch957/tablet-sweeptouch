@@ -114,8 +114,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               <Image
                 src={store.image}
                 alt="Store Logo"
-                width={matches ? 100 : 200}
-                height={matches ? 60 : 120}
+                width={matches ? 100 : 180}
+                height={matches ? 60 : 100}
                 style={{ objectFit: "contain", marginTop: "8px" }}
               />
             </Box>
@@ -167,8 +167,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <Image
               src={store.image}
               alt="Store Logo"
-              width={matches ? 100 : 200}
-              height={matches ? 60 : 120}
+              width={matches ? 100 : 180}
+              height={matches ? 60 : 100}
               style={{ objectFit: "contain", marginTop: "16px" }}
             />
           </Box>
