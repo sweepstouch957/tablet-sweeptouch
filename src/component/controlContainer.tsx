@@ -72,7 +72,7 @@ const ControlSoporte = () => {
   });
 
   return (
-    <Container maxWidth="lg" sx={{ py: 1, px: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 1, px: 3, background:"#efefef" }} >
       {/* Header */}
       <Box
         sx={{
@@ -84,7 +84,13 @@ const ControlSoporte = () => {
           mb: 2,
         }}
       >
-        <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          gap={2}
+          width={"100%"}
+        >
           <CalendarTodayIcon sx={{ fontSize: 40, color: "white" }} />
           <Typography
             variant="h6"
@@ -95,6 +101,25 @@ const ControlSoporte = () => {
           >
             Control de Soporte Técnico
           </Typography>
+          <Box>
+            <Button
+              sx={{
+                mt: 1,
+                backgroundColor: "#fff",
+                color: "#fc066f",
+                "&:hover": {
+                  backgroundColor: "#f8f9fa",
+                },
+                fontWeight: "600",
+                textTransform: "none",
+                fontSize: "0.9rem",
+                maxWidth: 200,
+                margin: "0 auto",
+              }}
+            >
+              Recargar
+            </Button>
+          </Box>
         </Box>
         <Stack>
           <Typography
@@ -105,23 +130,6 @@ const ControlSoporte = () => {
           >
             Fecha de Hoy: {today}
           </Typography>
-          <Button
-            sx={{
-              mt: 1,
-              backgroundColor: "#fff",
-              color: "#fc066f",
-              "&:hover": {
-                backgroundColor: "#f8f9fa",
-              },
-              fontWeight: "600",
-              textTransform: "none",
-              fontSize: "0.9rem",
-              maxWidth: 200,
-              margin: "0 auto",
-            }}
-          >
-            Recargar Datos
-          </Button>
         </Stack>
       </Box>
 
@@ -159,7 +167,7 @@ const ControlSoporte = () => {
               >
                 {entry.nombre_supermercado || "CITY SUPERMARKET"}
               </Typography>
-              <Box display="flex" alignItems="flex-start" gap={2}>
+              <Box display="flex" alignItems="center" gap={1} >
                 <LocationOnIcon
                   sx={{ fontSize: 32, color: "#fc066f", mt: 0.5 }}
                 />
@@ -289,7 +297,7 @@ const ControlSoporte = () => {
               {entry.tipo_accion || "Soporte Rutinario"}
             </Box>
 
-            <Box display="flex" alignItems="center" gap={1} >
+            <Box display="flex" alignItems="center" gap={1}>
               <DescriptionIcon sx={{ fontSize: 32, color: "#fc066f" }} />
               <Typography
                 variant="h5"
