@@ -119,7 +119,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       onSuccessRegister();
       setTimeout(() => {
         setShowThanks(false);
-      }, 5000);
+      }, 7000);
     },
     onError: (error: any) => {
       setError(error || "An error occurred while registering.");
