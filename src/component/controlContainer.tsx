@@ -8,8 +8,17 @@ import {
   Container,
   Paper,
   Stack,
+  Grid,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import BusinessIcon from "@mui/icons-material/Business";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LogoutIcon from "@mui/icons-material/Logout";
+import WorkIcon from "@mui/icons-material/Work";
+import PersonIcon from "@mui/icons-material/Person";
+import DescriptionIcon from "@mui/icons-material/Description";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 const API_URL = "https://sheetdb.io/api/v1/2s3i4cw7ppvtr";
 
@@ -23,17 +32,16 @@ interface Entry {
   Descripcion: string;
 }
 
-
-
 const CardBox = ({ children }: { children: React.ReactNode }) => (
   <Paper
     elevation={0}
     sx={{
-      p: 3,
+      p: 4,
       borderRadius: 3,
       backgroundColor: "#f8f9fa",
       border: "1px solid #e9ecef",
       width: "100%",
+      height: "100%",
     }}
   >
     {children}
@@ -64,184 +72,215 @@ const ControlSoporte = () => {
   });
 
   return (
-    <Container maxWidth="sm" sx={{ py: 2, px: 2 }}>
+    <Container maxWidth="lg" sx={{ py: 3, px: 3 }}>
       {/* Header */}
       <Box
         sx={{
           background: "linear-gradient(135deg, #fc066f 0%, #e91e63 100%)",
           borderRadius: 3,
-          py: 2,
-          px: 3,
+          py: 4,
+          px: 4,
           textAlign: "center",
-          mb: 3,
+          mb: 4,
           boxShadow: "0 4px 20px rgba(252, 6, 111, 0.3)",
         }}
       >
+        <Box display="flex" justifyContent="center" alignItems="center" gap={2} mb={2}>
+          <CalendarTodayIcon sx={{ fontSize: 40, color: "white" }} />
+          <Typography 
+            variant="h4" 
+            color="#fff" 
+            fontWeight="700"
+            sx={{ opacity: 0.9 }}
+          >
+            Control de Soporte Técnico
+          </Typography>
+        </Box>
         <Typography 
-          variant="subtitle1" 
-          color="#fff" 
-          fontWeight="600"
-          sx={{ opacity: 0.9, mb: 0.5 }}
-        >
-          Control de Soporte Técnico
-        </Typography>
-        <Typography 
-          variant="h5" 
-          fontWeight="700" 
+          variant="h3" 
+          fontWeight="800" 
           color="white"
-          sx={{ letterSpacing: '0.5px' }}
+          sx={{ letterSpacing: '1px', fontSize: { xs: '2rem', md: '3rem' } }}
         >
           Fecha de Hoy: {today}
         </Typography>
       </Box>
 
       {loading ? (
-        <Box display="flex" justifyContent="center" py={5}>
-          <CircularProgress sx={{ color: "#fc066f" }} />
+        <Box display="flex" justifyContent="center" py={8}>
+          <CircularProgress sx={{ color: "#fc066f", size: 80 }} />
         </Box>
       ) : entry ? (
-        <Stack spacing={3}>
-          {/* Supermarket Section */}
+        <Box>
+          {/* Two Column Layout for Supermarket and Schedule */}
+          <Grid container spacing={4} sx={{ mb: 4 }}>
+            {/* Supermarket Section */}
+            <Grid item xs={12} md={6}>
+              <CardBox>
+                <Box display="flex" alignItems="center" gap={2} mb={3}>
+                  <BusinessIcon sx={{ fontSize: 40, color: "#fc066f" }} />
+                  <Typography 
+                    variant="h5" 
+                    color="#6c757d" 
+                    fontWeight="700" 
+                    sx={{ textTransform: "uppercase", letterSpacing: "1px" }}
+                  >
+                    Supermercado
+                  </Typography>
+                </Box>
+                <Typography 
+                  variant="h3" 
+                  fontWeight="800" 
+                  color="#004aad"
+                  sx={{ mb: 3, fontSize: { xs: '2rem', md: '2.5rem' } }}
+                >
+                  {entry.nombre_supermercado || "CITY SUPERMARKET"}
+                </Typography>
+                <Box display="flex" alignItems="flex-start" gap={2}>
+                  <LocationOnIcon
+                    sx={{ fontSize: 32, color: "#fc066f", mt: 0.5 }}
+                  />
+                  <Typography 
+                    variant="h6" 
+                    color="#6c757d"
+                    sx={{ lineHeight: 1.4, fontSize: '1.3rem' }}
+                  >
+                    {entry.direccion || "525 Irvington ave Newark, NJ 07106"}
+                  </Typography>
+                </Box>
+              </CardBox>
+            </Grid>
+
+            {/* Schedule Section */}
+            <Grid item xs={12} md={6}>
+              <CardBox>
+                <Box display="flex" alignItems="center" gap={2} mb={3}>
+                  <ScheduleIcon sx={{ fontSize: 40, color: "#fc066f" }} />
+                  <Typography 
+                    variant="h5" 
+                    color="#6c757d" 
+                    fontWeight="700" 
+                    sx={{ textTransform: "uppercase", letterSpacing: "1px" }}
+                  >
+                    Horarios
+                  </Typography>
+                </Box>
+                <Stack spacing={3}>
+                  <Box
+                    sx={{
+                      background: "#4caf50",
+                      borderRadius: 3,
+                      px: 4,
+                      py: 3,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <AccessTimeIcon sx={{ fontSize: 32, color: "white" }} />
+                      <Typography variant="h6" color="white" fontWeight="700" sx={{ fontSize: '1.4rem' }}>
+                        Hora de Llegada
+                      </Typography>
+                    </Box>
+                    <Typography variant="h4" color="white" fontWeight="800" sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' } }}>
+                      {entry.hora_llegada || "4:24 PM"}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      background: "#f44336",
+                      borderRadius: 3,
+                      px: 4,
+                      py: 3,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <LogoutIcon sx={{ fontSize: 32, color: "white" }} />
+                      <Typography variant="h6" color="white" fontWeight="700" sx={{ fontSize: '1.4rem' }}>
+                        Hora de Salida
+                      </Typography>
+                    </Box>
+                    <Typography variant="h4" color="white" fontWeight="800" sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' } }}>
+                      {entry.hora_salida || "4:24 PM"}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </CardBox>
+            </Grid>
+          </Grid>
+
+          {/* Work Section - Full Width at Bottom */}
           <CardBox>
-            <Typography 
-              variant="subtitle2" 
-              color="#6c757d" 
-              fontWeight="600" 
-              mb={2}
-              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
-            >
-              Supermercado
-            </Typography>
-            <Typography 
-              variant="h6" 
-              fontWeight="700" 
-              color="#004aad"
-              sx={{ mb: 2, fontSize: "1.4rem" }}
-            >
-              {entry.nombre_supermercado || "CITY SUPERMARKET"}
-            </Typography>
-            <Box display="flex" alignItems="flex-start" gap={1}>
-              <LocationOnIcon
-                sx={{ fontSize: 18, color: "#fc066f", mt: 0.2 }}
-              />
+            <Box display="flex" alignItems="center" gap={2} mb={4}>
+              <WorkIcon sx={{ fontSize: 40, color: "#fc066f" }} />
               <Typography 
-                variant="body2" 
-                color="#6c757d"
-                sx={{ lineHeight: 1.4 }}
+                variant="h4" 
+                color="#6c757d" 
+                fontWeight="700" 
+                sx={{ textTransform: "uppercase", letterSpacing: "1px", fontSize: { xs: '1.8rem', md: '2.2rem' } }}
               >
-                {entry.direccion || "525 Irvington ave Newark, NJ 07106"}
+                Trabajo Realizado
               </Typography>
             </Box>
-          </CardBox>
-
-          {/* Schedule Section */}
-          <CardBox>
-            <Typography 
-              variant="subtitle2" 
-              color="#6c757d" 
-              fontWeight="600" 
-              mb={2}
-              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
-            >
-              Horarios
-            </Typography>
-            <Stack spacing={2}>
-              <Box
-                sx={{
-                  background: "#4caf50",
-                  borderRadius: 2,
-                  px: 3,
-                  py: 2,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="body2" color="white" fontWeight="600">
-                  Hora de Llegada
-                </Typography>
-                <Typography variant="h6" color="white" fontWeight="700">
-                  {entry.hora_llegada || "4:24 PM"}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  background: "#f44336",
-                  borderRadius: 2,
-                  px: 3,
-                  py: 2,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="body2" color="white" fontWeight="600">
-                  Hora de Salida
-                </Typography>
-                <Typography variant="h6" color="white" fontWeight="700">
-                  {entry.hora_salida || "4:24 PM"}
-                </Typography>
-              </Box>
-            </Stack>
-          </CardBox>
-
-          {/* Work Section */}
-          <CardBox>
-            <Typography 
-              variant="subtitle2" 
-              color="#6c757d" 
-              fontWeight="600" 
-              mb={2}
-              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
-            >
-              Trabajo Realizado
-            </Typography>
 
             <Box
               sx={{
-                display: "inline-block",
-                px: 3,
-                py: 1,
-                borderRadius: 2,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 2,
+                px: 4,
+                py: 2,
+                borderRadius: 3,
                 backgroundColor: "#fc066f",
                 color: "#fff",
-                fontWeight: "700",
-                mb: 3,
-                fontSize: "0.9rem",
+                fontWeight: "800",
+                mb: 4,
+                fontSize: { xs: '1.2rem', md: '1.4rem' },
                 textTransform: "uppercase",
-                letterSpacing: "0.5px",
+                letterSpacing: "1px",
               }}
             >
+              <WorkIcon sx={{ fontSize: 28 }} />
               {entry.tipo_accion || "Soporte Rutinario"}
             </Box>
 
+            <Box display="flex" alignItems="center" gap={2} mb={2}>
+              <DescriptionIcon sx={{ fontSize: 32, color: "#fc066f" }} />
+              <Typography 
+                variant="h5" 
+                fontWeight="700" 
+                color="#212529"
+                sx={{ fontSize: '1.6rem' }}
+              >
+                Descripción
+              </Typography>
+            </Box>
             <Typography 
-              variant="subtitle2" 
-              fontWeight="600" 
-              mb={1}
-              color="#212529"
-            >
-              Descripción
-            </Typography>
-            <Typography 
-              variant="body1" 
+              variant="h6" 
               color="#6c757d"
-              sx={{ mb: 3, lineHeight: 1.5 }}
+              sx={{ mb: 4, lineHeight: 1.5, fontSize: '1.3rem', pl: 5 }}
             >
               {entry.Descripcion || "Instalacion impresoras"}
             </Typography>
 
-            <Typography 
-              variant="body1" 
-              color="#212529"
-              sx={{ fontWeight: "500" }}
-            >
-              Técnico: <strong>{entry.nombre_del_tecnico || "Jose Ramirez"}</strong>
-            </Typography>
+            <Box display="flex" alignItems="center" gap={2}>
+              <PersonIcon sx={{ fontSize: 32, color: "#fc066f" }} />
+              <Typography 
+                variant="h5" 
+                color="#212529"
+                sx={{ fontWeight: "600", fontSize: '1.6rem' }}
+              >
+                Técnico: <strong style={{ color: "#004aad" }}>{entry.nombre_del_tecnico || "Jose Ramirez"}</strong>
+              </Typography>
+            </Box>
           </CardBox>
-        </Stack>
+        </Box>
       ) : (
-        <Typography color="error" textAlign="center">
+        <Typography color="error" textAlign="center" variant="h4" sx={{ py: 8 }}>
           No hay información disponible.
         </Typography>
       )}
