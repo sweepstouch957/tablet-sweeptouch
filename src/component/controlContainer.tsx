@@ -8,12 +8,8 @@ import {
   Container,
   Paper,
   Stack,
-  Button,
 } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import BuildIcon from "@mui/icons-material/Build";
-import ReplayIcon from "@mui/icons-material/Replay";
 
 const API_URL = "https://sheetdb.io/api/v1/2s3i4cw7ppvtr";
 
@@ -27,22 +23,16 @@ interface Entry {
   Descripcion: string;
 }
 
-const actionColors: Record<string, string> = {
-  Instalación: "#d4edbc",
-  Reprogramación: "#ffc8aa",
-  Desinstalación: "#ffcfc9",
-  "Soporte Rutinario": "#fc066f",
-  Configuración: "#e6e6e6",
-};
+
 
 const CardBox = ({ children }: { children: React.ReactNode }) => (
   <Paper
-    elevation={3}
+    elevation={0}
     sx={{
-      p: 2,
-      borderRadius: 4,
-      backgroundColor: "#fff",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+      p: 3,
+      borderRadius: 3,
+      backgroundColor: "#f8f9fa",
+      border: "1px solid #e9ecef",
       width: "100%",
     }}
   >
@@ -67,137 +57,187 @@ const ControlSoporte = () => {
     fetchData();
   }, []);
 
-  const today = new Date().toLocaleDateString();
+  const today = new Date().toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit", 
+    year: "numeric"
+  });
 
   return (
-    <Container maxWidth="sm" sx={{ py: 3 }}>
-      {/* Encabezado */}
+    <Container maxWidth="sm" sx={{ py: 2, px: 2 }}>
+      {/* Header */}
       <Box
         sx={{
-          background: "#fc066f",
-          borderRadius: 2,
-          py: 1.5,
-          px: 2,
+          background: "linear-gradient(135deg, #fc066f 0%, #e91e63 100%)",
+          borderRadius: 3,
+          py: 2,
+          px: 3,
           textAlign: "center",
           mb: 3,
+          boxShadow: "0 4px 20px rgba(252, 6, 111, 0.3)",
         }}
       >
-        <Typography variant="subtitle2" color="#fff" fontWeight="bold">
+        <Typography 
+          variant="subtitle1" 
+          color="#fff" 
+          fontWeight="600"
+          sx={{ opacity: 0.9, mb: 0.5 }}
+        >
           Control de Soporte Técnico
         </Typography>
-        <Typography variant="h5" fontWeight="bold" color="white">
+        <Typography 
+          variant="h5" 
+          fontWeight="700" 
+          color="white"
+          sx={{ letterSpacing: '0.5px' }}
+        >
           Fecha de Hoy: {today}
         </Typography>
       </Box>
 
-      {/* Botón de recarga */}
-      <Box textAlign="center" mb={2}>
-        <Button
-          variant="contained"
-          startIcon={<ReplayIcon />}
-          onClick={fetchData}
-          sx={{ backgroundColor: "#fc066f", textTransform: "none" }}
-        >
-          Actualizar
-        </Button>
-      </Box>
-
       {loading ? (
         <Box display="flex" justifyContent="center" py={5}>
-          <CircularProgress />
+          <CircularProgress sx={{ color: "#fc066f" }} />
         </Box>
       ) : entry ? (
         <Stack spacing={3}>
-          {/* Supermercado y horarios */}
-          <Stack direction="row" spacing={2} flexWrap="wrap">
-            {/* Supermercado */}
-            <CardBox>
-              <Typography fontWeight="bold" color="text.secondary" mb={1}>
-                Supermercado
-              </Typography>
-              <Typography fontSize="1.3rem" fontWeight="bold" color="#004aad">
-                {entry.nombre_supermercado}
-              </Typography>
-              <Box display="flex" alignItems="center" mt={1}>
-                <LocationOnIcon
-                  sx={{ fontSize: 20, color: "#fc066f", mr: 1 }}
-                />
-                <Typography variant="body1" color="text.secondary">
-                  {entry.direccion}
-                </Typography>
-              </Box>
-            </CardBox>
-
-            {/* Horarios */}
-            <CardBox>
-              <Typography fontWeight="bold" color="text.secondary" mb={1}>
-                Horarios
-              </Typography>
-              <Box
-                sx={{
-                  background: "#e7fce7",
-                  borderRadius: 2,
-                  px: 2,
-                  py: 1,
-                  mb: 1,
-                }}
-              >
-                <Typography variant="body2" color="green" fontWeight="bold">
-                  Hora de Llegada: {entry.hora_llegada}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  background: "#ffeaea",
-                  borderRadius: 2,
-                  px: 2,
-                  py: 1,
-                }}
-              >
-                <Typography variant="body2" color="red" fontWeight="bold">
-                  Hora de Salida: {entry.hora_salida}
-                </Typography>
-              </Box>
-            </CardBox>
-          </Stack>
-
-          {/* Trabajo realizado */}
+          {/* Supermarket Section */}
           <CardBox>
-            <Box display="flex" alignItems="center" gap={1} mb={1}>
-              <BuildIcon sx={{ color: "#fc066f" }} />
-              <Typography variant="h6" fontWeight="bold">
-                Trabajo Realizado
+            <Typography 
+              variant="subtitle2" 
+              color="#6c757d" 
+              fontWeight="600" 
+              mb={2}
+              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            >
+              Supermercado
+            </Typography>
+            <Typography 
+              variant="h6" 
+              fontWeight="700" 
+              color="#004aad"
+              sx={{ mb: 2, fontSize: "1.4rem" }}
+            >
+              {entry.nombre_supermercado || "CITY SUPERMARKET"}
+            </Typography>
+            <Box display="flex" alignItems="flex-start" gap={1}>
+              <LocationOnIcon
+                sx={{ fontSize: 18, color: "#fc066f", mt: 0.2 }}
+              />
+              <Typography 
+                variant="body2" 
+                color="#6c757d"
+                sx={{ lineHeight: 1.4 }}
+              >
+                {entry.direccion || "525 Irvington ave Newark, NJ 07106"}
               </Typography>
             </Box>
+          </CardBox>
+
+          {/* Schedule Section */}
+          <CardBox>
+            <Typography 
+              variant="subtitle2" 
+              color="#6c757d" 
+              fontWeight="600" 
+              mb={2}
+              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            >
+              Horarios
+            </Typography>
+            <Stack spacing={2}>
+              <Box
+                sx={{
+                  background: "#4caf50",
+                  borderRadius: 2,
+                  px: 3,
+                  py: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body2" color="white" fontWeight="600">
+                  Hora de Llegada
+                </Typography>
+                <Typography variant="h6" color="white" fontWeight="700">
+                  {entry.hora_llegada || "4:24 PM"}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  background: "#f44336",
+                  borderRadius: 2,
+                  px: 3,
+                  py: 2,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="body2" color="white" fontWeight="600">
+                  Hora de Salida
+                </Typography>
+                <Typography variant="h6" color="white" fontWeight="700">
+                  {entry.hora_salida || "4:24 PM"}
+                </Typography>
+              </Box>
+            </Stack>
+          </CardBox>
+
+          {/* Work Section */}
+          <CardBox>
+            <Typography 
+              variant="subtitle2" 
+              color="#6c757d" 
+              fontWeight="600" 
+              mb={2}
+              sx={{ textTransform: "uppercase", letterSpacing: "0.5px" }}
+            >
+              Trabajo Realizado
+            </Typography>
 
             <Box
               sx={{
                 display: "inline-block",
-                px: 2,
-                py: 0.5,
+                px: 3,
+                py: 1,
                 borderRadius: 2,
-                backgroundColor: actionColors[entry.tipo_accion] || "#4caf50",
+                backgroundColor: "#fc066f",
                 color: "#fff",
-                fontWeight: "bold",
-                mb: 1,
+                fontWeight: "700",
+                mb: 3,
+                fontSize: "0.9rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
               }}
             >
-              {entry.tipo_accion}
+              {entry.tipo_accion || "Soporte Rutinario"}
             </Box>
 
-            <Typography fontWeight="bold" mb={0.5}>
+            <Typography 
+              variant="subtitle2" 
+              fontWeight="600" 
+              mb={1}
+              color="#212529"
+            >
               Descripción
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {entry.Descripcion}
+            <Typography 
+              variant="body1" 
+              color="#6c757d"
+              sx={{ mb: 3, lineHeight: 1.5 }}
+            >
+              {entry.Descripcion || "Instalacion impresoras"}
             </Typography>
 
-            <Box display="flex" alignItems="center" mt={2}>
-              <PersonIcon sx={{ mr: 1 }} />
-              <Typography variant="body1">
-                Técnico: <strong>{entry.nombre_del_tecnico}</strong>
-              </Typography>
-            </Box>  
+            <Typography 
+              variant="body1" 
+              color="#212529"
+              sx={{ fontWeight: "500" }}
+            >
+              Técnico: <strong>{entry.nombre_del_tecnico || "Jose Ramirez"}</strong>
+            </Typography>
           </CardBox>
         </Stack>
       ) : (
