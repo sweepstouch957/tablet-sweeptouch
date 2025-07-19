@@ -8,7 +8,6 @@ import {
   Container,
   Paper,
   Stack,
-  Grid,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -112,10 +111,14 @@ const ControlSoporte = () => {
         </Box>
       ) : entry ? (
         <Box>
-          {/* Two Column Layout for Supermarket and Schedule */}
-          <Grid container spacing={4} sx={{ mb: 4 }}>
+          {/* Two Column Layout for Supermarket and Schedule using Stack */}
+          <Stack 
+            direction={{ xs: 'column', md: 'row' }} 
+            spacing={4} 
+            sx={{ mb: 4 }}
+          >
             {/* Supermarket Section */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: 1 }}>
               <CardBox>
                 <Box display="flex" alignItems="center" gap={2} mb={3}>
                   <BusinessIcon sx={{ fontSize: 40, color: "#fc066f" }} />
@@ -149,10 +152,10 @@ const ControlSoporte = () => {
                   </Typography>
                 </Box>
               </CardBox>
-            </Grid>
+            </Box>
 
             {/* Schedule Section */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: 1 }}>
               <CardBox>
                 <Box display="flex" alignItems="center" gap={2} mb={3}>
                   <ScheduleIcon sx={{ fontSize: 40, color: "#fc066f" }} />
@@ -210,8 +213,8 @@ const ControlSoporte = () => {
                   </Box>
                 </Stack>
               </CardBox>
-            </Grid>
-          </Grid>
+            </Box>
+          </Stack>
 
           {/* Work Section - Full Width at Bottom */}
           <CardBox>

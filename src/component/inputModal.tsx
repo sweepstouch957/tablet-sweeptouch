@@ -223,12 +223,16 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                   fullWidth
                 />
 
-                <Box
+                <Stack
+                  direction="row"
                   sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
+                    flexWrap: "wrap",
                     gap: 1.5,
                     width: "100%",
+                    "& > *": {
+                      flex: "1 1 calc(33.333% - 8px)",
+                      minWidth: "calc(33.333% - 8px)"
+                    }
                   }}
                 >
                   {keypad.map((key) => (
@@ -267,7 +271,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                       {key}
                     </Button>
                   ))}
-                </Box>
+                </Stack>
 
                 {error && (
                   <Typography color="white" fontSize="1rem">
