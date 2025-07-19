@@ -8,6 +8,7 @@ import {
   Container,
   Paper,
   Stack,
+  Button,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -35,7 +36,7 @@ const CardBox = ({ children }: { children: React.ReactNode }) => (
   <Paper
     elevation={0}
     sx={{
-      p: 4,
+      p: 2,
       borderRadius: 3,
       backgroundColor: "#f8f9fa",
       border: "1px solid #e9ecef",
@@ -71,44 +72,57 @@ const ControlSoporte = () => {
   });
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3, px: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 1, px: 3 }}>
       {/* Header */}
       <Box
         sx={{
           background: "linear-gradient(135deg, #fc066f 0%, #e91e63 100%)",
           borderRadius: 3,
-          py: 4,
-          px: 4,
+          p: 1,
           textAlign: "center",
-          mb: 4,
           boxShadow: "0 4px 20px rgba(252, 6, 111, 0.3)",
+          mb: 2,
         }}
       >
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          gap={2}
-          mb={2}
-        >
+        <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
           <CalendarTodayIcon sx={{ fontSize: 40, color: "white" }} />
           <Typography
-            variant="h4"
+            variant="h6"
             color="#fff"
             fontWeight="700"
             sx={{ opacity: 0.9 }}
+            lineHeight={1}
           >
             Control de Soporte Técnico
           </Typography>
         </Box>
-        <Typography
-          variant="h3"
-          fontWeight="800"
-          color="white"
-          sx={{ letterSpacing: "1px", fontSize: { xs: "2rem", md: "3rem" } }}
-        >
-          Fecha de Hoy: {today}
-        </Typography>
+        <Stack>
+          <Typography
+            variant="h6"
+            fontWeight="800"
+            color="white"
+            sx={{ letterSpacing: "1px", fontSize: "1rem" }}
+          >
+            Fecha de Hoy: {today}
+          </Typography>
+          <Button
+            sx={{
+              mt: 1,
+              backgroundColor: "#fff",
+              color: "#fc066f",
+              "&:hover": {
+                backgroundColor: "#f8f9fa",
+              },
+              fontWeight: "600",
+              textTransform: "none",
+              fontSize: "0.9rem",
+              maxWidth: 200,
+              margin: "0 auto",
+            }}
+          >
+            Recargar Datos
+          </Button>
+        </Stack>
       </Box>
 
       {loading ? (
@@ -121,14 +135,14 @@ const ControlSoporte = () => {
           <Stack
             spacing={4}
             direction={{ xs: "column", md: "row" }}
-            sx={{ mb: 4 }}
+            sx={{ mb: 1 }}
           >
             {/* Supermarket Section */}
-            <CardBox >
-              <Box display="flex" alignItems="center" gap={2} mb={3}>
+            <CardBox>
+              <Box display="flex" alignItems="center" gap={1} mb={1}>
                 <BusinessIcon sx={{ fontSize: 40, color: "#fc066f" }} />
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   color="#6c757d"
                   fontWeight="700"
                   sx={{ textTransform: "uppercase", letterSpacing: "1px" }}
@@ -140,7 +154,8 @@ const ControlSoporte = () => {
                 variant="h3"
                 fontWeight="800"
                 color="#004aad"
-                sx={{ mb: 3, fontSize: { xs: "2rem", md: "2.5rem" } }}
+                sx={{ fontSize: "2rem" }}
+                mb={"4px"}
               >
                 {entry.nombre_supermercado || "CITY SUPERMARKET"}
               </Typography>
@@ -160,10 +175,10 @@ const ControlSoporte = () => {
 
             {/* Schedule Section */}
             <CardBox>
-              <Box display="flex" alignItems="center" gap={2} mb={3}>
+              <Box display="flex" alignItems="center" gap={2} mb={2}>
                 <ScheduleIcon sx={{ fontSize: 40, color: "#fc066f" }} />
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   color="#6c757d"
                   fontWeight="700"
                   sx={{ textTransform: "uppercase", letterSpacing: "1px" }}
@@ -171,13 +186,12 @@ const ControlSoporte = () => {
                   Horarios
                 </Typography>
               </Box>
-              <Stack spacing={3}>
+              <Stack spacing={1}>
                 <Box
                   sx={{
                     background: "#4caf50",
                     borderRadius: 3,
-                    px: 4,
-                    py: 3,
+                    p: 1,
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -207,8 +221,7 @@ const ControlSoporte = () => {
                   sx={{
                     background: "#f44336",
                     borderRadius: 3,
-                    px: 4,
-                    py: 3,
+                    p: 1,
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -240,7 +253,7 @@ const ControlSoporte = () => {
 
           {/* Work Section - Full Width at Bottom */}
           <CardBox>
-            <Box display="flex" alignItems="center" gap={2} mb={4}>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
               <WorkIcon sx={{ fontSize: 40, color: "#fc066f" }} />
               <Typography
                 variant="h4"
@@ -249,7 +262,7 @@ const ControlSoporte = () => {
                 sx={{
                   textTransform: "uppercase",
                   letterSpacing: "1px",
-                  fontSize: { xs: "1.8rem", md: "2.2rem" },
+                  fontSize: "1.8rem",
                 }}
               >
                 Trabajo Realizado
@@ -261,14 +274,13 @@ const ControlSoporte = () => {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 2,
-                px: 4,
-                py: 2,
+                p: 1,
                 borderRadius: 3,
                 backgroundColor: "#fc066f",
                 color: "#fff",
                 fontWeight: "800",
-                mb: 4,
-                fontSize: { xs: "1.2rem", md: "1.4rem" },
+                mb: 1,
+                fontSize: "1rem",
                 textTransform: "uppercase",
                 letterSpacing: "1px",
               }}
@@ -277,7 +289,7 @@ const ControlSoporte = () => {
               {entry.tipo_accion || "Soporte Rutinario"}
             </Box>
 
-            <Box display="flex" alignItems="center" gap={2} mb={2}>
+            <Box display="flex" alignItems="center" gap={1} >
               <DescriptionIcon sx={{ fontSize: 32, color: "#fc066f" }} />
               <Typography
                 variant="h5"
@@ -291,12 +303,12 @@ const ControlSoporte = () => {
             <Typography
               variant="h6"
               color="#6c757d"
-              sx={{ mb: 4, lineHeight: 1.5, fontSize: "1.3rem", pl: 5 }}
+              sx={{ lineHeight: 1.5, fontSize: "1.8rem", pl: 5 }}
             >
               {entry.Descripcion || "Instalacion impresoras"}
             </Typography>
 
-            <Box display="flex" alignItems="center" gap={2}>
+            <Box display="flex" alignItems="center" gap={1}>
               <PersonIcon sx={{ fontSize: 32, color: "#fc066f" }} />
               <Typography
                 variant="h5"
