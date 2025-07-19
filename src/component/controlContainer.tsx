@@ -116,6 +116,7 @@ const ControlSoporte = () => {
                 maxWidth: 200,
                 margin: "0 auto",
               }}
+              onClick={() => fetchData()}
             >
               Recargar
             </Button>
@@ -126,7 +127,7 @@ const ControlSoporte = () => {
             variant="h6"
             fontWeight="800"
             color="white"
-            sx={{ letterSpacing: "1px", fontSize: "1rem" }}
+            sx={{ letterSpacing: "1px", fontSize: "1.7rem" }}
           >
             Fecha de Hoy: {today}
           </Typography>
