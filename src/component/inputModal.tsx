@@ -327,7 +327,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             mb={2}
             sx={{ color: "#333", letterSpacing: 1 }}
           >
-            ENTER YOUR NAME
+            ENTER YOUR FULL NAME
           </Typography>
 
           <TextField
