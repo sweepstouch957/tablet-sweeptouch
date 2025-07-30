@@ -98,7 +98,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             phone: phone.replace(/\D/g, ""),
             couponCode: resp.coupon || "XXXXXX",
             sweepstakeName,
-            name:customerName || "",  
+            name: customerName || "",
           });
         }
         printTicketWithImage(
@@ -111,7 +111,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           }
         );
       }
-      
+
       setShowNameModal(false);
       onClose();
       setPhone("");
@@ -304,7 +304,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           />
         </Box>
       </Dialog>
-      <ThankYouModal open={showThanks} onClose={() => setShowThanks(false)} />
+      <ThankYouModal
+        open={showThanks}
+        onClose={() => setShowThanks(false)}
+        isGeneric={type === "generic"}
+      />
 
       <Dialog
         open={showNameModal}

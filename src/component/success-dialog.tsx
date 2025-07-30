@@ -11,16 +11,20 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
 import ThankYouImage from "@public/ThankYou.png";
+import WelcomeOur from "@public/WelcomeOur.png";
+
 import Logo from "@public/LogoPink.webp";
 
 interface ThankYouModalProps {
   open: boolean;
   onClose: () => void;
+  isGeneric?: boolean; // Optional prop for generic modal
 }
 
 export const ThankYouModal: React.FC<ThankYouModalProps> = ({
   open,
   onClose,
+  isGeneric = false, // Default to false if not provided
 }) => {
   return (
     <Dialog
@@ -62,31 +66,47 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
           }}
         >
           <Image
-            src={ThankYouImage}
+            src={!isGeneric ? ThankYouImage : WelcomeOur}
             alt="Thank you for participating"
             style={{ width: "70%", height: "auto" }}
             priority
           />
 
-          <Typography
-            color="white"
-            fontSize="2rem"
-            mt={2}
-            fontWeight={800}
-            lineHeight={1}
-            textTransform={"uppercase"}
-          >
-            Thank you for participating in our sweepstake!
-          </Typography>
-          <Typography
-            color="white"
-            fontSize="1.5rem"
-            mt={1}
-            lineHeight={1}
-            textTransform={"uppercase"}
-          >
-            Winner Will Be announced soon
-          </Typography>
+          {!isGeneric ? (
+            <>
+              {" "}
+              <Typography
+                color="white"
+                fontSize="2rem"
+                mt={2}
+                fontWeight={800}
+                lineHeight={1}
+                textTransform={"uppercase"}
+              >
+                Thank you for participating in our sweepstake!
+              </Typography>
+              <Typography
+                color="white"
+                fontSize="1.5rem"
+                mt={1}
+                lineHeight={1}
+                textTransform={"uppercase"}
+              >
+                Winner Will Be announced soon
+              </Typography>
+            </>
+          ) : (
+            <Typography
+              color="white"
+              fontSize="2rem"
+              mt={2}
+              fontWeight={800}
+              lineHeight={1}
+              textTransform={"uppercase"}
+            >
+              TO OUR PROMOTIONS
+            </Typography>
+          )}
 
           <Box mt={2}>
             <Image
