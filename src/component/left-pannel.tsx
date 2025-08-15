@@ -92,7 +92,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         />
       </Stack>
 
-      <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }}>
+      <Stack textAlign={"center"} mb={0} order={{ xs: 0, md: 1 }} my={1}>
         {optinType !== "generic" && (
           <Stack>
             <Typography fontSize={"3rem"} fontWeight={800} lineHeight={0.9}>
@@ -138,7 +138,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
       )}
       {optinType !== "generic" && (
         <Stack
-          alignItems={"flex-end"}
+          alignItems={"center"}
           width={{ xs: "30%", md: "100%" }}
           order={{ xs: 3, md: 2 }}
         >
