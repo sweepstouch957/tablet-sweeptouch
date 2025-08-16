@@ -1,11 +1,10 @@
 // FathersDayPromo.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useSwipeable } from "react-swipeable";
+import { useState } from "react";
+import { Box } from "@mui/material";
 import { Store } from "@/services/store.service";
 
-import { Box } from "@mui/material";
 import LeftPanel from "./left-pannel";
 import RightCarousel from "./right-pannel";
 import PrivacyDialog from "./pannel";
@@ -22,10 +21,10 @@ const imagesDummy = [
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/8a8ac749-e75e-424b-ad77-1a18a39d987b_swtqv6.webp",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/112783a0-a34e-4108-a372-fabe93cedc16_a9oyix.webp",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/08b5df1a-9220-40bf-b6f0-428c95901be7_mxzdpo.webp",
+  "https://res.cloudinary.com/dg9gzic4s/video/upload/v1755352578/Main_Composition_1_zrhnye.mp4",
 ];
 
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
-  const [index, setIndex] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -40,28 +39,11 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
 
   const prize = data?.prize[0] || undefined;
 
-  const nextSlide = useCallback(() => {
-    setIndex((prev) => (prev + 1) % images.length);
-  }, [images.length]);
-  const prevSlide = () =>
-    setIndex((prev) => (prev - 1 + images.length) % images.length);
-
-  const handlers = useSwipeable({
-    onSwipedLeft: nextSlide,
-    onSwipedRight: prevSlide,
-    trackMouse: true,
-  });
-
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    const formattedValue = formatPhone(value); // Allow only digits and limit to 10 characters
+    const formattedValue = formatPhone(value);
     setPhoneNumber(formattedValue);
   };
-
-  useEffect(() => {
-    const timer = setInterval(nextSlide, 5000);
-    return () => clearInterval(timer);
-  }, [nextSlide]);
 
   return (
     <Box
@@ -86,13 +68,14 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         imageYear={data?.imageYear || ""}
         hasQR={data?.hasQr || false}
       />
+
       <RightCarousel
         store={store}
         images={images}
-        index={index}
-        handlers={handlers}
         isLoading={isLoading}
+        intervalMs={6000} // opcional
       />
+
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </Box>
