@@ -164,6 +164,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       <Dialog
         open={open}
         onClose={onClose}
+        BackdropProps={{
+          onClick: onClose,
+        }}
         maxWidth="sm"
         fullWidth
         sx={{
@@ -174,11 +177,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           },
         }}
       >
-        <Box sx={{ bgcolor: "#2a1a1d", p: 3, borderRadius: "16px" }}>
+        <Box sx={{ bgcolor: "#c79b34", p: 3, borderRadius: "16px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
           <Box
             sx={{
-              bgcolor: "#f43789",
-              borderRadius: "32px",
+              bgcolor: "#c79b34",
+              borderRadius: "16px",
               boxShadow: 6,
             }}
           >
@@ -187,7 +190,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 color: "white",
                 textAlign: "center",
                 fontWeight: "bold",
-                fontSize: "1.3rem",
+                fontSize: "1.1rem",
                 pb: 1,
               }}
             >
@@ -243,15 +246,18 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                             ? "#4CAF50"
                             : key === "Delete"
                             ? "#E53935"
-                            : "white",
-                        color:
-                          key === "Send" || key === "Delete"
-                            ? "white"
-                            : "black",
-                        fontSize: "1.5rem",
+                            : "linear-gradient(#a46c0f, #d49b34)",
+                        background:
+                          key === "Send"
+                            ? "#4CAF50"
+                            : key === "Delete"
+                            ? "#E53935"
+                            : "linear-gradient(#a46c0f, #d49b34)",
+                        color: "white",
+                        fontSize: "1.4rem",
                         width: "100%",
                         height: "65px",
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         fontWeight: "bold",
                         boxShadow: 3,
                         "&:hover": {
@@ -260,7 +266,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                               ? "#45a049"
                               : key === "Delete"
                               ? "#d32f2f"
-                              : "#f1f1f1",
+                              : undefined,
+                          opacity: key === "Send" || key === "Delete" ? 1 : 0.9,
                         },
                       }}
                     >
@@ -270,7 +277,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 </Box>
 
                 {error && (
-                  <Typography color="white" fontSize="1rem">
+                  <Typography color="white" fontSize="1rem" sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}>
                     {error}
                   </Typography>
                 )}
@@ -295,7 +302,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               />
             }
             label={
-              <Typography color="white" fontSize={"0.8rem"}>
+              <Typography color="white" fontSize={"0.8rem"} sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}>
                 By providing your phone number, you are consenting to receive
                 messages about sales/coupons/promotors/etc. Text HELP for info.
                 Text STOP to opt out. MSG&Data rates may apply.
@@ -313,6 +320,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       <Dialog
         open={showNameModal}
         onClose={() => setShowNameModal(false)}
+        BackdropProps={{
+          onClick: () => setShowNameModal(false),
+        }}
         maxWidth="xs"
         fullWidth
       >

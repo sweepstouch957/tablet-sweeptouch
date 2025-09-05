@@ -233,6 +233,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
         <Box position="absolute" bottom={16} right={16} zIndex={2}>
           <Box
             onClick={() => setOpenDrawer(true)}
+            data-exclude-global-click="true"
             sx={{
               backgroundColor: "rgba(0,0,0,0.8)",
               color: "white",

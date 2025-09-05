@@ -4,36 +4,47 @@ export default function RibbonBanner() {
   return (
     <Box
       sx={{
-        px: 3,
-        py: "4px",
+        position: "relative",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         backgroundColor: "#BF171B",
         color: "#fff",
-        clipPath: `
-          polygon(
-            0% 0%,                     /* esquina superior izquierda */
-            calc(100% - 12px) 0%,      /* corte antes de la derecha */
-            100% 50%,                  /* corte en medio derecha */
-            calc(100% - 12px) 100%,    /* corte abajo derecha */
-            0% 100%,                   /* esquina inferior izquierda */
-            12px 50%                   /* corte en medio izquierda */
-          )
-        `,
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "90%",
-        mx: "auto",
-        mt: { xs: 1, md: 2 },
-        height: "32px",
+        px: { xs: 2, md: 3 },
+        py: { xs: "6px", md: "8px" },
+        overflow: "visible", // allow tails to render outside
+        // OUTWARD tails (> <) via pseudo-elements
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          left: 0,
+          top: "50%",
+          transform: "translate(-100%, -50%)",
+          borderTop: { xs: "14px solid transparent", md: "18px solid transparent" },
+          borderBottom: { xs: "14px solid transparent", md: "18px solid transparent" },
+          borderRight: { xs: "14px solid #BF171B", md: "18px solid #BF171B" },
+        },
+        "&::after": {
+          content: '""',
+          position: "absolute",
+          right: 0,
+          top: "50%",
+          transform: "translate(100%, -50%)",
+          borderTop: { xs: "14px solid transparent", md: "18px solid transparent" },
+          borderBottom: { xs: "14px solid transparent", md: "18px solid transparent" },
+          borderLeft: { xs: "14px solid #BF171B", md: "18px solid #BF171B" },
+        },
       }}
     >
       <Typography
         component="span"
-        fontWeight="900"
-        fontSize={{ xs: "0.8rem", md: "1rem" }}
+        fontWeight={900}
         sx={{
-          whiteSpace: "nowrap",
+          fontSize: { xs: "0.9rem", md: "1.05rem" },
+          letterSpacing: "0.02em",
           lineHeight: 1,
+          whiteSpace: "nowrap",
         }}
       >
         PARTICIPATE FOR FREE
