@@ -1,18 +1,18 @@
-import React from "react";
-import Image from "next/image";
-import Logo from "@public/logo.webp";
-import { Box, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { Store } from "@/services/store.service";
-import { useAuth } from "@/context/auth-context";
+import React from 'react';
+import Image from 'next/image';
+import Logo from '@public/logo.webp';
+import { Box, Stack, Typography } from '@mui/material';
+import { Store } from '@/services/store.service';
+import { useAuth } from '@/context/auth-context';
 
-import BgImage from "@public/BgBlack.webp";
-import NewYearImage from "@public/2026.webp";
-import VipImage from "@public/VipImage.webp";
+import BgImage from '@public/BgBlack.webp';
+import NewYearImage from '@public/2026.webp';
+import VipImage from '@public/VipImage.webp';
 
-import RibbonBanner from "./title-box";
-import { PhoneInputModal } from "./inputModal";
-import CallToActionButton from "./button";
-import PhoneKeypad from "./PhoneKeypad";
+import RibbonBanner from './title-box';
+import { PhoneInputModal } from './inputModal';
+import CallToActionButton from './button';
+import PhoneKeypad from './PhoneKeypad';
 
 interface LeftPanelProps {
   store?: Store;
@@ -39,8 +39,8 @@ interface LeftPanelProps {
 const LeftPanel: React.FC<LeftPanelProps> = ({
   store,
   setTermsAccepted,
-  sweeptakeId = "",
-  prize = { name: "No Prize", image: "" },
+  sweeptakeId = '',
+  prize = { name: 'No Prize', image: '' },
   optinType,
   sweepstakeName,
   imageYear = NewYearImage.src,
@@ -48,12 +48,12 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   modalOpen,
   setModalOpen,
 }) => {
-  const [brand, ...restParts] = prize.name.split(" ");
-  const model = restParts.join(" ");
+  const [brand, ...restParts] = prize.name.split(' ');
+  const model = restParts.join(' ');
   const { user } = useAuth();
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  //const theme = useTheme();
+  //const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <>
@@ -63,17 +63,18 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         flexDirection="column"
         alignItems="center"
         justifyContent="flex-start"
-        width={{ xs: "100%", md: "22%" }}
+        width={{ xs: '100%', md: '22%' }}
         minHeight="70vh"
         maxHeight="100vh"
         sx={{
           backgroundImage: `url(${BgImage.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          cursor: "default", // no necesitamos que el panel sea "clickable"
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          cursor: 'default', // no necesitamos que el panel sea "clickable"
         }}
-        pl={{ xs: 1.5, md: 2 }} pr={0}
+        pl={{ xs: 1.5, md: 2 }}
+        pr={0}
         py={0.75}
         gap={0}
       >
@@ -83,21 +84,21 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         {/* 🧩 Hero grid: car + title + new year */}
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr 1fr", md: "1.2fr 1fr" },
-            gridTemplateRows: { xs: "auto auto", md: "auto auto" },
-            alignItems: "end",
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr 1fr', md: '1.2fr 1fr' },
+            gridTemplateRows: { xs: 'auto auto', md: 'auto auto' },
+            alignItems: 'end',
             columnGap: 0,
             rowGap: 0,
-            width: "100%",
+            width: '100%',
           }}
         >
           {/* 🚘 Car (dynamic from DB) */}
           <Box
             sx={{
-              gridColumn: "1 / span 2",
-              justifySelf: "stretch",
-              alignSelf: "start",
+              gridColumn: '1 / span 2',
+              justifySelf: 'stretch',
+              alignSelf: 'start',
               mr: { xs: -1.5, md: -2 },
             }}
           >
@@ -107,61 +108,61 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               width={900}
               height={500}
               style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "contain",
-                objectPosition: "right center",
-                transform: "scale(0.94)",
-                transformOrigin: "right center",
-                display: "block",
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain',
+                objectPosition: 'right center',
+                transform: 'scale(0.94)',
+                transformOrigin: 'right center',
+                display: 'block',
               }}
             />
           </Box>
 
           {/* 🏷 Brand + model (left-bottom) */}
-          <Box sx={{ gridColumn: "1 / span 1", alignSelf: "start" }}>
+          <Box sx={{ gridColumn: '1 / span 1', alignSelf: 'start' }}>
             <Typography
               fontWeight={900}
               sx={{
-                fontSize: { xs: "1.6rem", md: "2.2rem" },
+                fontSize: { xs: '1.6rem', md: '2.2rem' },
                 lineHeight: 0.95,
-                letterSpacing: "0.02em",
+                letterSpacing: '0.02em',
               }}
             >
-              {(brand || "").toUpperCase()}
+              {(brand || '').toUpperCase()}
             </Typography>
             <Typography
               fontWeight={700}
               sx={{
-                fontSize: { xs: "1.2rem", md: "1.6rem" },
+                fontSize: { xs: '1.2rem', md: '1.6rem' },
                 lineHeight: 0.95,
-                letterSpacing: "0.02em",
+                letterSpacing: '0.02em',
               }}
             >
-              {(model || "").toUpperCase()}
+              {(model || '').toUpperCase()}
             </Typography>
           </Box>
 
           {/* 🎆 2026 NEW YEAR (right-bottom, dynamic) */}
           <Box
             sx={{
-              gridColumn: { xs: "2 / span 1", md: "2 / span 1" },
-              justifySelf: "end",
-              alignSelf: "end",
+              gridColumn: { xs: '2 / span 1', md: '2 / span 1' },
+              justifySelf: 'end',
+              alignSelf: 'end',
               maxWidth: { xs: 150, md: 210 },
               mt: { xs: -0.5, md: -1 },
             }}
           >
             <Image
-              src={optinType === "generic" ? VipImage.src : imageYear}
+              src={optinType === 'generic' ? VipImage.src : imageYear}
               alt="New Year Image"
               width={400}
               height={200}
               style={{
-                width: "100%",
-                height: "auto",
-                objectFit: "contain",
-                transform: "scale(0.94)"
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain',
+                transform: 'scale(0.94)',
               }}
             />
           </Box>
@@ -174,7 +175,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         {/* 📱 Keypad */}
         <Box mt={0.5}>
           <PhoneKeypad
-            onSubmit={(phone) => console.log("Número ingresado:", phone)}
+            onSubmit={(phone) => console.log('Número ingresado:', phone)}
             onKeypadClick={() => setModalOpen(true)}
           />
         </Box>
@@ -187,7 +188,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               alt="Store Logo"
               width={110}
               height={60}
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: 'contain' }}
             />
           )}
           <Typography fontSize="0.7rem" textAlign="center" color="white">
@@ -205,8 +206,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         storeName={store?.name}
         type={optinType}
         createdBy={user?._id || store?.id}
-        sweepstakeName={sweepstakeName || ""}
-        method={user ? "cashier" : "tablet"}
+        sweepstakeName={sweepstakeName || ''}
+        method={user ? 'cashier' : 'tablet'}
         onSuccessRegister={() => setTermsAccepted(true)}
         hasQR={hasQR}
       />

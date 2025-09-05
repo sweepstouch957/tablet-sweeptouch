@@ -15,7 +15,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
@@ -75,6 +75,31 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      onClose();
+    }, 20000); // 20 seconds
+  };
+
+  useEffect(() => {
+    if (open) {
+      resetTimer();
+    } else {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [open]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ customerName }: { customerName: string }) => {
@@ -130,6 +155,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   });
 
   const handleKeyPress = (key: string) => {
+    resetTimer();
     if (key === "Delete") {
       setPhone(formatPhone(phone.slice(0, -1)));
     } else if (key === "Send") {
@@ -239,7 +265,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                       key={key}
                       variant="contained"
                       disabled={key === "Send" && isPending}
-                      onClick={() => handleKeyPress(key)}
+                      onClick={(e) => {
+                      e.stopPropagation();
+                      handleKeyPress(key);
+                    }}
                       sx={{
                         backgroundColor:
                           key === "Send"
