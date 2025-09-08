@@ -73,16 +73,17 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
     fontWeight: 'bold',
     borderRadius: '6px',
     border: '1px solid #a0821f',
-    '&:hover': {
-      background: 'linear-gradient(135deg, #e0b560 0%, #c49f37 100%)',
-      transform: 'scale(0.98)',
-    },
-    '&:active': { transform: 'scale(0.95)' },
+    //'&:hover': {
+    //  background: 'linear-gradient(135deg, #e0b560 0%, #c49f37 100%)',
+    //  transform: 'scale(0.98)',
+    //},
+    //'&:active': { transform: 'scale(0.95)' },
     minWidth: 0,
+    cursor: 'default',
     minHeight: 0,
     flex: 1,
     aspectRatio: '1 / 1', // Hace que sean cuadrados
-    boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+    boxShadow: 'none',
   };
 
   return (
@@ -166,6 +167,9 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
           <Button
             key={key}
             onClick={() => handleClick(key)}
+            disableRipple
+            disableFocusRipple
+            disableElevation
             sx={{
               ...buttonStyle,
               width: '45px',
