@@ -14,6 +14,7 @@ import { PhoneInputModal } from './inputModal';
 import CallToActionButton from './button';
 import PhoneKeypad from './PhoneKeypad';
 
+
 interface LeftPanelProps {
   store?: Store;
   termsAccepted: boolean;
@@ -23,10 +24,7 @@ interface LeftPanelProps {
   handlePhoneChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   phoneNumber: string;
   setPhoneNumber: (value: string) => void;
-  prize?: {
-    name: string;
-    image: string;
-  };
+  prize?: { name: string; image: string };
   sweeptakeId?: string;
   optinType?: string;
   imageYear?: string;
@@ -40,7 +38,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   store,
   setTermsAccepted,
   sweeptakeId = '',
-  prize = { name: 'No Prize', image: '' },
+  prize = { name: 'NISSAN VERSA 2025', image: '' },
   optinType,
   sweepstakeName,
   imageYear = NewYearImage.src,
@@ -61,24 +59,150 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         alignItems="center"
         justifyContent="flex-start"
         width={{ xs: '100%', md: '22%' }}
-        minHeight={{ xs: "100vh", md: "70vh" }}
+        minHeight={{ xs: '100vh', md: '70vh' }}
         maxHeight="100vh"
         sx={{
+          position: 'relative',
           backgroundImage: `url(${BgImage.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           cursor: 'default',
+          '@media (orientation: portrait)': {
+            width: '100%',
+            maxWidth: '100%',
+            minHeight: 'auto',
+            maxHeight: 'none',
+          },
         }}
         pl={{ xs: 1.5, md: 2 }}
         pr={0}
         py={0.75}
         gap={0}
       >
-        {/* 🎉 Banner */}
-        <RibbonBanner />
+        {/* ===================== HEADER (solo portrait) ===================== */}
+        <Box
+          sx={{
+            display: 'none',
+            '@media (orientation: portrait)': {
+              display: 'block',
+              width: '100%',
+              backgroundImage: `url(${BgImage.src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            },
+          }}
+        >
+          {/* Cinta centrada */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <RibbonBanner />
+          </Box>
 
-        {/* 🧩 Hero grid: car + title + new year */}
+          {/* 3 columnas iguales: [IZQ centrado] [CENTRO centrado] [DER] */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr',
+              alignItems: 'center',
+              gap: 1,
+              px: 1.25,
+              py: 0.75,
+            }}
+          >
+            {/* === IZQUIERDA: Nissan/Modelo + logo tienda + Contact Us (todo centrado) === */}
+            <Box
+              sx={{
+                justifySelf: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 0.5,
+                textAlign: 'center',
+              }}
+            >
+              <Typography
+                fontWeight={900}
+                sx={{
+                  fontSize: 'clamp(0.95rem, 4.2vw, 1.2rem)',
+                  lineHeight: 1,
+                  letterSpacing: '0.02em',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {(brand || '').toUpperCase()}
+              </Typography>
+              <Typography
+                fontWeight={700}
+                sx={{
+                  fontSize: 'clamp(0.85rem, 3.6vw, 1.05rem)',
+                  lineHeight: 1,
+                  letterSpacing: '0.02em',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {(model || '').toUpperCase()}
+              </Typography>
+
+              {store?.image && (
+                <Box sx={{ maxWidth: 'clamp(120px, 26vw, 170px)' }}>
+                  <Image
+                    src={store.image}
+                    alt={store?.name || 'Store Logo'}
+                    width={260}
+                    height={120}
+                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                  />
+                </Box>
+              )}
+
+              {/* Contact Us debajo del logo de tienda */}
+              <Typography
+                sx={{
+                  fontSize: 'clamp(10px, 2.6vw, 12px)',
+                  opacity: 0.9,
+                  mt: 0.25,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Contact Us: (201) 982-4102
+              </Typography>
+            </Box>
+
+            {/* === CENTRO: New Year EXACTAMENTE centrado === */}
+            <Box
+              sx={{
+                justifySelf: 'center',
+                maxWidth: 'clamp(140px, 28vw, 220px)',
+              }}
+            >
+              <Image
+                src={optinType === 'generic' ? VipImage.src : imageYear}
+                alt="New Year"
+                width={360}
+                height={160}
+                style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+              />
+            </Box>
+
+            {/* === DERECHA: auto reducido, alineado a la derecha === */}
+            <Box sx={{ justifySelf: 'end', maxWidth: 'clamp(120px, 22vw, 180px)' }}>
+              <Image
+                src={prize.image || Logo.src}
+                alt="Vehicle"
+                width={420}
+                height={220}
+                style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+              />
+            </Box>
+          </Box>
+
+          {/* CTA centrado bajo el header (solo portrait) */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', pb: 0.75 }}>
+            <CallToActionButton onClick={() => setModalOpen(true)} />
+          </Box>
+        </Box>
+
+        {/* ===================== LAYOUT ORIGINAL (landscape) ===================== */}
         <Box
           sx={{
             display: 'grid',
@@ -88,9 +212,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             columnGap: 0,
             rowGap: 0,
             width: '100%',
+            '@media (orientation: portrait)': { display: 'none' },
           }}
         >
-          {/* 🚘 Car */}
+          {/* Carro grande */}
           <Box
             sx={{
               gridColumn: '1 / span 2',
@@ -116,7 +241,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             />
           </Box>
 
-          {/* 🏷 Brand + model (NISSAN VERSA 2025) */}
+          {/* NISSAN / VERSA 2025 */}
           <Box sx={{ gridColumn: '1 / span 1', alignSelf: 'start' }}>
             <Typography
               fontWeight={900}
@@ -148,7 +273,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             </Typography>
           </Box>
 
-          {/* 🎆 2026 NEW YEAR */}
+          {/* 2026 NEW YEAR */}
           <Box
             sx={{
               gridColumn: { xs: '2 / span 1', md: '2 / span 1' },
@@ -173,21 +298,48 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           </Box>
         </Box>
 
-        {/* 🔘 CTA */}
-        <Box my={0.5}>
+        {/* CTA (landscape) → igual que siempre */}
+        <Box
+          my={0.5}
+          sx={{
+            display: 'block',
+            '@media (orientation: portrait)': { display: 'none' }, // en portrait el CTA está bajo el header
+          }}
+        >
           <CallToActionButton onClick={() => setModalOpen(true)} />
         </Box>
 
-        {/* 📱 Keypad */}
-        <Box mt={0.5}>
+        {/* =============== BOTONERA FIJA, CENTRADA (solo portrait) =============== */}
+        <Box
+          sx={{
+            // Horizontal: se muestra normal (posición estática en su lugar)
+            position: 'static',
+            display: 'block',
+
+            // Portrait: ocultar completamente
+            '@media (orientation: portrait)': {
+              display: 'none',
+            },
+          }}
+        >
           <PhoneKeypad
             onSubmit={(phone) => console.log('Número ingresado:', phone)}
             onKeypadClick={() => setModalOpen(true)}
           />
         </Box>
 
-        {/* ℹ️ Footer */}
-        <Stack alignItems="center" spacing={0.3} mt="auto" pb={1}>
+        {/* Footer: OCULTO en portrait para evitar duplicado de logo/Contact Us */}
+        <Stack
+          alignItems="center"
+          spacing={0.3}
+          mt="auto"
+          pb={1}
+          sx={{
+            '@media (orientation: portrait)': {
+              display: 'none',
+            },
+          }}
+        >
           {store?.image && (
             <Image
               src={store.image}
@@ -203,10 +355,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         </Stack>
       </Box>
 
-      {/* 📱 Modal */}
+      {/* Modal */}
       <PhoneInputModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)} // ✅ ahora funciona con backdrop, X y Esc
+        onClose={() => setModalOpen(false)}
         sweepstakeId={sweeptakeId}
         storeId={store?.id}
         storeName={store?.name}
