@@ -52,9 +52,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   const model = restParts.join(' ');
   const { user } = useAuth();
 
-  //const theme = useTheme();
-  //const matches = useMediaQuery(theme.breakpoints.down("md"));
-
   return (
     <>
       <Box
@@ -71,7 +68,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          cursor: 'default', // no necesitamos que el panel sea "clickable"
+          cursor: 'default',
         }}
         pl={{ xs: 1.5, md: 2 }}
         pr={0}
@@ -93,7 +90,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             width: '100%',
           }}
         >
-          {/* 🚘 Car (dynamic from DB) */}
+          {/* 🚘 Car */}
           <Box
             sx={{
               gridColumn: '1 / span 2',
@@ -119,14 +116,18 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             />
           </Box>
 
-          {/* 🏷 Brand + model (left-bottom) */}
+          {/* 🏷 Brand + model (NISSAN VERSA 2025) */}
           <Box sx={{ gridColumn: '1 / span 1', alignSelf: 'start' }}>
             <Typography
               fontWeight={900}
               sx={{
-                fontSize: { xs: '1.6rem', md: '2.2rem' },
+                fontSize: {
+                  xs: 'clamp(1.0rem, 6.2vw, 1.6rem)',
+                  md: 'clamp(1.2rem, 3.2vw, 2.2rem)',
+                },
                 lineHeight: 0.95,
                 letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
               }}
             >
               {(brand || '').toUpperCase()}
@@ -134,16 +135,20 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <Typography
               fontWeight={700}
               sx={{
-                fontSize: { xs: '1.2rem', md: '1.6rem' },
+                fontSize: {
+                  xs: 'clamp(0.9rem, 5vw, 1.3rem)',
+                  md: 'clamp(1.0rem, 2.6vw, 1.6rem)',
+                },
                 lineHeight: 0.95,
                 letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
               }}
             >
               {(model || '').toUpperCase()}
             </Typography>
           </Box>
 
-          {/* 🎆 2026 NEW YEAR (right-bottom, dynamic) */}
+          {/* 🎆 2026 NEW YEAR */}
           <Box
             sx={{
               gridColumn: { xs: '2 / span 1', md: '2 / span 1' },
@@ -167,6 +172,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             />
           </Box>
         </Box>
+
         {/* 🔘 CTA */}
         <Box my={0.5}>
           <CallToActionButton onClick={() => setModalOpen(true)} />
