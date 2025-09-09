@@ -102,7 +102,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
         vid.pause();
         vid.currentTime = 0;
         vid.controls = false;
-      } catch {}
+      } catch { }
     });
 
     const src = images[index];
@@ -155,7 +155,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
 
   return (
     <Box
-      width={{ xs: "100%", md: "75%" }}
+      width={{ xs: "100%", md: "78%" }}
       position="relative"
       minHeight={{ xs: "69vh", md: "100vh" }}
       maxHeight={{ xs: "69vh", md: "100vh" }}

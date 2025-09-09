@@ -67,8 +67,9 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         // Eliminar espacios en blanco en pantallas horizontales
         margin: 0,
         padding: 0,
-        width: "100vw",
-        height: "100vh"
+          bgcolor: "#0B1224",
+        width: "100%",
+        height: "100dvh"
       }}
     >
       <LeftPanel
