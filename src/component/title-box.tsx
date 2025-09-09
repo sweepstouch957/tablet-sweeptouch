@@ -14,16 +14,18 @@ export default function RibbonBanner() {
         px: { xs: 2, md: 3 },
         py: { xs: "6px", md: "8px" },
         overflow: "visible", // allow tails to render outside
-        // OUTWARD tails (> <) via pseudo-elements
+        // Mejorar la forma de cinta con bordes más curvos
+        borderRadius: "4px",
+        // OUTWARD tails (> <) via pseudo-elements - mejorados para verse más como cinta
         "&::before": {
           content: '""',
           position: "absolute",
           left: 0,
           top: "50%",
           transform: "translate(-100%, -50%)",
-          borderTop: { xs: "14px solid transparent", md: "18px solid transparent" },
-          borderBottom: { xs: "14px solid transparent", md: "18px solid transparent" },
-          borderRight: { xs: "14px solid #BF171B", md: "18px solid #BF171B" },
+          borderTop: { xs: "16px solid transparent", md: "20px solid transparent" },
+          borderBottom: { xs: "16px solid transparent", md: "20px solid transparent" },
+          borderRight: { xs: "16px solid #BF171B", md: "20px solid #BF171B" },
         },
         "&::after": {
           content: '""',
@@ -31,9 +33,9 @@ export default function RibbonBanner() {
           right: 0,
           top: "50%",
           transform: "translate(100%, -50%)",
-          borderTop: { xs: "14px solid transparent", md: "18px solid transparent" },
-          borderBottom: { xs: "14px solid transparent", md: "18px solid transparent" },
-          borderLeft: { xs: "14px solid #BF171B", md: "18px solid #BF171B" },
+          borderTop: { xs: "16px solid transparent", md: "20px solid transparent" },
+          borderBottom: { xs: "16px solid transparent", md: "20px solid transparent" },
+          borderLeft: { xs: "16px solid #BF171B", md: "20px solid #BF171B" },
         },
       }}
     >

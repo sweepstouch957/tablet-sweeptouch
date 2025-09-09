@@ -64,7 +64,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         alignItems="center"
         justifyContent="flex-start"
         width={{ xs: '100%', md: '22%' }}
-        minHeight="70vh"
+        minHeight={{ xs: "100vh", md: "70vh" }}
         maxHeight="100vh"
         sx={{
           backgroundImage: `url(${BgImage.src})`,

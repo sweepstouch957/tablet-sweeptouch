@@ -39,7 +39,15 @@ export default function CallToActionButton({
           },
         }}
       >
-        <Typography fontSize="1rem" fontWeight="bold">
+        <Typography 
+          fontSize={{ xs: "0.85rem", md: "1rem" }} 
+          fontWeight="bold"
+          sx={{
+            // En pantallas horizontales, hacer el texto más pequeño para una sola línea
+            lineHeight: 1.2,
+            whiteSpace: { md: "nowrap" }
+          }}
+        >
           Participate and Win!
         </Typography>
       </Button>

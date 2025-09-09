@@ -62,7 +62,14 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       minHeight="100vh"
       overflow="hidden"
       onClick={handleGlobalClick}
-      sx={{ cursor: "pointer" }}
+      sx={{ 
+        cursor: "pointer",
+        // Eliminar espacios en blanco en pantallas horizontales
+        margin: 0,
+        padding: 0,
+        width: "100vw",
+        height: "100vh"
+      }}
     >
       <LeftPanel
         store={store}
