@@ -37,6 +37,7 @@ interface PhoneInputModalProps {
   type?: string;
   hasQR?: boolean;
   onSuccessRegister: () => void;
+  userId?: string;
 }
 
 const keypad = [
@@ -66,7 +67,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   sweepstakeName,
   type = "",
   hasQR,
+  userId,
 }) => {
+  
   const [phone, setPhone] = useState("");
   const [showNameModal, setShowNameModal] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -84,7 +87,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         customerPhone: phone.replace(/\D/g, ""),
         customerName,
         method,
-        createdBy,
+        createdBy: userId ?? createdBy,
       });
       return resp;
     },

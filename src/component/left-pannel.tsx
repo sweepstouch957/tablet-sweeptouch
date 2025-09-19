@@ -48,7 +48,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   const [brand, ...restParts] = prize.name.split(" ");
   const model = restParts.join(" ");
   const { user } = useAuth();
-
+  
   const [openModal, setOpenModal] = useState(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
@@ -190,6 +190,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         method={user ? "cashier" : "tablet"}
         onSuccessRegister={() => setTermsAccepted(true)}
         hasQR={hasQR}
+        userId={user?._id}
       />
     </Box>
   );
