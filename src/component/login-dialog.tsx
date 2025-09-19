@@ -33,6 +33,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
       await login("", "", accessCode); // Asegúrate que tu `login` soporte este tercer argumento
       onClose();
       setAccessCode("");
+      window.location.reload(); // 👈 fuerza refresco
     } catch (_) {
       // El error ya lo maneja el contexto
     }

@@ -15,7 +15,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
 import { useMutation } from "@tanstack/react-query";
 import { createSweepstake } from "@/services/sweepstake.service";
@@ -69,7 +69,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   hasQR,
   userId,
 }) => {
-  
   const [phone, setPhone] = useState("");
   const [showNameModal, setShowNameModal] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -80,15 +79,14 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [showThanks, setShowThanks] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
     timerRef.current = setTimeout(() => {
       onClose();
     }, 20000); // 20 seconds
-  };
-
+  }, [onClose]);
   useEffect(() => {
     if (open) {
       resetTimer();
@@ -102,7 +100,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         clearTimeout(timerRef.current);
       }
     };
-  }, [open]);
+  }, [open, resetTimer]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ customerName }: { customerName: string }) => {
@@ -206,7 +204,14 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           },
         }}
       >
-        <Box sx={{ bgcolor: "#c79b34", p: 3, borderRadius: "16px", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
+        <Box
+          sx={{
+            bgcolor: "#c79b34",
+            p: 3,
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          }}
+        >
           <Box
             sx={{
               bgcolor: "#c79b34",
@@ -269,9 +274,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                       variant="contained"
                       disabled={key === "Send" && isPending}
                       onClick={(e) => {
-                      e.stopPropagation();
-                      handleKeyPress(key);
-                    }}
+                        e.stopPropagation();
+                        handleKeyPress(key);
+                      }}
                       sx={{
                         backgroundColor:
                           key === "Send"
@@ -309,7 +314,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 </Box>
 
                 {error && (
-                  <Typography color="white" fontSize="1rem" sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}>
+                  <Typography
+                    color="white"
+                    fontSize="1rem"
+                    sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+                  >
                     {error}
                   </Typography>
                 )}
@@ -334,7 +343,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               />
             }
             label={
-              <Typography color="white" fontSize={"0.8rem"} sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}>
+              <Typography
+                color="white"
+                fontSize={"0.8rem"}
+                sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+              >
                 By providing your phone number, you are consenting to receive
                 messages about sales/coupons/promotors/etc. Text HELP for info.
                 Text STOP to opt out. MSG&Data rates may apply.
