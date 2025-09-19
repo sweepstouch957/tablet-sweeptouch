@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // RightCarousel.tsx
 
-"use client";
+'use client';
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
-import { useSwipeable } from "react-swipeable";
-import { Box, CircularProgress, Typography } from "@mui/material";
-import { Store } from "@/services/store.service";
-import LoginDialog from "./login-dialog";
-import CashierDrawer from "./cahierDrawer";
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import { useSwipeable } from 'react-swipeable';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { Store } from '@/services/store.service';
+import LoginDialog from './login-dialog';
+import CashierDrawer from './cahierDrawer';
 
 interface RightCarouselProps {
   store?: Store;
@@ -25,7 +25,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   isLoading = false,
   intervalMs = 6000,
 }) => {
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   // Estado interno del carrusel
   const [index, setIndex] = useState(0);
@@ -130,14 +130,14 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       setLocked(false);
     };
 
-    vid.addEventListener("playing", onPlaying);
-    vid.addEventListener("ended", onEnded);
-    vid.addEventListener("error", onError);
-    vid.addEventListener("pause", onPause);
+    vid.addEventListener('playing', onPlaying);
+    vid.addEventListener('ended', onEnded);
+    vid.addEventListener('error', onError);
+    vid.addEventListener('pause', onPause);
 
     // Intento de reproducción
     const p = vid.play?.();
-    if (p && typeof p.then === "function") {
+    if (p && typeof p.then === 'function') {
       p.catch(() => {
         // Autoplay bloqueado → muestra controles y NO bloquees el avance
         vid.controls = true;
@@ -146,19 +146,19 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
     }
 
     return () => {
-      vid.removeEventListener("playing", onPlaying);
-      vid.removeEventListener("ended", onEnded);
-      vid.removeEventListener("error", onError);
-      vid.removeEventListener("pause", onPause);
+      vid.removeEventListener('playing', onPlaying);
+      vid.removeEventListener('ended', onEnded);
+      vid.removeEventListener('error', onError);
+      vid.removeEventListener('pause', onPause);
     };
   }, [index, images]);
 
   return (
     <Box
-      width={{ xs: "100%", md: "75%" }}
+      width={{ xs: '100%', md: '78%' }}
       position="relative"
-      minHeight={{ xs: "69vh", md: "100vh" }}
-      maxHeight={{ xs: "69vh", md: "100vh" }}
+      minHeight={{ xs: '69vh', md: '100vh' }}
+      maxHeight={{ xs: '69vh', md: '100vh' }}
       overflow="hidden"
       bgcolor="black"
       {...handlers}
@@ -177,7 +177,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
           zIndex={10}
           bgcolor="rgba(0,0,0,0.85)"
         >
-          <CircularProgress size={60} thickness={4} sx={{ color: "#fc0680" }} />
+          <CircularProgress size={60} thickness={4} sx={{ color: '#fc0680' }} />
           <Typography mt={2} fontWeight={600} color="white">
             Cargando Promos...
           </Typography>
@@ -197,10 +197,10 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
               height="100%"
               sx={{
                 opacity: isActive ? 1 : 0,
-                visibility: isActive ? "visible" : "hidden",
-                transition: "opacity 1s ease-in-out, visibility 1s",
+                visibility: isActive ? 'visible' : 'hidden',
+                transition: 'opacity 1s ease-in-out, visibility 1s',
                 zIndex: isActive ? 1 : 0,
-                "& video, & img": { width: "100%", height: "100%" },
+                '& video, & img': { width: '100%', height: '100%' },
               }}
             >
               {isVideo ? (
@@ -212,15 +212,15 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
                   controls={false}
                   muted
                   playsInline
-                  preload={isActive ? "auto" : "none"}
-                  style={{ objectFit: isMobile ? "contain" : "fill" }}
+                  preload={isActive ? 'auto' : 'none'}
+                  style={{ objectFit: isMobile ? 'contain' : 'fill' }}
                 />
               ) : (
                 <Image
                   src={src}
                   alt={`Slide ${i + 1}`}
                   fill
-                  style={{ objectFit: isMobile ? "contain" : "fill" }}
+                  style={{ objectFit: isMobile ? 'contain' : 'fill' }}
                   priority={isActive}
                 />
               )}
@@ -233,16 +233,17 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
         <Box position="absolute" bottom={16} right={16} zIndex={2}>
           <Box
             onClick={() => setOpenDrawer(true)}
+            data-exclude-global-click="true"
             sx={{
-              backgroundColor: "rgba(0,0,0,0.8)",
-              color: "white",
-              borderRadius: "16px",
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              color: 'white',
+              borderRadius: '16px',
               px: 2,
               py: 0.5,
-              fontSize: "0.9rem",
-              fontWeight: "bold",
-              whiteSpace: "nowrap",
-              cursor: "pointer",
+              fontSize: '0.9rem',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
             }}
           >
             {store.name}

@@ -28,6 +28,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { data } = useActiveSweepstake(store?._id);
   const { data: promosData, isLoading } = usePromos("tablet", store?._id);
@@ -44,12 +45,24 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
     setPhoneNumber(formattedValue);
   };
 
+  const handleGlobalClick = (event: React.MouseEvent) => {
+    // Verificar si el click fue en el área excluida (parte inferior)
+    const target = event.target as HTMLElement;
+    const isExcludedArea = target.closest('[data-exclude-global-click="true"]');
+    
+    if (!isExcludedArea && modalOpen) {
+      setModalOpen(false);
+    }
+  };
+
   return (
     <Box
       display="flex"
       flexDirection={{ xs: "column", md: "row" }}
       minHeight="100vh"
       overflow="hidden"
+      onClick={handleGlobalClick}
+      sx={{ cursor: "pointer" }}
     >
       <LeftPanel
         store={store}
@@ -66,6 +79,8 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
         sweepstakeName={data?.name}
         imageYear={data?.imageYear || ""}
         hasQR={data?.hasQr || false}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
       />
 
       <RightCarousel
