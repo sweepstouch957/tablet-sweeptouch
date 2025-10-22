@@ -259,6 +259,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       <LoginDialog
         open={showLoginDialog}
         onClose={() => setShowLoginDialog(false)}
+        storeId={store?._id || ""}
       />
     </Box>
   );

@@ -91,7 +91,7 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       />
 
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id || ""} />
     </Box>
   );
 };
