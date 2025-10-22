@@ -28,7 +28,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   // Estado interno del carrusel
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(0);  
   const [locked, setLocked] = useState(false); // bloquea el auto-avance si hay video reproduciéndose
   const timerRef = useRef<number | null>(null);
 
@@ -259,7 +259,6 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       <LoginDialog
         open={showLoginDialog}
         onClose={() => setShowLoginDialog(false)}
-        storeId={store?._id || ""}
       />
     </Box>
   );
