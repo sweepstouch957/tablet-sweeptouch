@@ -1,18 +1,18 @@
-import React from 'react';
-import Image from 'next/image';
-import Logo from '@public/logo.webp';
-import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
-import { Store } from '@/services/store.service';
-import { useAuth } from '@/context/auth-context';
+import React from "react";
+import Image from "next/image";
+import Logo from "@public/logo.webp";
+import { Box, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Store } from "@/services/store.service";
+import { useAuth } from "@/context/auth-context";
 
-import BgImage from '@public/BgBlack.webp';
-import NewYearImage from '@public/2026.webp';
-import VipImage from '@public/VipImage.webp';
+import BgImage from "@public/BgBlack.webp";
+import NewYearImage from "@public/2026.webp";
+import VipImage from "@public/VipImage.webp";
 
-import RibbonBanner from './title-box';
-import { PhoneInputModal } from './inputModal';
-import CallToActionButton from './button';
-import PhoneKeypad from './PhoneKeypad';
+import RibbonBanner from "./title-box";
+import { PhoneInputModal } from "./inputModal";
+import CallToActionButton from "./button";
+import PhoneKeypad from "./PhoneKeypad";
 
 interface LeftPanelProps {
   store?: Store;
@@ -39,8 +39,8 @@ interface LeftPanelProps {
 const LeftPanel: React.FC<LeftPanelProps> = ({
   store,
   setTermsAccepted,
-  sweeptakeId = '',
-  prize = { name: 'No Prize', image: '' },
+  sweeptakeId = "",
+  prize = { name: "No Prize", image: "" },
   optinType,
   sweepstakeName,
   imageYear = NewYearImage.src,
@@ -48,11 +48,11 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   modalOpen,
   setModalOpen,
 }) => {
-  const [brand, ...restParts] = prize.name.split(' ');
-  const model = restParts.join(' ');
+  const [brand, ...restParts] = prize.name.split(" ");
+  const model = restParts.join(" ");
   const { user } = useAuth();
 
-  const isPortrait = useMediaQuery('(orientation: portrait)');
+  const isPortrait = useMediaQuery("(orientation: portrait)");
 
   return (
     <>
@@ -62,15 +62,15 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         flexDirection="column"
         alignItems="center"
         justifyContent="flex-start"
-        width={{ xs: '100%', md: '22%' }}
-        minHeight={isPortrait ? '20vh' : '100vh'}
-        maxHeight={isPortrait ? '31vh' : '100vh'}
+        width={{ xs: "100%", md: "22%" }}
+        minHeight={isPortrait ? "20vh" : "100vh"}
+        maxHeight={isPortrait ? "31vh" : "100vh"}
         sx={{
           backgroundImage: `url(${BgImage.src})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          cursor: 'default',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          cursor: "default",
         }}
         pl={{ xs: 1.5, md: 2 }}
         pr={0}
@@ -102,23 +102,26 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               pt={2} // ✅ sube más el logo
             >
               <Box>
-                <Typography
-                  fontWeight={900}
-                  sx={{
-                    fontSize: 'clamp(1.1rem, 5vw, 1.6rem)',
-                    lineHeight: 1,
-                  }}
-                >
-                  {(brand || '').toUpperCase()}
-                </Typography>
+                {brand !== "No Prize" && (
+                  <Typography
+                    fontWeight={900}
+                    sx={{
+                      fontSize: "clamp(1.1rem, 5vw, 1.6rem)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {(brand || "").toUpperCase()}
+                  </Typography>
+                )}
+
                 <Typography
                   fontWeight={700}
                   sx={{
-                    fontSize: 'clamp(1rem, 4vw, 1.4rem)',
+                    fontSize: "clamp(1rem, 4vw, 1.4rem)",
                     lineHeight: 1,
                   }}
                 >
-                  {(model || '').toUpperCase()}
+                  {(model || "").toUpperCase()}
                 </Typography>
               </Box>
 
@@ -128,7 +131,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   alt="Store Logo"
                   width={200} // ✅ un poco más grande
                   height={130}
-                  style={{ objectFit: 'contain' }}
+                  style={{ objectFit: "contain" }}
                 />
               )}
             </Box>
@@ -147,19 +150,19 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
 
               <Box sx={{ maxWidth: 200 }}>
                 <Image
-                  src={optinType === 'generic' ? VipImage.src : imageYear}
+                  src={optinType === "generic" ? VipImage.src : imageYear}
                   alt="New Year Image"
                   width={400}
                   height={200}
                   style={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'contain',
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
                   }}
                 />
               </Box>
 
-              <Box sx={{ transform: 'scale(1)' }}>
+              <Box sx={{ transform: "scale(1)" }}>
                 <CallToActionButton onClick={() => setModalOpen(true)} />
               </Box>
             </Box>
@@ -179,10 +182,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                 width={600}
                 height={400}
                 style={{
-                  width: '100%',
-                  height: 'auto',
-                  objectFit: 'contain',
-                  objectPosition: 'center right',
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  objectPosition: "center right",
                 }}
               />
             </Box>
@@ -196,21 +199,21 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             {/* 🧩 Hero grid: car + title + new year */}
             <Box
               sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr 1fr', md: '1.2fr 1fr' },
-                gridTemplateRows: { xs: 'auto auto', md: 'auto auto' },
-                alignItems: 'end',
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr 1fr", md: "1.2fr 1fr" },
+                gridTemplateRows: { xs: "auto auto", md: "auto auto" },
+                alignItems: "end",
                 columnGap: 0,
                 rowGap: 0,
-                width: '100%',
+                width: "100%",
               }}
             >
               {/* 🚘 Car */}
               <Box
                 sx={{
-                  gridColumn: '1 / span 2',
-                  justifySelf: 'stretch',
-                  alignSelf: 'start',
+                  gridColumn: "1 / span 2",
+                  justifySelf: "stretch",
+                  alignSelf: "start",
                   mr: { xs: -1.5, md: -2 },
                 }}
               >
@@ -220,69 +223,69 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   width={900}
                   height={500}
                   style={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'contain',
-                    objectPosition: 'right center',
-                    transform: 'scale(0.94)',
-                    transformOrigin: 'right center',
-                    display: 'block',
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                    objectPosition: "right center",
+                    transform: "scale(0.94)",
+                    transformOrigin: "right center",
+                    display: "block",
                   }}
                 />
               </Box>
 
               {/* 🏷 Brand + model */}
-              <Box sx={{ gridColumn: '1 / span 1', alignSelf: 'start' }}>
+              <Box sx={{ gridColumn: "1 / span 1", alignSelf: "start" }}>
                 <Typography
                   fontWeight={900}
                   sx={{
                     fontSize: {
-                      xs: 'clamp(1.0rem, 6.2vw, 1.6rem)',
-                      md: 'clamp(1.2rem, 3.2vw, 2.2rem)',
+                      xs: "clamp(1.0rem, 6.2vw, 1.6rem)",
+                      md: "clamp(1.2rem, 3.2vw, 2.2rem)",
                     },
                     lineHeight: 0.95,
-                    letterSpacing: '0.02em',
-                    whiteSpace: 'nowrap',
+                    letterSpacing: "0.02em",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {(brand || '').toUpperCase()}
+                  {(brand || "").toUpperCase()}
                 </Typography>
                 <Typography
                   fontWeight={700}
                   sx={{
                     fontSize: {
-                      xs: 'clamp(0.9rem, 5vw, 1.3rem)',
-                      md: 'clamp(1.0rem, 2.6vw, 1.6rem)',
+                      xs: "clamp(0.9rem, 5vw, 1.3rem)",
+                      md: "clamp(1.0rem, 2.6vw, 1.6rem)",
                     },
                     lineHeight: 0.95,
-                    letterSpacing: '0.02em',
-                    whiteSpace: 'nowrap',
+                    letterSpacing: "0.02em",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {(model || '').toUpperCase()}
+                  {(model || "").toUpperCase()}
                 </Typography>
               </Box>
 
               {/* 🎆 2026 NEW YEAR */}
               <Box
                 sx={{
-                  gridColumn: { xs: '2 / span 1', md: '2 / span 1' },
-                  justifySelf: 'end',
-                  alignSelf: 'end',
+                  gridColumn: { xs: "2 / span 1", md: "2 / span 1" },
+                  justifySelf: "end",
+                  alignSelf: "end",
                   maxWidth: { xs: 150, md: 210 },
                   mt: { xs: -0.5, md: -1 },
                 }}
               >
                 <Image
-                  src={optinType === 'generic' ? VipImage.src : imageYear}
+                  src={optinType === "generic" ? VipImage.src : imageYear}
                   alt="New Year Image"
                   width={400}
                   height={200}
                   style={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'contain',
-                    transform: 'scale(0.94)',
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                    transform: "scale(0.94)",
                   }}
                 />
               </Box>
@@ -296,7 +299,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             {/* 📱 Keypad */}
             <Box mt={0.5}>
               <PhoneKeypad
-                onSubmit={(phone) => console.log('Número ingresado:', phone)}
+                onSubmit={(phone) => console.log("Número ingresado:", phone)}
                 onKeypadClick={() => setModalOpen(true)}
               />
             </Box>
@@ -309,7 +312,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   alt="Store Logo"
                   width={110}
                   height={60}
-                  style={{ objectFit: 'contain' }}
+                  style={{ objectFit: "contain" }}
                 />
               )}
               <Typography fontSize="0.7rem" textAlign="center" color="white">
@@ -329,8 +332,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         storeName={store?.name}
         type={optinType}
         createdBy={user?._id || store?.id}
-        sweepstakeName={sweepstakeName || ''}
-        method={user ? 'cashier' : 'tablet'}
+        sweepstakeName={sweepstakeName || ""}
+        method={user ? "cashier" : "tablet"}
         onSuccessRegister={() => setTermsAccepted(true)}
         hasQR={hasQR}
         userId={user?._id}
