@@ -102,7 +102,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               pt={2} // ✅ sube más el logo
             >
               <Box>
-                {brand !== "No Prize" && (
+                {prize.name !== "No Prize" && (
                   <Typography
                     fontWeight={900}
                     sx={{
