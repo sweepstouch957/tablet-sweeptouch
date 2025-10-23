@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Drawer,
   Typography,
@@ -10,73 +10,96 @@ import {
   Modal,
   Box,
   CircularProgress,
-} from "@mui/material";
-import { useAuth } from "@/context/auth-context";
-import TodayParticipationCard from "./TotalParticipations";
-import { useCashiersByStore } from "@/services/cashierService";
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
+import { useAuth } from '@/context/auth-context';
+import TodayParticipationCard from './TotalParticipations';
+import { useCashiersByStore } from '@/services/cashierService';
+import LoginDialog from './login-dialog';
 
 interface CashierDrawerProps {
   open: boolean;
   onClose: () => void;
-  onOpenLoginDialog: () => void;
+  onOpenLoginDialog?: () => void;
+}
+interface Cashier {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  countryCode: string;
+  role: string;
+  profileImage?: string; // La propiedad profileImage es opcional
+  accessCode?: string; // Si es que también puede ser opcional en el caso de los cajeros
 }
 
-const CashierDrawer: React.FC<CashierDrawerProps> = ({
-  open,
-  onClose,
-  onOpenLoginDialog,
-}) => {
-  const { user, logout, login } = useAuth(); // ✅ Se añade login del contexto
+const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
+  const { user, logout, login } = useAuth();
   const [openModal, setOpenModal] = useState(false);
-  const [loadingLogin, setLoadingLogin] = useState<string | null>(null); // para mostrar spinner en el cajero clicado
+  const [openManualLogin, setOpenManualLogin] = useState(false);
 
-  const storeId = "132cd8db009865f573c26947";
-  const { data, isLoading, error } = useCashiersByStore(storeId);
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const [selectedCashier, setSelectedCashier] = useState<Cashier | null>(null);
+  const storeId = '132cd8db009865f573c26947';
+  const { data, isLoading, error } = useCashiersByStore(storeId) as {
+    data: Cashier[] | undefined;
+    isLoading: boolean;
+    error: unknown;
+  };
 
-  // 🔹 Función para loguear automáticamente al seleccionar un cajero
-  const handleSelectCashier = async (cashier: any) => {
+  // Esta función es llamada al seleccionar un cajero y hace login automáticamente
+
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const handleLoginSelected = async (cashier: any) => {
+    if (!cashier || !cashier.accessCode) return;
+
     try {
-      setLoadingLogin(cashier._id);
-      await login(cashier.accessCode); // 👈 Simula login automático con su código
-      setOpenModal(false);
-      onClose();
+      // Ejecuta login directamente con el accessCode del cajero
+      await login('', '', cashier.accessCode);
+      setOpenModal(false); // Cerrar modal al completar el login
+      onClose(); // Cerrar Drawer
+      window.location.reload(); // Recargar para reflejar cambios
     } catch (err) {
-      console.error("Error al iniciar sesión automáticamente:", err);
-    } finally {
-      setLoadingLogin(null);
+      console.error('Error al iniciar sesión automáticamente:', err);
     }
   };
 
   return (
     <>
-      {/* ==========================
-          📦 Drawer lateral original
-      ========================== */}
       <Drawer
         anchor="right"
         open={open}
         onClose={onClose}
         PaperProps={{
           sx: {
-            width: { xs: "100%", sm: 300 },
-            background: "#0a0a0a",
-            color: "#fff",
+            width: { xs: '100%', sm: 350 },
+            background: '#1a1a1a',
+            color: '#fff',
             p: 2,
+            borderRadius: '12px 0 0 12px',
+            boxShadow: 4,
           },
         }}
       >
         <Typography variant="h6" fontWeight="bold" mb={2}>
-          {user ? "Información de Cajera" : "Iniciar sesión"}
+          {user ? 'Información de Cajera' : 'Iniciar sesión'}
         </Typography>
 
         {user ? (
           <Stack spacing={2} alignItems="center" textAlign="center">
             <Avatar
               sx={{
-                bgcolor: "#fc0680",
+                bgcolor: '#fc0680',
                 width: 80,
                 height: 80,
-                fontSize: "2rem",
+                fontSize: '2rem',
               }}
             >
               {user.firstName[0]}
@@ -91,7 +114,6 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               Rol: {user.role}
             </Typography>
 
-            {/* 💥 Tarjeta de participaciones */}
             <TodayParticipationCard />
 
             <Button
@@ -102,6 +124,12 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                 logout();
                 onClose();
               }}
+              sx={{
+                mt: 2,
+                borderRadius: '8px',
+                backgroundColor: '#e0046f',
+                '&:hover': { backgroundColor: '#fc0680' },
+              }}
             >
               Cerrar sesión
             </Button>
@@ -111,28 +139,44 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             <Typography textAlign="center" fontSize="0.95rem">
               Para continuar, inicia sesión como cajera
             </Typography>
+
+            {/* Botón para abrir tabla de cajeras */}
             <Button
               variant="contained"
               fullWidth
-              onClick={() => setOpenModal(true)} // 🔹 Abrimos el modal
+              onClick={() => setOpenModal(true)}
               sx={{
-                backgroundColor: "#fc0680",
-                "&:hover": {
-                  backgroundColor: "#e0046f",
-                },
-                borderRadius: "8px",
+                backgroundColor: '#fc0680',
+                '&:hover': { backgroundColor: '#e0046f' },
+                borderRadius: '8px',
                 mt: 2,
               }}
             >
-              Iniciar Sesión
+              Seleccionar Cajera
+            </Button>
+
+            {/* Botón para login manual con código de acceso */}
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => setOpenManualLogin(true)}
+              sx={{
+                borderColor: '#fc0680',
+                color: '#fc0680',
+                '&:hover': {
+                  borderColor: '#e0046f',
+                  backgroundColor: 'rgba(252, 6, 128, 0.1)',
+                },
+                borderRadius: '8px',
+              }}
+            >
+              Ingresar Código Manualmente
             </Button>
           </Stack>
         )}
       </Drawer>
 
-      {/* ==========================
-          🪟 Modal con lista de cajeras
-      ========================== */}
+      {/* Modal con tabla de cajeras */}
       <Modal
         open={openModal}
         onClose={() => setOpenModal(false)}
@@ -140,128 +184,198 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
       >
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            bgcolor: "#121212",
-            color: "#fff",
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'white',
+            color: '#000',
             boxShadow: 24,
-            borderRadius: 2,
-            p: 3,
-            width: { xs: "90%", sm: 500 },
-            maxHeight: "80vh",
-            overflowY: "auto",
+            borderRadius: 3,
+            p: 4,
+            width: { xs: '95%', sm: '90%', md: 800 },
+            maxHeight: '85vh',
+            overflowY: 'auto',
+            transition: 'all 0.3s ease-in-out',
           }}
         >
           <Typography
             id="cashier-modal-title"
-            variant="h6"
+            variant="h5"
             fontWeight="bold"
-            mb={2}
+            mb={3}
+            sx={{ color: '#f43789' }}
           >
-            Cajeras disponibles
+            Ranking de Cajeras
           </Typography>
 
-          {/* 🔄 Cargando */}
-          {isLoading && (
+          {isLoading ? (
             <Stack alignItems="center" mt={4}>
-              <CircularProgress sx={{ color: "#fc0680" }} />
-              <Typography mt={1}>Cargando cajeras...</Typography>
+              <CircularProgress sx={{ color: '#fc0680' }} />
+              <Typography mt={2} color="text.secondary">
+                Cargando cajeras...
+              </Typography>
             </Stack>
-          )}
-
-          {/* ⚠️ Error */}
-          {error && (
+          ) : error ? (
             <Typography color="error" textAlign="center">
               Error al cargar las cajeras.
             </Typography>
-          )}
-
-          {/* ✅ Lista de cajeras */}
-          {!isLoading && data && (
-            <Stack spacing={2}>
-              {data.map((cashier) => (
-                <Box
-                  key={cashier._id}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 2,
-                    p: 2,
-                    borderRadius: 2,
-                    backgroundColor: "#1a1a1a",
-                    cursor: "pointer",
-                    transition: "0.2s",
-                    "&:hover": {
-                      backgroundColor: "#2a2a2a",
-                    },
-                  }}
-                  onClick={() => handleSelectCashier(cashier)} // 👈 login directo
-                >
-                  <Stack direction="row" alignItems="center" gap={2}>
-                    <Avatar
-                      src={
-                        cashier.profileImage
-                          ? `https://api2.sweepstouch.com/uploads/${cashier.profileImage}`
-                          : undefined
-                      }
+          ) : data && data.length > 0 ? (
+            <>
+              <TableContainer
+                component={Paper}
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  overflow: 'hidden',
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow
                       sx={{
-                        bgcolor: "#fc0680",
-                        width: 50,
-                        height: 50,
-                        fontSize: "1.2rem",
+                        backgroundColor: '#f43789',
+                        '& .MuiTableCell-head': {
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '0.95rem',
+                        },
                       }}
                     >
-                      {cashier.firstName[0]}
-                    </Avatar>
+                      <TableCell align="center">Foto</TableCell>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Teléfono</TableCell>
+                      <TableCell align="center">Rol</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {data.map((cashier, index) => (
+                      <TableRow
+                        key={cashier._id}
+                        hover
+                        selected={selectedCashier?._id === cashier._id}
+                        onClick={() => {
+                          setSelectedCashier(cashier);
+                          handleLoginSelected(cashier); // Ejecuta login automáticamente
+                        }}
+                        sx={{
+                          cursor: 'pointer',
+                          backgroundColor:
+                            selectedCashier?._id === cashier._id
+                              ? '#fce4ec'
+                              : index % 2 === 0
+                              ? '#fafafa'
+                              : 'white',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            backgroundColor: '#f8bbd0',
+                            transform: 'scale(1.01)',
+                          },
+                          '& .MuiTableCell-root': {
+                            borderBottom: '1px solid #f0f0f0',
+                            py: 2,
+                          },
+                        }}
+                      >
+                        <TableCell align="center">
+                          <Avatar
+                            src={
+                              cashier.profileImage
+                                ? `https://api2.sweepstouch.com/uploads/${cashier.profileImage}`
+                                : undefined
+                            }
+                            sx={{
+                              bgcolor: '#fc0680',
+                              width: 45,
+                              height: 45,
+                              fontSize: '1.1rem',
+                              margin: '0 auto',
+                              boxShadow: 2,
+                            }}
+                          >
+                            {cashier.firstName[0]}
+                          </Avatar>
+                        </TableCell>
+                        <TableCell>
+                          <Typography fontWeight={600} fontSize="0.95rem">
+                            {cashier.firstName} {cashier.lastName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography fontSize="0.9rem" color="text.secondary">
+                            {cashier.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography fontSize="0.9rem" color="text.secondary">
+                            {cashier.countryCode} {cashier.phoneNumber}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: 'inline-block',
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: 2,
+                              backgroundColor: '#e1f5fe',
+                              color: '#0277bd',
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                            }}
+                          >
+                            {cashier.role}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
 
-                    <Box>
-                      <Typography fontWeight="bold">
-                        {cashier.firstName} {cashier.lastName}
-                      </Typography>
-                      <Typography fontSize="0.9rem" color="gray">
-                        {cashier.email}
-                      </Typography>
-                      <Typography fontSize="0.8rem" color="gray">
-                        {cashier.countryCode} {cashier.phoneNumber}
-                      </Typography>
-                      <Typography fontSize="0.8rem" color="gray">
-                        Rol: {cashier.role}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  {/* Indicador de carga individual */}
-                  {loadingLogin === cashier._id && (
-                    <CircularProgress size={24} sx={{ color: "#fc0680" }} />
-                  )}
-                </Box>
-              ))}
-
-              {data.length === 0 && (
-                <Typography textAlign="center" color="gray">
-                  No se encontraron cajeras.
-                </Typography>
-              )}
-            </Stack>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+                mt={3}
+                sx={{ fontStyle: 'italic' }}
+              >
+                Haz clic en cualquier cajera para iniciar sesión automáticamente
+              </Typography>
+            </>
+          ) : (
+            <Typography textAlign="center" color="text.secondary">
+              No se encontraron cajeras.
+            </Typography>
           )}
 
           <Button
-            variant="contained"
+            variant="outlined"
             fullWidth
+            onClick={() => setOpenModal(false)}
             sx={{
               mt: 3,
-              backgroundColor: "#fc0680",
-              "&:hover": { backgroundColor: "#e0046f" },
+              borderColor: '#f43789',
+              color: '#f43789',
+              '&:hover': {
+                borderColor: '#d62b74',
+                backgroundColor: 'rgba(244, 55, 137, 0.05)',
+              },
+              borderRadius: 2,
             }}
-            onClick={() => setOpenModal(false)}
           >
             Cerrar
           </Button>
         </Box>
       </Modal>
+
+      {/* Dialog para login manual */}
+      <LoginDialog
+        open={openManualLogin}
+        onClose={() => setOpenManualLogin(false)}
+      />
     </>
   );
 };

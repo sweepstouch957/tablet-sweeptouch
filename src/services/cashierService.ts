@@ -1,5 +1,5 @@
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 // ===========================
 // 🧩 Tipos
@@ -22,9 +22,9 @@ export interface Cashier {
 // ⚙️ Cliente Axios
 // ===========================
 const api = axios.create({
-  baseURL: "https://api2.sweepstouch.com/api",
+  baseURL: 'https://api2.sweepstouch.com/api',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -48,10 +48,11 @@ export const getCashiersByStore = async (
     // Ajusta según la estructura exacta del backend
     // Ejemplo: { success: true, data: [...] }
     return response.data.data || response.data;
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    console.error("Error fetching cashiers:", error);
+    console.error('Error fetching cashiers:', error);
     throw new Error(
-      error.response?.data?.message || "Error al obtener los cajeros"
+      error.response?.data?.message || 'Error al obtener los cajeros'
     );
   }
 };
@@ -59,13 +60,9 @@ export const getCashiersByStore = async (
 // ===========================
 // 🪄 Hook para React Query
 // ===========================
-export const useCashiersByStore = (
-  storeId: string,
-  limit = 50,
-  page = 1
-) => {
+export const useCashiersByStore = (storeId: string, limit = 50, page = 1) => {
   return useQuery({
-    queryKey: ["cashiers", storeId, limit, page],
+    queryKey: ['cashiers', storeId, limit, page],
     queryFn: () => getCashiersByStore(storeId, limit, page),
     enabled: !!storeId, // Solo ejecuta si hay storeId
     staleTime: 1000 * 60 * 5, // 5 minutos
