@@ -16,7 +16,7 @@ import {
   Box,
 } from '@mui/material';
 import { useAuth } from '@/context/auth-context';
-import { getCashiersByStore, Cashier } from '@/services/cashier.service';
+import { getCashiersByStore, Cashier } from '@/services/cashierService';
 
 interface LoginDialogProps {
   open: boolean;
