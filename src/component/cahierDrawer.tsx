@@ -152,7 +152,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
                 mt: 2,
               }}
             >
-              Seleccionar Cajera
+              Ver Ranking de Cashiers
             </Button>
 
             {/* Botón para login manual con código de acceso */}
@@ -170,7 +170,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
                 borderRadius: '8px',
               }}
             >
-              Ingresar Código Manualmente
+              Ingresar Código de Acceso
             </Button>
           </Stack>
         )}
