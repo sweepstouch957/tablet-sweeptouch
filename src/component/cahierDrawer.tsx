@@ -27,36 +27,24 @@ interface CashierDrawerProps {
   open: boolean;
   onClose: () => void;
   onOpenLoginDialog?: () => void;
-}
-interface Cashier {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  countryCode: string;
-  role: string;
-  profileImage?: string; // La propiedad profileImage es opcional
-  accessCode?: string; // Si es que también puede ser opcional en el caso de los cajeros
+  storeId?: string;
 }
 
-const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
+const CashierDrawer: React.FC<CashierDrawerProps> = ({
+  open,
+  onClose,
+  storeId,
+}) => {
   const { user, logout, login } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [openManualLogin, setOpenManualLogin] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedCashier, setSelectedCashier] = useState<any | null>(null);
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  const [selectedCashier, setSelectedCashier] = useState<Cashier | null>(null);
-  const storeId = '132cd8db009865f573c26947';
-  const { data, isLoading, error } = useCashiersByStore(storeId) as {
-    data: Cashier[] | undefined;
-    isLoading: boolean;
-    error: unknown;
-  };
+  const { data, isLoading, error } = useCashiersByStore(storeId || '');
 
   // Esta función es llamada al seleccionar un cajero y hace login automáticamente
-
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLoginSelected = async (cashier: any) => {
     if (!cashier || !cashier.accessCode) return;
 
@@ -152,7 +140,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
                 mt: 2,
               }}
             >
-              Ver Ranking de Cashiers
+              Ver Ranking de Cajeras
             </Button>
 
             {/* Botón para login manual con código de acceso */}
@@ -170,7 +158,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({ open, onClose }) => {
                 borderRadius: '8px',
               }}
             >
-              Ingresar Código de Acceso
+              Ingresar Access Code
             </Button>
           </Stack>
         )}

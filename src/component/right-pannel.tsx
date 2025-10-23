@@ -255,6 +255,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         onOpenLoginDialog={() => setShowLoginDialog(true)}
+        storeId={store?._id}
       />
       <LoginDialog
         open={showLoginDialog}
