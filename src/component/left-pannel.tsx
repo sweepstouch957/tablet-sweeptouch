@@ -50,6 +50,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
 }) => {
   const [brand, ...restParts] = prize.name.split(" ");
   const model = restParts.join(" ");
+
+
   const { user } = useAuth();
 
   const isPortrait = useMediaQuery("(orientation: portrait)");
@@ -101,8 +103,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               gap={2}
               pt={2} // ✅ sube más el logo
             >
-              <Box>
-                {optinType !== "generic" && (
+              {optinType !== "generic" && (
+                <Box>
                   <Typography
                     fontWeight={900}
                     sx={{
@@ -112,18 +114,18 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   >
                     {(brand || "").toUpperCase()}
                   </Typography>
-                )}
 
-                <Typography
-                  fontWeight={700}
-                  sx={{
-                    fontSize: "clamp(1rem, 4vw, 1.4rem)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {(model || "").toUpperCase()}
-                </Typography>
-              </Box>
+                  <Typography
+                    fontWeight={700}
+                    sx={{
+                      fontSize: "clamp(1rem, 4vw, 1.4rem)",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {(model || "").toUpperCase()}
+                  </Typography>
+                </Box>
+              )}
 
               {store?.image && (
                 <Image
@@ -202,7 +204,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr 1fr", md: "1.2fr 1fr" },
                 gridTemplateRows: { xs: "auto auto", md: "auto auto" },
-                alignItems: "end",
+                alignItems: "center",
                 columnGap: 0,
                 rowGap: 0,
                 width: "100%",
@@ -235,7 +237,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
               </Box>
 
               {/* 🏷 Brand + model */}
-              <Box sx={{ gridColumn: "1 / span 1", alignSelf: "start" }}>
+             { optinType !== "generic" && (
+               <Box sx={{ gridColumn: "1 / span 1", alignSelf: "start" }}>
                 <Typography
                   fontWeight={900}
                   sx={{
@@ -265,6 +268,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
                   {(model || "").toUpperCase()}
                 </Typography>
               </Box>
+              )}
 
               {/* 🎆 2026 NEW YEAR */}
               <Box
