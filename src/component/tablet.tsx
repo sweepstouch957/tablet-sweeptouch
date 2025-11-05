@@ -12,6 +12,7 @@ import LoginDialog from "./login-dialog";
 import { formatPhone } from "@/libs/utils/formatPhone";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { usePromos } from "@/hooks/usePromos";
+import LeftPanelGeneric from "./left-pannel.generic";
 
 interface FathersDayPromoProps {
   store?: Store;
@@ -30,14 +31,23 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data } = useActiveSweepstake(store?._id);
-  const { data: promosData, isLoading } = usePromos("tablet", store?._id);
+  const { data, isLoading } = useActiveSweepstake(store?._id);
+  const { data: promosData, isLoading: isLoadingPromos } = usePromos("tablet", store?._id);
+
+  // Normalizamos optinType solo si hay data
+  const rawOptin = data?.optinType;
+  const normalizedOptin =
+    typeof rawOptin === "string" ? rawOptin.trim().toLowerCase() : undefined;
+
+  // Solo será genérico si optinType === "generic" o no hay data en absoluto
+  const isGeneric = !data ? true : normalizedOptin === "generic";
+
   const images =
     promosData && promosData.length > 0
       ? promosData.map((promo) => promo.imageMobile)
       : imagesDummy;
 
-  const prize = data?.prize[0] || undefined;
+  const prize = data?.prize?.[0] || undefined;
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -46,10 +56,8 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
   };
 
   const handleGlobalClick = (event: React.MouseEvent) => {
-    // Verificar si el click fue en el área excluida (parte inferior)
     const target = event.target as HTMLElement;
     const isExcludedArea = target.closest('[data-exclude-global-click="true"]');
-    
     if (!isExcludedArea && modalOpen) {
       setModalOpen(false);
     }
@@ -64,34 +72,54 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       onClick={handleGlobalClick}
       sx={{ cursor: "pointer" }}
     >
-      <LeftPanel
-        store={store}
-        termsAccepted={termsAccepted}
-        setTermsAccepted={setTermsAccepted}
-        setPrivacyOpen={setPrivacyOpen}
-        handlePhoneChange={handlePhoneChange}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        onLogin={() => setLoginOpen(true)}
-        prize={prize}
-        sweeptakeId={data?._id || ""}
-        optinType={data?.optinType}
-        sweepstakeName={data?.name}
-        imageYear={data?.imageYear || ""}
-        hasQR={data?.hasQr || false}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-      />
+      {/* Esperamos a que se cargue el sweepstake antes de mostrar el panel */}
+      {isLoading ? null : isGeneric ? (
+        <LeftPanelGeneric
+          store={store}
+          termsAccepted={termsAccepted}
+          setTermsAccepted={setTermsAccepted}
+          setPrivacyOpen={setPrivacyOpen}
+          handlePhoneChange={handlePhoneChange}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          onLogin={() => setLoginOpen(true)}
+          prize={prize}
+          sweeptakeId={data?._id || ""}
+          optinType={data?.optinType}
+          sweepstakeName={data?.name}
+          imageYear={data?.imageYear || ""}
+          hasQR={data?.hasQr || false}
+        />
+      ) : (
+        <LeftPanel
+          store={store}
+          termsAccepted={termsAccepted}
+          setTermsAccepted={setTermsAccepted}
+          setPrivacyOpen={setPrivacyOpen}
+          handlePhoneChange={handlePhoneChange}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
+          onLogin={() => setLoginOpen(true)}
+          prize={prize}
+          sweeptakeId={data?._id || ""}
+          optinType={data?.optinType}
+          sweepstakeName={data?.name}
+          imageYear={data?.imageYear || ""}
+          hasQR={data?.hasQr || false}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+        />
+      )}
 
       <RightCarousel
         store={store}
         images={images}
-        isLoading={isLoading}
-        intervalMs={6000} // opcional
+        isLoading={isLoadingPromos}
+        intervalMs={6000}
       />
 
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)}  />
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </Box>
   );
 };

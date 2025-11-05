@@ -12,6 +12,8 @@ export interface Cashier {
   phoneNumber: string;
   role: string;
   accessCode: string;
+  profileImage?: string;
+  countryCode?: string;
   store?: {
     _id: string;
     name: string;
@@ -48,7 +50,7 @@ export const getCashiersByStore = async (
     // Ajusta según la estructura exacta del backend
     // Ejemplo: { success: true, data: [...] }
     return response.data.data || response.data;
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error fetching cashiers:', error);
     throw new Error(
