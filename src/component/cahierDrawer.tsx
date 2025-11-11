@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Drawer,
   Typography,
@@ -17,11 +17,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-} from '@mui/material';
-import { useAuth } from '@/context/auth-context';
-import TodayParticipationCard from './TotalParticipations';
-import { useCashiersByStore } from '@/services/cashierService';
-import LoginDialog from './login-dialog';
+} from "@mui/material";
+import { useAuth } from "@/context/auth-context";
+import TodayParticipationCard from "./TotalParticipations";
+import { useCashiersByStore } from "@/services/cashierService";
+import LoginDialog from "./login-dialog";
 
 interface CashierDrawerProps {
   open: boolean;
@@ -41,7 +41,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedCashier, setSelectedCashier] = useState<any | null>(null);
 
-  const { data, isLoading, error } = useCashiersByStore(storeId || '');
+  const { data, isLoading, error } = useCashiersByStore(storeId || "");
 
   // Esta función es llamada al seleccionar un cajero y hace login automáticamente
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,12 +50,12 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
 
     try {
       // Ejecuta login directamente con el accessCode del cajero
-      await login('', '', cashier.accessCode);
+      await login("", "", cashier.accessCode);
       setOpenModal(false); // Cerrar modal al completar el login
       onClose(); // Cerrar Drawer
       window.location.reload(); // Recargar para reflejar cambios
     } catch (err) {
-      console.error('Error al iniciar sesión automáticamente:', err);
+      console.error("Error al iniciar sesión automáticamente:", err);
     }
   };
 
@@ -67,27 +67,29 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
         onClose={onClose}
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 350 },
-            background: '#1a1a1a',
-            color: '#fff',
+            width: { xs: "100%", sm: 360 },
+            background: "#1a1a1a",
+            color: "#fff",
             p: 2,
-            borderRadius: '12px 0 0 12px',
+            borderRadius: "12px 0 0 12px",
             boxShadow: 4,
+            maxHeight: "100vh",
+            overflowY: "auto", // 👈 evita que se “salga”
           },
         }}
       >
         <Typography variant="h6" fontWeight="bold" mb={2}>
-          {user ? 'Información de Cajera' : 'Iniciar sesión'}
+          {user ? "Información de Cajera" : "Iniciar sesión"}
         </Typography>
 
         {user ? (
           <Stack spacing={2} alignItems="center" textAlign="center">
             <Avatar
               sx={{
-                bgcolor: '#fc0680',
+                bgcolor: "#fc0680",
                 width: 80,
                 height: 80,
-                fontSize: '2rem',
+                fontSize: "2rem",
               }}
             >
               {user.firstName[0]}
@@ -102,7 +104,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               Rol: {user.role}
             </Typography>
 
-            <TodayParticipationCard />
+            <TodayParticipationCard storeId={storeId} />
 
             <Button
               variant="contained"
@@ -114,9 +116,9 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               }}
               sx={{
                 mt: 2,
-                borderRadius: '8px',
-                backgroundColor: '#e0046f',
-                '&:hover': { backgroundColor: '#fc0680' },
+                borderRadius: "8px",
+                backgroundColor: "#e0046f",
+                "&:hover": { backgroundColor: "#fc0680" },
               }}
             >
               Cerrar sesión
@@ -134,9 +136,9 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               fullWidth
               onClick={() => setOpenModal(true)}
               sx={{
-                backgroundColor: '#fc0680',
-                '&:hover': { backgroundColor: '#e0046f' },
-                borderRadius: '8px',
+                backgroundColor: "#fc0680",
+                "&:hover": { backgroundColor: "#e0046f" },
+                borderRadius: "8px",
                 mt: 2,
               }}
             >
@@ -149,13 +151,13 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               fullWidth
               onClick={() => setOpenManualLogin(true)}
               sx={{
-                borderColor: '#fc0680',
-                color: '#fc0680',
-                '&:hover': {
-                  borderColor: '#e0046f',
-                  backgroundColor: 'rgba(252, 6, 128, 0.1)',
+                borderColor: "#fc0680",
+                color: "#fc0680",
+                "&:hover": {
+                  borderColor: "#e0046f",
+                  backgroundColor: "rgba(252, 6, 128, 0.1)",
                 },
-                borderRadius: '8px',
+                borderRadius: "8px",
               }}
             >
               Ingresar Access Code
@@ -172,19 +174,19 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
       >
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'white',
-            color: '#000',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "white",
+            color: "#000",
             boxShadow: 24,
             borderRadius: 3,
             p: 4,
-            width: { xs: '95%', sm: '90%', md: 800 },
-            maxHeight: '85vh',
-            overflowY: 'auto',
-            transition: 'all 0.3s ease-in-out',
+            width: { xs: "95%", sm: "90%", md: 800 },
+            maxHeight: "85vh",
+            overflowY: "auto",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           <Typography
@@ -192,14 +194,14 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             variant="h5"
             fontWeight="bold"
             mb={3}
-            sx={{ color: '#f43789' }}
+            sx={{ color: "#f43789" }}
           >
             Ranking de Cajeras
           </Typography>
 
           {isLoading ? (
             <Stack alignItems="center" mt={4}>
-              <CircularProgress sx={{ color: '#fc0680' }} />
+              <CircularProgress sx={{ color: "#fc0680" }} />
               <Typography mt={2} color="text.secondary">
                 Cargando cajeras...
               </Typography>
@@ -213,21 +215,21 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               <TableContainer
                 component={Paper}
                 sx={{
-                  backgroundColor: 'white',
+                  backgroundColor: "white",
                   borderRadius: 2,
                   boxShadow: 3,
-                  overflow: 'hidden',
+                  overflow: "hidden",
                 }}
               >
                 <Table>
                   <TableHead>
                     <TableRow
                       sx={{
-                        backgroundColor: '#f43789',
-                        '& .MuiTableCell-head': {
-                          color: 'white',
-                          fontWeight: 'bold',
-                          fontSize: '0.95rem',
+                        backgroundColor: "#f43789",
+                        "& .MuiTableCell-head": {
+                          color: "white",
+                          fontWeight: "bold",
+                          fontSize: "0.95rem",
                         },
                       }}
                     >
@@ -249,20 +251,20 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                           handleLoginSelected(cashier); // Ejecuta login automáticamente
                         }}
                         sx={{
-                          cursor: 'pointer',
+                          cursor: "pointer",
                           backgroundColor:
                             selectedCashier?._id === cashier._id
-                              ? '#fce4ec'
+                              ? "#fce4ec"
                               : index % 2 === 0
-                              ? '#fafafa'
-                              : 'white',
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            backgroundColor: '#f8bbd0',
-                            transform: 'scale(1.01)',
+                              ? "#fafafa"
+                              : "white",
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            backgroundColor: "#f8bbd0",
+                            transform: "scale(1.01)",
                           },
-                          '& .MuiTableCell-root': {
-                            borderBottom: '1px solid #f0f0f0',
+                          "& .MuiTableCell-root": {
+                            borderBottom: "1px solid #f0f0f0",
                             py: 2,
                           },
                         }}
@@ -275,11 +277,11 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                                 : undefined
                             }
                             sx={{
-                              bgcolor: '#fc0680',
+                              bgcolor: "#fc0680",
                               width: 45,
                               height: 45,
-                              fontSize: '1.1rem',
-                              margin: '0 auto',
+                              fontSize: "1.1rem",
+                              margin: "0 auto",
                               boxShadow: 2,
                             }}
                           >
@@ -304,13 +306,13 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                         <TableCell align="center">
                           <Box
                             sx={{
-                              display: 'inline-block',
+                              display: "inline-block",
                               px: 2,
                               py: 0.5,
                               borderRadius: 2,
-                              backgroundColor: '#e1f5fe',
-                              color: '#0277bd',
-                              fontSize: '0.85rem',
+                              backgroundColor: "#e1f5fe",
+                              color: "#0277bd",
+                              fontSize: "0.85rem",
                               fontWeight: 600,
                             }}
                           >
@@ -328,7 +330,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                 color="text.secondary"
                 textAlign="center"
                 mt={3}
-                sx={{ fontStyle: 'italic' }}
+                sx={{ fontStyle: "italic" }}
               >
                 Haz clic en cualquier cajera para iniciar sesión automáticamente
               </Typography>
@@ -345,11 +347,11 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             onClick={() => setOpenModal(false)}
             sx={{
               mt: 3,
-              borderColor: '#f43789',
-              color: '#f43789',
-              '&:hover': {
-                borderColor: '#d62b74',
-                backgroundColor: 'rgba(244, 55, 137, 0.05)',
+              borderColor: "#f43789",
+              color: "#f43789",
+              "&:hover": {
+                borderColor: "#d62b74",
+                backgroundColor: "rgba(244, 55, 137, 0.05)",
               },
               borderRadius: 2,
             }}

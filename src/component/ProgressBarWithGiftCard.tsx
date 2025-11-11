@@ -1,117 +1,155 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Box, LinearProgress, Typography, Stack } from '@mui/material';
-import Image from 'next/image';
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  LinearProgress,
+  Typography,
+  Stack,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Image from "next/image";
 
 interface ProgressBarWithGiftCardProps {
   currentParticipations: number;
   targetParticipations: number;
   onComplete: () => void;
+  /** Si se envía, este porcentaje (0–100) reemplaza el cálculo interno */
+  percentOverride?: number;
 }
 
 const ProgressBarWithGiftCard: React.FC<ProgressBarWithGiftCardProps> = ({
   currentParticipations,
   targetParticipations,
   onComplete,
+  percentOverride,
 }) => {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // Calcular el porcentaje de progreso
-  const percentage = Math.min(
+  // Porcentaje mostrado (usa override si viene)
+  const computedPercent = Math.min(
     100,
-    (currentParticipations / targetParticipations) * 100,
+    percentOverride ??
+      (currentParticipations / Math.max(1, targetParticipations)) * 100
   );
 
   useEffect(() => {
-    // Animación de la barra de progreso
-    const animationDuration = 1000; // 1 segundo
+    const animationDuration = 1000;
     const start = progress;
-    const end = percentage;
+    const end = computedPercent;
     const startTime = Date.now();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
-      const t = Math.min(1, elapsed / animationDuration); // t va de 0 a 1
+      const t = Math.min(1, elapsed / animationDuration);
       const animatedProgress = start + (end - start) * t;
       setProgress(animatedProgress);
 
       if (t < 1) {
         requestAnimationFrame(animate);
-      } else {
-        // Cuando la animación termina y el progreso es 100%
-        if (percentage >= 100 && !isComplete) {
-          setIsComplete(true);
-          setShowPopup(true); // Mostrar el pop-up de la gift card
-          onComplete();
-        }
+      } else if (computedPercent >= 100 && !isComplete) {
+        setIsComplete(true);
+        setShowPopup(true);
+        onComplete();
       }
     };
 
     requestAnimationFrame(animate);
-  }, [currentParticipations, targetParticipations, percentage, isComplete, onComplete]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentParticipations,
+    targetParticipations,
+    computedPercent,
+    isComplete,
+    onComplete,
+  ]);
 
-  // Ocultar el pop-up después de un tiempo
   useEffect(() => {
     if (showPopup) {
-      const timer = setTimeout(() => {
-        setShowPopup(false);
-      }, 3000); // Mostrar por 3 segundos
+      const timer = setTimeout(() => setShowPopup(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showPopup]);
 
   return (
     <>
-      <Stack spacing={1} sx={{ width: '100%', p: 2, backgroundColor: '#222', borderRadius: 2 }}>
-        <Typography variant="body2" color="white" fontWeight="bold">
-          Meta de Participaciones: {currentParticipations} / {targetParticipations}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ width: '100%' }}>
+      <Stack
+        spacing={1}
+        sx={{ width: "100%", p: 2, backgroundColor: "#222", borderRadius: 2 }}
+      >
+        {/* ✅ TITULO + TOOLTIP */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 0.8,
+            mb: 0.5,
+          }}
+        >
+          <Typography variant="body2" color="white" fontWeight="bold">
+            Meta de Participaciones: {currentParticipations} /{" "}
+            {targetParticipations}
+          </Typography>
+
+          <Tooltip
+            title="Solo cuentan números nuevos registrados por primera vez en la tienda."
+            arrow
+            placement="top"
+          >
+            <IconButton size="small" sx={{ color: "#ff85c2", p: 0 }}>
+              <InfoOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box sx={{ width: "100%" }}>
             <LinearProgress
               variant="determinate"
               value={progress}
               sx={{
                 height: 15,
                 borderRadius: 5,
-                backgroundColor: '#444',
-                '& .MuiLinearProgress-bar': {
-                  backgroundColor: '#fc0680', // Color de la barra de progreso
-                  transition: 'transform 1s ease-out', // Animación CSS para la barra
+                backgroundColor: "#444",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "#fc0680",
+                  transition: "transform 1s ease-out",
                 },
               }}
             />
           </Box>
           <Box sx={{ minWidth: 35 }}>
-            <Typography variant="body2" color="white">{`${Math.round(
-              percentage,
-            )}%`}</Typography>
+            <Typography variant="body2" color="white">
+              {`${Math.round(computedPercent)}%`}
+            </Typography>
           </Box>
         </Box>
 
-        {/* Gift Card estática dentro del componente */}
+        {/* Gift Card */}
         <Box
           sx={{
-            position: 'relative',
+            position: "relative",
             width: 100,
             height: 60,
-            margin: '10px auto',
+            margin: "10px auto",
             opacity: isComplete ? 1 : 0.5,
-            transform: isComplete ? 'scale(1.2) rotate(5deg)' : 'scale(1)',
-            transition: 'all 0.5s ease-in-out',
-            cursor: 'pointer',
+            transform: isComplete ? "scale(1.2) rotate(5deg)" : "scale(1)",
+            transition: "all 0.5s ease-in-out",
+            cursor: "pointer",
           }}
         >
           <Image
-            src="/gift-card.png" // La imagen debe estar en la carpeta public
+            src="/gift-card.png"
             alt="Gift Card"
-            layout="fill"
-            objectFit="contain"
+            fill
+            style={{ objectFit: "contain" }}
           />
         </Box>
+
         {isComplete && (
           <Typography textAlign="center" color="#fc0680" fontWeight="bold">
             ¡Recompensa Desbloqueada!
@@ -119,20 +157,20 @@ const ProgressBarWithGiftCard: React.FC<ProgressBarWithGiftCardProps> = ({
         )}
       </Stack>
 
-      {/* Animación de la Gift Card en el centro de la pantalla (Pop-up) */}
+      {/* Pop-up */}
       {showPopup && (
         <Box
           sx={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%) scale(0)',
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) scale(0)",
             zIndex: 10000,
-            animation: 'giftCardJump 0.5s ease-out forwards',
-            '@keyframes giftCardJump': {
-              '0%': { transform: 'translate(-50%, -50%) scale(0)' },
-              '50%': { transform: 'translate(-50%, -50%) scale(1.5)' },
-              '100%': { transform: 'translate(-50%, -50%) scale(1)' },
+            animation: "giftCardJump 0.5s ease-out forwards",
+            "@keyframes giftCardJump": {
+              "0%": { transform: "translate(-50%, -50%) scale(0)" },
+              "50%": { transform: "translate(-50%, -50%) scale(1.5)" },
+              "100%": { transform: "translate(-50%, -50%) scale(1)" },
             },
           }}
         >
@@ -140,24 +178,28 @@ const ProgressBarWithGiftCard: React.FC<ProgressBarWithGiftCardProps> = ({
             sx={{
               width: 200,
               height: 120,
-              position: 'relative',
-              boxShadow: '0 0 20px rgba(252, 6, 128, 0.8)',
+              position: "relative",
+              boxShadow: "0 0 20px rgba(252, 6, 128, 0.8)",
               borderRadius: 2,
-              overflow: 'hidden',
+              overflow: "hidden",
             }}
           >
             <Image
               src="/gift-card.png"
               alt="Gift Card Pop-up"
-              layout="fill"
-              objectFit="cover"
+              fill
+              style={{ objectFit: "cover" }}
             />
           </Box>
           <Typography
             variant="h6"
             textAlign="center"
             mt={1}
-            sx={{ color: '#fc0680', fontWeight: 'bold', textShadow: '1px 1px 2px #000' }}
+            sx={{
+              color: "#fc0680",
+              fontWeight: "bold",
+              textShadow: "1px 1px 2px #000",
+            }}
           >
             ¡500 Participaciones!
           </Typography>
