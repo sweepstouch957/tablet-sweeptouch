@@ -19,9 +19,10 @@ interface FathersDayPromoProps {
 }
 
 const imagesDummy = [
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/8a8ac749-e75e-424b-ad77-1a18a39d987b_swtqv6.webp",
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/112783a0-a34e-4108-a372-fabe93cedc16_a9oyix.webp",
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/08b5df1a-9220-40bf-b6f0-428c95901be7_mxzdpo.webp",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/2_oadnkv.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/3_dhbtm0.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/4_qhap3b.png",
+  "hhttps://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
 ];
 
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
