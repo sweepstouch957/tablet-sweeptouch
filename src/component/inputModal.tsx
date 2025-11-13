@@ -163,9 +163,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       if (validatePhone(phone)) {
         setError("");
-        if (hasQR) {
-          return;
-        }
+       
         mutateWithName("");
       } else {
         setError("Please enter a valid phone number");
