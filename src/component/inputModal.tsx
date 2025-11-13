@@ -70,9 +70,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   userId,
 }) => {
   const [phone, setPhone] = useState("");
-  const [showNameModal, setShowNameModal] = useState(false);
   const [customerName, setCustomerName] = useState("");
-  const [nameError, setNameError] = useState("");
 
   const [error, setError] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
@@ -165,6 +163,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       if (validatePhone(phone)) {
         setError("");
+        if (hasQR) {
+          return;
+        }
+        mutateWithName("");
       } else {
         setError("Please enter a valid phone number");
       }
@@ -276,14 +278,14 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                           key === "Send"
                             ? "#4CAF50"
                             : key === "Delete"
-                              ? "#E53935"
-                              : "linear-gradient(#a46c0f, #d49b34)",
+                            ? "#E53935"
+                            : "linear-gradient(#a46c0f, #d49b34)",
                         background:
                           key === "Send"
                             ? "#4CAF50"
                             : key === "Delete"
-                              ? "#E53935"
-                              : "linear-gradient(#a46c0f, #d49b34)",
+                            ? "#E53935"
+                            : "linear-gradient(#a46c0f, #d49b34)",
                         color: "white",
                         fontSize: "1.4rem",
                         width: "100%",
@@ -296,8 +298,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                             key === "Send"
                               ? "#45a049"
                               : key === "Delete"
-                                ? "#d32f2f"
-                                : undefined,
+                              ? "#d32f2f"
+                              : undefined,
                           opacity: key === "Send" || key === "Delete" ? 1 : 0.9,
                         },
                       }}
@@ -356,107 +358,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         isGeneric={type === "generic"}
       />
 
-      <Dialog
-        open={showNameModal}
-        onClose={() => setShowNameModal(false)}
-        BackdropProps={{
-          onClick: () => setShowNameModal(false),
-        }}
-        maxWidth="xs"
-        fullWidth
-      >
-        <Box
-          sx={{
-            bgcolor: "#fefefe",
-            p: 4,
-            borderRadius: "16px",
-            boxShadow: 10,
-            textAlign: "center",
-          }}
-        >
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            mb={2}
-            sx={{ color: "#333", letterSpacing: 1 }}
-          >
-            ENTER YOUR FULL NAME
-          </Typography>
-
-          <TextField
-            fullWidth
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="FullName"
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                backgroundColor: "#fafafa",
-                "& fieldset": {
-                  borderColor: "#ccc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#fc0680",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#fc0680",
-                },
-              },
-            }}
-            inputProps={{
-              maxLength: 40,
-              pattern: "[A-Za-z ]*",
-              style: { textAlign: "center", fontSize: "1.2rem" },
-            }}
-          />
-
-          {nameError && (
-            <Typography color="error" fontSize="0.9rem" mb={2}>
-              {nameError}
-            </Typography>
-          )}
-
-          <Stack direction="row" spacing={2} justifyContent="center">
-            <Button
-              variant="outlined"
-              onClick={() => setShowNameModal(false)}
-              sx={{
-                textTransform: "none",
-                borderRadius: "10px",
-                px: 4,
-                fontWeight: "bold",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => {
-                const isValid = /^[A-Za-z\s]+$/.test(customerName.trim());
-                if (!isValid || customerName.trim().length < 2) {
-                  setNameError("Name must contain only letters and spaces.");
-                  return;
-                }
-                setNameError("");
-                mutateWithName(customerName.trim());
-              }}
-              sx={{
-                backgroundColor: "#fc0680",
-                textTransform: "none",
-                borderRadius: "10px",
-                px: 4,
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#e00572",
-                },
-              }}
-            >
-              Submit
-            </Button>
-          </Stack>
-        </Box>
-      </Dialog>
     </>
   );
 };
