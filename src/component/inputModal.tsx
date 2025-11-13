@@ -138,7 +138,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         );
       }
 
-      setShowNameModal(false);
       onClose();
       setPhone("");
       setCustomerName("");
