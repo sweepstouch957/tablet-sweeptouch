@@ -165,11 +165,6 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       if (validatePhone(phone)) {
         setError("");
-        if (hasQR) {
-          setShowNameModal(true); // 👉 Mostrar modal de nombre si hay QR
-          return;
-        }
-        mutateWithName("");
       } else {
         setError("Please enter a valid phone number");
       }
@@ -281,14 +276,14 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                           key === "Send"
                             ? "#4CAF50"
                             : key === "Delete"
-                            ? "#E53935"
-                            : "linear-gradient(#a46c0f, #d49b34)",
+                              ? "#E53935"
+                              : "linear-gradient(#a46c0f, #d49b34)",
                         background:
                           key === "Send"
                             ? "#4CAF50"
                             : key === "Delete"
-                            ? "#E53935"
-                            : "linear-gradient(#a46c0f, #d49b34)",
+                              ? "#E53935"
+                              : "linear-gradient(#a46c0f, #d49b34)",
                         color: "white",
                         fontSize: "1.4rem",
                         width: "100%",
@@ -301,8 +296,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                             key === "Send"
                               ? "#45a049"
                               : key === "Delete"
-                              ? "#d32f2f"
-                              : undefined,
+                                ? "#d32f2f"
+                                : undefined,
                           opacity: key === "Send" || key === "Delete" ? 1 : 0.9,
                         },
                       }}
