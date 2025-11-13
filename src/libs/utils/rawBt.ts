@@ -235,8 +235,6 @@ export async function printTicketWithQRCodeOnly(data: {
   ctx.fillStyle = "black";
   let y = 40;
   centerText(data.sweepstakeName.toUpperCase(), y, "bold 26px monospace");
-  y += 30;
-  centerText("TRADE SHOW", y, "24px monospace");
   y += 25;
   centerText("Your ticket QR code:", y, "20px monospace");
 
@@ -260,8 +258,7 @@ export async function printTicketWithQRCodeOnly(data: {
   y += 25;
   centerText("GOOD LUCK!", y);
 
-  // 🖨️ Imprimir con RawBT
-  // 🖨️ Imprimir con RawBT dos veces
+
   const base64Image = canvas.toDataURL("image/png");
 
   // Primera impresión
