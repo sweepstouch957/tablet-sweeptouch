@@ -266,18 +266,4 @@ export async function printTicketWithQRCodeOnly(data: {
   iframe1.style.display = "none";
   iframe1.src = `rawbt:${base64Image}`;
   document.body.appendChild(iframe1);
-
-  setTimeout(() => {
-    document.body.removeChild(iframe1);
-
-    // Segunda impresión (después de que se quite la primera)
-    const iframe2 = document.createElement("iframe");
-    iframe2.style.display = "none";
-    iframe2.src = `rawbt:${base64Image}`;
-    document.body.appendChild(iframe2);
-
-    setTimeout(() => {
-      document.body.removeChild(iframe2);
-    }, 2000); // tiempo suficiente para que se dispare la impresión
-  }, 2000); // tiempo entre una impresión y otra
 }
