@@ -124,6 +124,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             sweepstakeName,
             name: customerName || "",
           });
+          return
         }
         printTicketWithImage(
           "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
