@@ -22,7 +22,7 @@ const imagesDummy = [
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/2_oadnkv.png",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/3_dhbtm0.png",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/4_qhap3b.png",
-  "hhttps://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
 ];
 
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
