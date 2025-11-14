@@ -21,7 +21,7 @@ interface FathersDayPromoProps {
 const imagesDummy = [
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/2_oadnkv.png",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/3_dhbtm0.png",
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/4_qhap3b.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078551/4_euh82t.png",
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
 ];
 
