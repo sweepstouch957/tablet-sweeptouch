@@ -47,6 +47,7 @@ export type Labels = {
   recargar: string;
 };
 
+
 export type ThemeConfig = {
   headerGradient?: string;
   brandPrimary?: string;
@@ -84,7 +85,7 @@ const DEFAULTS = {
   dateLocale: "es-ES",
   showReload: true,
   fieldMap: {
-    tecnico: "nombre_del_tecnico",
+    tecnico: "nombre_del_encargado",
     supermercado: "nombre_supermercado",
     direccion: "direccion",
     horaLlegada: "hora_llegada",
