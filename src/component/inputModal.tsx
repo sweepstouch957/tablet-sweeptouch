@@ -357,7 +357,12 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       </Dialog>
       <ThankYouModal
         open={showThanks}
-        onClose={() => setShowThanks(false)}
+        onClose={() => {
+          // cierra el modal de "GOOD LUCK!"
+          setShowThanks(false);
+          // 🔹 y también cierra el modal donde se ingresa el número
+          onClose();
+        }}
         isGeneric={type === "generic"}
       />
 

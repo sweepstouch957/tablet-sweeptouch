@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -26,6 +28,27 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
   onClose,
   isGeneric = false, // Default to false if not provided
 }) => {
+  const autoCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      // reiniciamos el timer cada vez que se abre
+      if (autoCloseRef.current) {
+        clearTimeout(autoCloseRef.current);
+      }
+      autoCloseRef.current = setTimeout(() => {
+        onClose(); // cierra el modal automáticamente
+      }, 3000); // 3 segundos
+    }
+
+    // limpieza al desmontar o cuando cambie "open"
+    return () => {
+      if (autoCloseRef.current) {
+        clearTimeout(autoCloseRef.current);
+      }
+    };
+  }, [open, onClose]);
+
   return (
     <Dialog
       open={open}
