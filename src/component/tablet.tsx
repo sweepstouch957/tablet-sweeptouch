@@ -8,7 +8,7 @@ import { Store } from "@/services/store.service";
 import LeftPanel from "./left-pannel";
 import RightCarousel from "./right-pannel";
 import PrivacyDialog from "./pannel";
-import LoginDialog from "./login-dialog";
+import LoginDialogCashiers from "./login-dialog-cashiers";
 import { formatPhone } from "@/libs/utils/formatPhone";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { usePromos } from "@/hooks/usePromos";
@@ -120,7 +120,11 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       />
 
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginDialogCashiers 
+        open={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+        storeId={store?._id}
+      />
     </Box>
   );
 };
