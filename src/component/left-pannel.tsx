@@ -303,7 +303,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             {/* 📱 Keypad */}
             <Box mt={0.5}>
               <PhoneKeypad
-                onSubmit={(phone) => console.log("Número ingresado:", phone)}
+                onSubmit={(phone) => console.log("Phone number entered:", phone)}
                 onKeypadClick={() => setModalOpen(true)}
               />
             </Box>
