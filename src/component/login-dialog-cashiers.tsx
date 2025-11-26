@@ -106,6 +106,8 @@ const LoginDialogCashiers: React.FC<LoginDialogCashiersProps> = ({
       onClose();
       setAccessCode('');
       setShowRanking(false);
+      // Recargar la página después del login exitoso
+      window.location.reload();
     } catch (error) {
       console.log(error);
 
@@ -121,6 +123,8 @@ const LoginDialogCashiers: React.FC<LoginDialogCashiersProps> = ({
       await login('', '', cashier.accessCode);
       setShowRanking(false);
       onClose();
+      // Recargar la página después del login exitoso
+      window.location.reload();
     } catch (err) {
       console.error('Error during automatic login:', err);
     }
