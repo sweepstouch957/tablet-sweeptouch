@@ -55,6 +55,8 @@ const keypad = [
   "Send",
 ];
 
+const STORAGE_KEY = "phoneInputModal_phone";
+
 export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   open,
   onClose,
@@ -85,10 +87,28 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       onClose();
     }, 20000); // 20 seconds
   }, [onClose]);
+
+  // Guardar el número en localStorage cuando cambia
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (phone) {
+        localStorage.setItem(STORAGE_KEY, phone);
+      }
+    }
+  }, [phone]);
+
   useEffect(() => {
     if (open) {
       resetTimer();
-      setPhone("");
+      // Restaurar el número guardado del localStorage
+      if (typeof window !== "undefined") {
+        const savedPhone = localStorage.getItem(STORAGE_KEY);
+        if (savedPhone) {
+          setPhone(savedPhone);
+        } else {
+          setPhone("");
+        }
+      }
       setCustomerName("");
       setError("");
       setAcceptedTerms(true);
@@ -144,6 +164,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       onClose();
       setPhone("");
       setCustomerName("");
+      // Limpiar el localStorage después de envío exitoso
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(STORAGE_KEY);
+      }
       onSuccessRegister();
       setTimeout(() => {
         setShowThanks(false);
@@ -185,13 +209,21 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     });
   };
 
+  // Manejar el cierre del modal solo a través del botón X
+  const handleCloseModal = () => {
+    onClose();
+  };
+
   return (
     <>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={handleCloseModal}
         BackdropProps={{
-          onClick: onClose,
+          onClick: (e) => {
+            // Prevenir el cierre al hacer clic en el fondo
+            e.stopPropagation();
+          },
         }}
         maxWidth="sm"
         fullWidth
@@ -225,16 +257,20 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 fontWeight: "bold",
                 fontSize: "1.1rem",
                 pb: 1,
+                position: "relative",
               }}
             >
               ENTER YOUR PHONE NUMBER
               <IconButton
-                onClick={onClose}
+                onClick={handleCloseModal}
                 sx={{
                   position: "absolute",
                   right: 24,
                   top: 24,
                   color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
                 }}
               >
                 <CloseIcon />
