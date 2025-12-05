@@ -116,6 +116,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       });
       return resp;
     },
+
     onSuccess: (resp) => {
       setShowThanks(true);
 
@@ -128,32 +129,27 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             sweepstakeName,
             name: customerName || '',
           });
-          return;
+        } else {
+          printTicketWithImage(
+            'https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg',
+            {
+              storeName: storeName,
+              phone: phone,
+              couponCode: resp.coupon || 'XXXXXX',
+              sweepstakeName,
+            }
+          );
         }
-        printTicketWithImage(
-          'https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg',
-          {
-            storeName: storeName,
-            phone: phone,
-            couponCode: resp.coupon || 'XXXXXX',
-            sweepstakeName,
-          }
-        );
       }
 
-      // Limpiar el localStorage después de envío exitoso
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-
-      onClose();
-      setPhone('');
-      setCustomerName('');
+      // Si quieres, aquí solo avisamos al padre de que se registró bien
       onSuccessRegister();
-      setTimeout(() => {
-        setShowThanks(false);
-      }, 7000);
+
+      // 👇 OJO: ya NO limpiamos ni cerramos aquí
+      // Nada de onClose(), ni setPhone(''), ni setShowThanks(false) aquí
     },
+
+
     onError: (error: any) => {
       setError(error || 'An error occurred while registering.');
       setTimeout(() => {
@@ -190,12 +186,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
 
   // Manejar el cierre del modal SOLO a través del botón X
   const handleCloseModal = () => {
-    setPhone('');
-    setCustomerName('');
+    // Solo cerramos el modal, sin borrar el número ni el localStorage
     setError('');
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEY);
-    }
     onClose();
   };
 
@@ -328,14 +320,14 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                           key === 'Send'
                             ? '#4CAF50'
                             : key === 'Delete'
-                            ? '#E53935'
-                            : 'linear-gradient(#a46c0f, #d49b34)',
+                              ? '#E53935'
+                              : 'linear-gradient(#a46c0f, #d49b34)',
                         background:
                           key === 'Send'
                             ? '#4CAF50'
                             : key === 'Delete'
-                            ? '#E53935'
-                            : 'linear-gradient(#a46c0f, #d49b34)',
+                              ? '#E53935'
+                              : 'linear-gradient(#a46c0f, #d49b34)',
                         color: 'white',
                         fontSize: '1.4rem',
                         width: '100%',
@@ -348,8 +340,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                             key === 'Send'
                               ? '#45a049'
                               : key === 'Delete'
-                              ? '#d32f2f'
-                              : undefined,
+                                ? '#d32f2f'
+                                : undefined,
                           opacity: key === 'Send' || key === 'Delete' ? 1 : 0.9,
                         },
                       }}
@@ -412,13 +404,25 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       <ThankYouModal
         open={showThanks}
         onClose={() => {
-          // cierra el modal de "GOOD LUCK!"
+          // Cerrar el modal de "Thanks"
           setShowThanks(false);
-          // 🔹 y también cierra el modal donde se ingresa el número
+
+          // 🔹 Aquí SÍ limpiamos porque hubo éxito
+          setPhone('');
+          setCustomerName('');
+          setError('');
+
+          // Limpiar el localStorage definitivamente
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+
+          // Y cerramos el modal donde se ingresa el número
           onClose();
         }}
         isGeneric={type === 'generic'}
       />
+
     </>
   );
 };
