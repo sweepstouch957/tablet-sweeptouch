@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
 import {
   Box,
@@ -13,17 +13,17 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
-import { useMutation } from "@tanstack/react-query";
-import { createSweepstake } from "@/services/sweepstake.service";
-import { ThankYouModal } from "./success-dialog";
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useEffect, useState } from 'react';
+import { validatePhone, formatPhone } from '@/libs/utils/formatPhone';
+import { useMutation } from '@tanstack/react-query';
+import { createSweepstake } from '@/services/sweepstake.service';
+import { ThankYouModal } from './success-dialog';
 import {
   printTicketWithImage,
   printTicketWithQRCodeOnly,
-} from "@/libs/utils/rawBt";
+} from '@/libs/utils/rawBt';
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -32,7 +32,7 @@ interface PhoneInputModalProps {
   storeId?: string;
   storeName?: string;
   createdBy?: string;
-  method: "cashier" | "tablet";
+  method: 'cashier' | 'tablet';
   sweepstakeName: string;
   type?: string;
   hasQR?: boolean;
@@ -41,95 +41,75 @@ interface PhoneInputModalProps {
 }
 
 const keypad = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "Delete",
-  "0",
-  "Send",
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  'Delete',
+  '0',
+  'Send',
 ];
 
-const STORAGE_KEY = "phoneInputModal_phone";
+const STORAGE_KEY = 'phoneInputModal_phone';
 
 export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   open,
   onClose,
   sweepstakeId,
-  storeId = "",
-  storeName = "",
-  createdBy = "",
+  storeId = '',
+  storeName = '',
+  createdBy = '',
   method,
   onSuccessRegister,
   sweepstakeName,
-  type = "",
+  type = '',
   hasQR,
   userId,
 }) => {
-  const [phone, setPhone] = useState("");
-  const [customerName, setCustomerName] = useState("");
+  const [phone, setPhone] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      onClose();
-    }, 20000); // 20 seconds
-  }, [onClose]);
-
-  // Guardar el número en localStorage cuando cambia
+  // Restaurar el número guardado cuando se abre el modal
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (open) {
+      if (typeof window !== 'undefined') {
+        const savedPhone = localStorage.getItem(STORAGE_KEY);
+        if (savedPhone) {
+          setPhone(savedPhone);
+        } else {
+          setPhone('');
+        }
+      }
+      setCustomerName('');
+      setError('');
+      setAcceptedTerms(true);
+    }
+  }, [open]);
+
+  // Guardar el número en localStorage cada vez que cambia
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
       if (phone) {
         localStorage.setItem(STORAGE_KEY, phone);
       }
     }
   }, [phone]);
 
-  useEffect(() => {
-    if (open) {
-      resetTimer();
-      // Restaurar el número guardado del localStorage
-      if (typeof window !== "undefined") {
-        const savedPhone = localStorage.getItem(STORAGE_KEY);
-        if (savedPhone) {
-          setPhone(savedPhone);
-        } else {
-          setPhone("");
-        }
-      }
-      setCustomerName("");
-      setError("");
-      setAcceptedTerms(true);
-    } else {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    }
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [open, resetTimer]);
-
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ customerName }: { customerName: string }) => {
       const resp = await createSweepstake({
         sweepstakeId,
         storeId,
-        customerPhone: phone.replace(/\D/g, ""),
+        customerPhone: phone.replace(/\D/g, ''),
         customerName,
         method,
         createdBy: userId ?? createdBy,
@@ -139,66 +119,65 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     onSuccess: (resp) => {
       setShowThanks(true);
 
-      if (type !== "generic") {
+      if (type !== 'generic') {
         if (hasQR) {
           printTicketWithQRCodeOnly({
             storeName: storeName,
-            phone: phone.replace(/\D/g, ""),
-            couponCode: resp.coupon || "XXXXXX",
+            phone: phone.replace(/\D/g, ''),
+            couponCode: resp.coupon || 'XXXXXX',
             sweepstakeName,
-            name: customerName || "",
+            name: customerName || '',
           });
-          return
+          return;
         }
         printTicketWithImage(
-          "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
+          'https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg',
           {
             storeName: storeName,
             phone: phone,
-            couponCode: resp.coupon || "XXXXXX",
+            couponCode: resp.coupon || 'XXXXXX',
             sweepstakeName,
           }
         );
       }
 
-      onClose();
-      setPhone("");
-      setCustomerName("");
       // Limpiar el localStorage después de envío exitoso
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         localStorage.removeItem(STORAGE_KEY);
       }
+
+      onClose();
+      setPhone('');
+      setCustomerName('');
       onSuccessRegister();
       setTimeout(() => {
         setShowThanks(false);
       }, 7000);
     },
     onError: (error: any) => {
-      setError(error || "An error occurred while registering.");
+      setError(error || 'An error occurred while registering.');
       setTimeout(() => {
-        setError("");
+        setError('');
       }, 5000);
     },
   });
 
   const handleKeyPress = (key: string) => {
-    resetTimer();
-    if (key === "Delete") {
+    if (key === 'Delete') {
       setPhone(formatPhone(phone.slice(0, -1)));
-    } else if (key === "Send") {
+    } else if (key === 'Send') {
       if (!acceptedTerms) {
-        setError("You must accept the terms to participate.");
+        setError('You must accept the terms to participate.');
         return;
       }
       if (validatePhone(phone)) {
-        setError("");
-
-        mutateWithName("");
+        setError('');
+        mutateWithName('');
       } else {
-        setError("Please enter a valid phone number");
+        setError('Please enter a valid phone number');
       }
     } else {
-      if (phone.replace(/\D/g, "").length < 10)
+      if (phone.replace(/\D/g, '').length < 10)
         setPhone(formatPhone(phone + key));
     }
   };
@@ -209,67 +188,96 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     });
   };
 
-  // Manejar el cierre del modal solo a través del botón X
+  // Manejar el cierre del modal SOLO a través del botón X
   const handleCloseModal = () => {
+    setPhone('');
+    setCustomerName('');
+    setError('');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
     onClose();
+  };
+
+  // Prevenir cierre al hacer clic en cualquier parte del modal
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
   };
 
   return (
     <>
       <Dialog
         open={open}
-        onClose={handleCloseModal}
+        onClose={(event, reason) => {
+          console.log(event, '', reason);
+        }}
         BackdropProps={{
           onClick: (e) => {
-            // Prevenir el cierre al hacer clic en el fondo
+            // Prevenir completamente cualquier cierre al hacer clic en el fondo
+            e.preventDefault();
             e.stopPropagation();
+          },
+          sx: {
+            // Asegurar que el backdrop no cierre el modal
+            cursor: 'default',
           },
         }}
         maxWidth="sm"
         fullWidth
+        disableEscapeKeyDown={true}
         sx={{
-          "& .MuiPaper-root": {
-            minHeight: "560px",
-            background: "transparent",
-            overflow: "hidden",
+          '& .MuiPaper-root': {
+            minHeight: '560px',
+            background: 'transparent',
+            overflow: 'hidden',
+          },
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
           },
         }}
       >
         <Box
+          onClick={handleModalClick}
           sx={{
-            bgcolor: "#c79b34",
+            bgcolor: '#c79b34',
             p: 3,
-            borderRadius: "16px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           }}
         >
           <Box
+            onClick={handleModalClick}
             sx={{
-              bgcolor: "#c79b34",
-              borderRadius: "16px",
+              bgcolor: '#c79b34',
+              borderRadius: '16px',
               boxShadow: 6,
             }}
           >
             <DialogTitle
+              onClick={handleModalClick}
               sx={{
-                color: "white",
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: "1.1rem",
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '1.1rem',
                 pb: 1,
-                position: "relative",
+                position: 'relative',
               }}
             >
               ENTER YOUR PHONE NUMBER
               <IconButton
-                onClick={handleCloseModal}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCloseModal();
+                }}
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   right: 24,
                   top: 24,
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   },
                 }}
               >
@@ -277,69 +285,72 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               </IconButton>
             </DialogTitle>
 
-            <DialogContent>
-              <Stack spacing={2} alignItems="center">
+            <DialogContent onClick={handleModalClick}>
+              <Stack spacing={2} alignItems="center" onClick={handleModalClick}>
                 <TextField
                   value={phone}
                   variant="outlined"
+                  onClick={handleModalClick}
                   sx={{
                     input: {
-                      textAlign: "center",
-                      fontSize: "1.8rem",
-                      color: "black",
-                      backgroundColor: "white",
+                      textAlign: 'center',
+                      fontSize: '1.8rem',
+                      color: 'black',
+                      backgroundColor: 'white',
                       borderRadius: 2,
                     },
                   }}
-                  inputProps={{ maxLength: 14, inputMode: "numeric" }}
+                  inputProps={{ maxLength: 14, inputMode: 'numeric' }}
                   fullWidth
                 />
 
                 <Box
+                  onClick={handleModalClick}
                   sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
                     gap: 1.5,
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   {keypad.map((key) => (
                     <Button
                       key={key}
                       variant="contained"
-                      disabled={key === "Send" && isPending}
+                      disabled={key === 'Send' && isPending}
                       onClick={(e) => {
                         e.stopPropagation();
+                        e.preventDefault();
                         handleKeyPress(key);
                       }}
                       sx={{
                         backgroundColor:
-                          key === "Send"
-                            ? "#4CAF50"
-                            : key === "Delete"
-                              ? "#E53935"
-                              : "linear-gradient(#a46c0f, #d49b34)",
+                          key === 'Send'
+                            ? '#4CAF50'
+                            : key === 'Delete'
+                            ? '#E53935'
+                            : 'linear-gradient(#a46c0f, #d49b34)',
                         background:
-                          key === "Send"
-                            ? "#4CAF50"
-                            : key === "Delete"
-                              ? "#E53935"
-                              : "linear-gradient(#a46c0f, #d49b34)",
-                        color: "white",
-                        fontSize: "1.4rem",
-                        width: "100%",
-                        height: "65px",
-                        borderRadius: "6px",
-                        fontWeight: "bold",
+                          key === 'Send'
+                            ? '#4CAF50'
+                            : key === 'Delete'
+                            ? '#E53935'
+                            : 'linear-gradient(#a46c0f, #d49b34)',
+                        color: 'white',
+                        fontSize: '1.4rem',
+                        width: '100%',
+                        height: '65px',
+                        borderRadius: '6px',
+                        fontWeight: 'bold',
                         boxShadow: 3,
-                        "&:hover": {
+                        '&:hover': {
                           backgroundColor:
-                            key === "Send"
-                              ? "#45a049"
-                              : key === "Delete"
-                                ? "#d32f2f"
-                                : undefined,
-                          opacity: key === "Send" || key === "Delete" ? 1 : 0.9,
+                            key === 'Send'
+                              ? '#45a049'
+                              : key === 'Delete'
+                              ? '#d32f2f'
+                              : undefined,
+                          opacity: key === 'Send' || key === 'Delete' ? 1 : 0.9,
                         },
                       }}
                     >
@@ -350,9 +361,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
 
                 {error && (
                   <Typography
+                    onClick={handleModalClick}
                     color="white"
                     fontSize="1rem"
-                    sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+                    sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                   >
                     {error}
                   </Typography>
@@ -362,26 +374,32 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           </Box>
 
           <FormControlLabel
+            onClick={handleModalClick}
             sx={{
               mt: 1,
             }}
             control={
               <Checkbox
                 checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setAcceptedTerms(e.target.checked);
+                }}
+                onClick={(e) => e.stopPropagation()}
                 sx={{
-                  color: "#fff",
-                  "&.Mui-checked": {
-                    color: "#fff",
+                  color: '#fff',
+                  '&.Mui-checked': {
+                    color: '#fff',
                   },
                 }}
               />
             }
             label={
               <Typography
+                onClick={handleModalClick}
                 color="white"
-                fontSize={"0.8rem"}
-                sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+                fontSize={'0.8rem'}
+                sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
               >
                 By providing your phone number, you are consenting to receive
                 messages about sales/coupons/promotors/etc. Text HELP for info.
@@ -399,9 +417,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
           // 🔹 y también cierra el modal donde se ingresa el número
           onClose();
         }}
-        isGeneric={type === "generic"}
+        isGeneric={type === 'generic'}
       />
-
     </>
   );
 };
