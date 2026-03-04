@@ -77,6 +77,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [error, setError] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
   // Restaurar el número guardado cuando se abre el modal
   useEffect(() => {
@@ -168,7 +169,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       if (validatePhone(phone)) {
         setError('');
-        mutateWithName('');
+        if (type === 'event') {
+          setShowRoleModal(true);
+        } else {
+          mutateWithName('');
+        }
       } else {
         setError('Please enter a valid phone number');
       }
@@ -404,24 +409,90 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       <ThankYouModal
         open={showThanks}
         onClose={() => {
-          // Cerrar el modal de "Thanks"
           setShowThanks(false);
-
-          // 🔹 Aquí SÍ limpiamos porque hubo éxito
           setPhone('');
           setCustomerName('');
           setError('');
-
-          // Limpiar el localStorage definitivamente
           if (typeof window !== 'undefined') {
             localStorage.removeItem(STORAGE_KEY);
           }
-
-          // Y cerramos el modal donde se ingresa el número
           onClose();
         }}
         isGeneric={type === 'generic'}
       />
+
+      {/* Role Selection Modal – only for optinType 'event' */}
+      <Dialog
+        open={showRoleModal}
+        onClose={() => { }}
+        disableEscapeKeyDown
+        BackdropProps={{ onClick: (e) => { e.preventDefault(); e.stopPropagation(); } }}
+        maxWidth="xs"
+        fullWidth
+        sx={{ '& .MuiPaper-root': { background: 'transparent', overflow: 'hidden' } }}
+      >
+        <Box
+          sx={{
+            bgcolor: '#c79b34',
+            p: 4,
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            textAlign: 'center',
+          }}
+        >
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            color="white"
+            mb={3}
+            sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+          >
+            ARE YOU AN OWNER OR EMPLOYEE?
+          </Typography>
+          <Stack spacing={2}>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                setShowRoleModal(false);
+                mutateWithName('Owner');
+              }}
+              sx={{
+                background: 'linear-gradient(#a46c0f, #d49b34)',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                height: '60px',
+                borderRadius: '8px',
+                boxShadow: 3,
+                '&:hover': { opacity: 0.9 },
+              }}
+            >
+              OWNER
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                setShowRoleModal(false);
+                mutateWithName('Employee');
+              }}
+              sx={{
+                background: 'linear-gradient(#1565c0, #1e88e5)',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                height: '60px',
+                borderRadius: '8px',
+                boxShadow: 3,
+                '&:hover': { opacity: 0.9 },
+              }}
+            >
+              EMPLOYEE
+            </Button>
+          </Stack>
+        </Box>
+      </Dialog>
 
     </>
   );
