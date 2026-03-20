@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { api } from '@/http/client';
 
 // ===========================
 // 🧩 Tipos
@@ -20,15 +21,7 @@ export interface Cashier {
   };
 }
 
-// ===========================
-// ⚙️ Cliente Axios
-// ===========================
-const api = axios.create({
-  baseURL: 'https://api2.sweepstouch.com/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+
 
 // ===========================
 // 📦 Servicio principal
