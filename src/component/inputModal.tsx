@@ -13,6 +13,7 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
+  Link,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
@@ -374,6 +375,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             onClick={handleModalClick}
             sx={{
               mt: 1,
+              alignItems: 'flex-start',
             }}
             control={
               <Checkbox
@@ -392,16 +394,65 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               />
             }
             label={
-              <Typography
-                onClick={handleModalClick}
-                color="white"
-                fontSize={'0.8rem'}
-                sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
-              >
-                By providing your phone number, you are consenting to receive
-                messages about sales/coupons/promotors/etc. Text HELP for info.
-                Text STOP to opt out. MSG&Data rates may apply.
-              </Typography>
+              <Box onClick={handleModalClick}>
+                <Typography
+                  color="white"
+                  fontSize={'0.8rem'}
+                  sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                >
+                  By providing your phone number, you are consenting to receive
+                  messages about sales/coupons/promotors/etc. Text HELP for info.
+                  Text STOP to opt out. MSG&Data rates may apply.
+                </Typography>
+
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  flexWrap="wrap"
+                  sx={{ mt: 0.75 }}
+                >
+                  <Link
+                    href="https://www.sweepstouch.com/term"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    underline="always"
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      color: '#fff',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    }}
+                  >
+                    Terms and Conditions
+                  </Link>
+
+                  <Typography
+                    component="span"
+                    color="white"
+                    fontSize="0.8rem"
+                    sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                  >
+                    |
+                  </Typography>
+
+                  <Link
+                    href="https://www.sweepstouch.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    underline="always"
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      color: '#fff',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    }}
+                  >
+                    Privacy Policy
+                  </Link>
+                </Stack>
+              </Box>
             }
           />
         </Box>
