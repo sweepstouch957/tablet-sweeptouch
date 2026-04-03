@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { validatePhone, formatPhone } from '@/libs/utils/formatPhone';
 import { useMutation } from '@tanstack/react-query';
 import { createSweepstake } from '@/services/sweepstake.service';
@@ -369,6 +370,31 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                 )}
               </Stack>
             </DialogContent>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 1,
+              mt: 2,
+              mb: 1,
+            }}
+          >
+            <Image
+              src="/LogoPink.webp"
+              alt="SweepsTouch"
+              width={220}
+              height={48}
+              priority
+              style={{
+                width: '100%',
+                maxWidth: '220px',
+                height: 'auto',
+                filter: 'brightness(0) invert(1)',
+              }}
+            />
           </Box>
 
           <FormControlLabel
