@@ -426,9 +426,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                   fontSize={'0.8rem'}
                   sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                 >
-                  By providing your phone number, you are consenting to receive
-                  messages about sales/coupons/promotors/etc. Text HELP for info.
-                  Text STOP to opt out. MSG&Data rates may apply.
+                  By checking this box, you agree to receive recurring promotional text messages from Sweepstouch,
+                  including sales, coupons, and promotional offers. Message frequency varies.
+                  Message and data rates may apply. Reply STOP to opt out and HELP for help.
+                  View our Terms and Conditions and Privacy Policy.
                 </Typography>
 
                 <Stack
