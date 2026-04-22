@@ -12,10 +12,10 @@ import {
 import Image from "next/image";
 import Logo from "@public/logo.webp";
 
-type PageStateComponent = "waiting" | "loading" | "result" | "error";
+type PageState = "waiting" | "loading" | "result" | "error";
 
 function WeeklyAdScanContent() {
-  const [state, setState] = useState<PageStateComponent>("waiting");
+  const [state, setState] = useState<PageState>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState("");
 
