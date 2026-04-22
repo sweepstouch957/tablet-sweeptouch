@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
 import {
   Box,
@@ -13,17 +13,19 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { validatePhone, formatPhone } from "@/libs/utils/formatPhone";
-import { useMutation } from "@tanstack/react-query";
-import { createSweepstake } from "@/services/sweepstake.service";
-import { ThankYouModal } from "./success-dialog";
+  Link,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { validatePhone, formatPhone } from '@/libs/utils/formatPhone';
+import { useMutation } from '@tanstack/react-query';
+import { createSweepstake } from '@/services/sweepstake.service';
+import { ThankYouModal } from './success-dialog';
 import {
   printTicketWithImage,
   printTicketWithQRCodeOnly,
-} from "@/libs/utils/rawBt";
+} from '@/libs/utils/rawBt';
 
 interface PhoneInputModalProps {
   open: boolean;
@@ -32,7 +34,7 @@ interface PhoneInputModalProps {
   storeId?: string;
   storeName?: string;
   createdBy?: string;
-  method: "cashier" | "tablet";
+  method: 'cashier' | 'tablet';
   sweepstakeName: string;
   type?: string;
   hasQR?: boolean;
@@ -41,141 +43,144 @@ interface PhoneInputModalProps {
 }
 
 const keypad = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "Delete",
-  "0",
-  "Send",
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  'Delete',
+  '0',
+  'Send',
 ];
+
+const STORAGE_KEY = 'phoneInputModal_phone';
 
 export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   open,
   onClose,
   sweepstakeId,
-  storeId = "",
-  storeName = "",
-  createdBy = "",
+  storeId = '',
+  storeName = '',
+  createdBy = '',
   method,
   onSuccessRegister,
   sweepstakeName,
-  type = "",
+  type = '',
   hasQR,
   userId,
 }) => {
-  const [phone, setPhone] = useState("");
-  const [showNameModal, setShowNameModal] = useState(false);
-  const [customerName, setCustomerName] = useState("");
-  const [nameError, setNameError] = useState("");
+  const [phone, setPhone] = useState('');
+  const [customerName, setCustomerName] = useState('');
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      onClose();
-    }, 20000); // 20 seconds
-  }, [onClose]);
+  // Restaurar el número guardado cuando se abre el modal
   useEffect(() => {
     if (open) {
-      resetTimer();
-    } else {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
+      if (typeof window !== 'undefined') {
+        const savedPhone = localStorage.getItem(STORAGE_KEY);
+        if (savedPhone) {
+          setPhone(savedPhone);
+        } else {
+          setPhone('');
+        }
+      }
+      setCustomerName('');
+      setError('');
+      setAcceptedTerms(true);
+    }
+  }, [open]);
+
+  // Guardar el número en localStorage cada vez que cambia
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (phone) {
+        localStorage.setItem(STORAGE_KEY, phone);
       }
     }
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [open, resetTimer]);
+  }, [phone]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ customerName }: { customerName: string }) => {
       const resp = await createSweepstake({
         sweepstakeId,
         storeId,
-        customerPhone: phone.replace(/\D/g, ""),
+        customerPhone: phone.replace(/\D/g, ''),
         customerName,
         method,
         createdBy: userId ?? createdBy,
       });
       return resp;
     },
+
     onSuccess: (resp) => {
       setShowThanks(true);
 
-      if (type !== "generic") {
+      if (type !== 'generic') {
         if (hasQR) {
           printTicketWithQRCodeOnly({
             storeName: storeName,
-            phone: phone.replace(/\D/g, ""),
-            couponCode: resp.coupon || "XXXXXX",
+            phone: phone.replace(/\D/g, ''),
+            couponCode: resp.coupon || 'XXXXXX',
             sweepstakeName,
-            name: customerName || "",
+            name: customerName || '',
           });
+        } else {
+          printTicketWithImage(
+            'https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg',
+            {
+              storeName: storeName,
+              phone: phone,
+              couponCode: resp.coupon || 'XXXXXX',
+              sweepstakeName,
+            }
+          );
         }
-        printTicketWithImage(
-          "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg",
-          {
-            storeName: storeName,
-            phone: phone,
-            couponCode: resp.coupon || "XXXXXX",
-            sweepstakeName,
-          }
-        );
       }
 
-      setShowNameModal(false);
-      onClose();
-      setPhone("");
-      setCustomerName("");
+      // Si quieres, aquí solo avisamos al padre de que se registró bien
       onSuccessRegister();
-      setTimeout(() => {
-        setShowThanks(false);
-      }, 7000);
+
+      // 👇 OJO: ya NO limpiamos ni cerramos aquí
+      // Nada de onClose(), ni setPhone(''), ni setShowThanks(false) aquí
     },
+
+
     onError: (error: any) => {
-      setError(error || "An error occurred while registering.");
+      setError(error || 'An error occurred while registering.');
       setTimeout(() => {
-        setError("");
+        setError('');
       }, 5000);
     },
   });
 
   const handleKeyPress = (key: string) => {
-    resetTimer();
-    if (key === "Delete") {
+    if (key === 'Delete') {
       setPhone(formatPhone(phone.slice(0, -1)));
-    } else if (key === "Send") {
+    } else if (key === 'Send') {
       if (!acceptedTerms) {
-        setError("You must accept the terms to participate.");
+        setError('You must accept the terms to participate.');
         return;
       }
       if (validatePhone(phone)) {
-        setError("");
-        if (hasQR) {
-          setShowNameModal(true); // 👉 Mostrar modal de nombre si hay QR
-          return;
+        setError('');
+        if (type === 'event') {
+          setShowRoleModal(true);
+        } else {
+          mutateWithName('');
         }
-        mutateWithName("");
       } else {
-        setError("Please enter a valid phone number");
+        setError('Please enter a valid phone number');
       }
     } else {
-      if (phone.replace(/\D/g, "").length < 10)
+      if (phone.replace(/\D/g, '').length < 10)
         setPhone(formatPhone(phone + key));
     }
   };
@@ -186,125 +191,165 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     });
   };
 
+  // Manejar el cierre del modal SOLO a través del botón X
+  const handleCloseModal = () => {
+    // Solo cerramos el modal, sin borrar el número ni el localStorage
+    setError('');
+    onClose();
+  };
+
+  // Prevenir cierre al hacer clic en cualquier parte del modal
+  const handleModalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   return (
     <>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={(event, reason) => {
+          console.log(event, '', reason);
+        }}
         BackdropProps={{
-          onClick: onClose,
+          onClick: (e) => {
+            // Prevenir completamente cualquier cierre al hacer clic en el fondo
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          sx: {
+            // Asegurar que el backdrop no cierre el modal
+            cursor: 'default',
+          },
         }}
         maxWidth="sm"
         fullWidth
+        disableEscapeKeyDown={true}
         sx={{
-          "& .MuiPaper-root": {
-            minHeight: "560px",
-            background: "transparent",
-            overflow: "hidden",
+          '& .MuiPaper-root': {
+            minHeight: '560px',
+            background: 'transparent',
+            overflow: 'hidden',
+          },
+          '& .MuiBackdrop-root': {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
           },
         }}
       >
         <Box
+          onClick={handleModalClick}
           sx={{
-            bgcolor: "#c79b34",
+            bgcolor: '#c79b34',
             p: 3,
-            borderRadius: "16px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           }}
         >
           <Box
+            onClick={handleModalClick}
             sx={{
-              bgcolor: "#c79b34",
-              borderRadius: "16px",
+              bgcolor: '#c79b34',
+              borderRadius: '16px',
               boxShadow: 6,
             }}
           >
             <DialogTitle
+              onClick={handleModalClick}
               sx={{
-                color: "white",
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: "1.1rem",
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                fontSize: '1.1rem',
                 pb: 1,
+                position: 'relative',
               }}
             >
               ENTER YOUR PHONE NUMBER
               <IconButton
-                onClick={onClose}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCloseModal();
+                }}
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   right: 24,
                   top: 24,
-                  color: "white",
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
                 }}
               >
                 <CloseIcon />
               </IconButton>
             </DialogTitle>
 
-            <DialogContent>
-              <Stack spacing={2} alignItems="center">
+            <DialogContent onClick={handleModalClick}>
+              <Stack spacing={2} alignItems="center" onClick={handleModalClick}>
                 <TextField
                   value={phone}
                   variant="outlined"
+                  onClick={handleModalClick}
                   sx={{
                     input: {
-                      textAlign: "center",
-                      fontSize: "1.8rem",
-                      color: "black",
-                      backgroundColor: "white",
+                      textAlign: 'center',
+                      fontSize: '1.8rem',
+                      color: 'black',
+                      backgroundColor: 'white',
                       borderRadius: 2,
                     },
                   }}
-                  inputProps={{ maxLength: 14, inputMode: "numeric" }}
+                  inputProps={{ maxLength: 14, inputMode: 'numeric' }}
                   fullWidth
                 />
 
                 <Box
+                  onClick={handleModalClick}
                   sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
                     gap: 1.5,
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   {keypad.map((key) => (
                     <Button
                       key={key}
                       variant="contained"
-                      disabled={key === "Send" && isPending}
+                      disabled={key === 'Send' && isPending}
                       onClick={(e) => {
                         e.stopPropagation();
+                        e.preventDefault();
                         handleKeyPress(key);
                       }}
                       sx={{
                         backgroundColor:
-                          key === "Send"
-                            ? "#4CAF50"
-                            : key === "Delete"
-                            ? "#E53935"
-                            : "linear-gradient(#a46c0f, #d49b34)",
+                          key === 'Send'
+                            ? '#4CAF50'
+                            : key === 'Delete'
+                              ? '#E53935'
+                              : 'linear-gradient(#a46c0f, #d49b34)',
                         background:
-                          key === "Send"
-                            ? "#4CAF50"
-                            : key === "Delete"
-                            ? "#E53935"
-                            : "linear-gradient(#a46c0f, #d49b34)",
-                        color: "white",
-                        fontSize: "1.4rem",
-                        width: "100%",
-                        height: "65px",
-                        borderRadius: "6px",
-                        fontWeight: "bold",
+                          key === 'Send'
+                            ? '#4CAF50'
+                            : key === 'Delete'
+                              ? '#E53935'
+                              : 'linear-gradient(#a46c0f, #d49b34)',
+                        color: 'white',
+                        fontSize: '1.4rem',
+                        width: '100%',
+                        height: '65px',
+                        borderRadius: '6px',
+                        fontWeight: 'bold',
                         boxShadow: 3,
-                        "&:hover": {
+                        '&:hover': {
                           backgroundColor:
-                            key === "Send"
-                              ? "#45a049"
-                              : key === "Delete"
-                              ? "#d32f2f"
-                              : undefined,
-                          opacity: key === "Send" || key === "Delete" ? 1 : 0.9,
+                            key === 'Send'
+                              ? '#45a049'
+                              : key === 'Delete'
+                                ? '#d32f2f'
+                                : undefined,
+                          opacity: key === 'Send' || key === 'Delete' ? 1 : 0.9,
                         },
                       }}
                     >
@@ -315,9 +360,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
 
                 {error && (
                   <Typography
+                    onClick={handleModalClick}
                     color="white"
                     fontSize="1rem"
-                    sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
+                    sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                   >
                     {error}
                   </Typography>
@@ -326,143 +372,206 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             </DialogContent>
           </Box>
 
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: 1,
+              mt: 2,
+              mb: 1,
+            }}
+          >
+            <Image
+              src="/LogoPink.webp"
+              alt="SweepsTouch"
+              width={220}
+              height={48}
+              priority
+              style={{
+                width: '100%',
+                maxWidth: '220px',
+                height: 'auto',
+                filter: 'brightness(0) invert(1)',
+              }}
+            />
+          </Box>
+
           <FormControlLabel
+            onClick={handleModalClick}
             sx={{
               mt: 1,
+              alignItems: 'flex-start',
             }}
             control={
               <Checkbox
                 checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setAcceptedTerms(e.target.checked);
+                }}
+                onClick={(e) => e.stopPropagation()}
                 sx={{
-                  color: "#fff",
-                  "&.Mui-checked": {
-                    color: "#fff",
+                  color: '#fff',
+                  '&.Mui-checked': {
+                    color: '#fff',
                   },
                 }}
               />
             }
             label={
-              <Typography
-                color="white"
-                fontSize={"0.8rem"}
-                sx={{ textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}
-              >
-                By providing your phone number, you are consenting to receive
-                messages about sales/coupons/promotors/etc. Text HELP for info.
-                Text STOP to opt out. MSG&Data rates may apply.
-              </Typography>
+              <Box onClick={handleModalClick}>
+                <Typography
+                  color="white"
+                  fontSize={'0.8rem'}
+                  sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                >
+                  By checking this box, you agree to receive recurring promotional text messages from Sweepstouch,
+                  including sales, coupons, and promotional offers. Message frequency varies.
+                  Message and data rates may apply. Reply STOP to opt out and HELP for help.
+                  View our Terms and Conditions and Privacy Policy.
+                </Typography>
+
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  flexWrap="wrap"
+                  sx={{ mt: 0.75 }}
+                >
+                  <Link
+                    href="https://www.sweepstouch.com/term"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    underline="always"
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      color: '#fff',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    }}
+                  >
+                    Terms and Conditions
+                  </Link>
+
+                  <Typography
+                    component="span"
+                    color="white"
+                    fontSize="0.8rem"
+                    sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+                  >
+                    |
+                  </Typography>
+
+                  <Link
+                    href="https://www.sweepstouch.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    underline="always"
+                    onClick={(e) => e.stopPropagation()}
+                    sx={{
+                      color: '#fff',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    }}
+                  >
+                    Privacy Policy
+                  </Link>
+                </Stack>
+              </Box>
             }
           />
         </Box>
       </Dialog>
       <ThankYouModal
         open={showThanks}
-        onClose={() => setShowThanks(false)}
-        isGeneric={type === "generic"}
+        onClose={() => {
+          setShowThanks(false);
+          setPhone('');
+          setCustomerName('');
+          setError('');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+          onClose();
+        }}
+        isGeneric={type === 'generic'}
       />
 
+      {/* Role Selection Modal – only for optinType 'event' */}
       <Dialog
-        open={showNameModal}
-        onClose={() => setShowNameModal(false)}
-        BackdropProps={{
-          onClick: () => setShowNameModal(false),
-        }}
+        open={showRoleModal}
+        onClose={() => { }}
+        disableEscapeKeyDown
+        BackdropProps={{ onClick: (e) => { e.preventDefault(); e.stopPropagation(); } }}
         maxWidth="xs"
         fullWidth
+        sx={{ '& .MuiPaper-root': { background: 'transparent', overflow: 'hidden' } }}
       >
         <Box
           sx={{
-            bgcolor: "#fefefe",
+            bgcolor: '#c79b34',
             p: 4,
-            borderRadius: "16px",
-            boxShadow: 10,
-            textAlign: "center",
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            textAlign: 'center',
           }}
         >
           <Typography
             variant="h6"
             fontWeight="bold"
-            mb={2}
-            sx={{ color: "#333", letterSpacing: 1 }}
+            color="white"
+            mb={3}
+            sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
           >
-            ENTER YOUR FULL NAME
+            ARE YOU AN OWNER OR EMPLOYEE?
           </Typography>
-
-          <TextField
-            fullWidth
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="FullName"
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "12px",
-                backgroundColor: "#fafafa",
-                "& fieldset": {
-                  borderColor: "#ccc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#fc0680",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#fc0680",
-                },
-              },
-            }}
-            inputProps={{
-              maxLength: 40,
-              pattern: "[A-Za-z ]*",
-              style: { textAlign: "center", fontSize: "1.2rem" },
-            }}
-          />
-
-          {nameError && (
-            <Typography color="error" fontSize="0.9rem" mb={2}>
-              {nameError}
-            </Typography>
-          )}
-
-          <Stack direction="row" spacing={2} justifyContent="center">
+          <Stack spacing={2}>
             <Button
-              variant="outlined"
-              onClick={() => setShowNameModal(false)}
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                setShowRoleModal(false);
+                mutateWithName('Owner');
+              }}
               sx={{
-                textTransform: "none",
-                borderRadius: "10px",
-                px: 4,
-                fontWeight: "bold",
+                background: 'linear-gradient(#a46c0f, #d49b34)',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                height: '60px',
+                borderRadius: '8px',
+                boxShadow: 3,
+                '&:hover': { opacity: 0.9 },
               }}
             >
-              Cancel
+              OWNER
             </Button>
             <Button
               variant="contained"
+              fullWidth
               onClick={() => {
-                const isValid = /^[A-Za-z\s]+$/.test(customerName.trim());
-                if (!isValid || customerName.trim().length < 2) {
-                  setNameError("Name must contain only letters and spaces.");
-                  return;
-                }
-                setNameError("");
-                mutateWithName(customerName.trim());
+                setShowRoleModal(false);
+                mutateWithName('Employee');
               }}
               sx={{
-                backgroundColor: "#fc0680",
-                textTransform: "none",
-                borderRadius: "10px",
-                px: 4,
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#e00572",
-                },
+                background: 'linear-gradient(#1565c0, #1e88e5)',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                height: '60px',
+                borderRadius: '8px',
+                boxShadow: 3,
+                '&:hover': { opacity: 0.9 },
               }}
             >
-              Submit
+              EMPLOYEE
             </Button>
           </Stack>
         </Box>
       </Dialog>
+
     </>
   );
 };

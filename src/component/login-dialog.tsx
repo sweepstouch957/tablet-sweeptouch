@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // LoginDialog.tsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -9,8 +9,8 @@ import {
   TextField,
   Button,
   Typography,
-} from "@mui/material";
-import { useAuth } from "@/context/auth-context";
+} from '@mui/material';
+import { useAuth } from '@/context/auth-context';
 
 interface LoginDialogProps {
   open: boolean;
@@ -18,21 +18,21 @@ interface LoginDialogProps {
 }
 
 const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
-  const [accessCode, setAccessCode] = useState("");
+  const [accessCode, setAccessCode] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   const { login, error } = useAuth();
 
   const handleLogin = async () => {
     if (!accessCode) {
-      setLocalError("Por favor ingresa tu código de acceso.");
+      setLocalError('Please enter your access code.');
       return;
     }
 
     setLocalError(null);
     try {
-      await login("", "", accessCode); // Asegúrate que tu `login` soporte este tercer argumento
+      await login('', '', accessCode); // Asegúrate que tu `login` soporte este tercer argumento
       onClose();
-      setAccessCode("");
+      setAccessCode('');
       window.location.reload(); // 👈 fuerza refresco
     } catch (_) {
       // El error ya lo maneja el contexto
@@ -43,42 +43,42 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle
         sx={{
-          bgcolor: "#f43789",
-          color: "white",
-          textAlign: "center",
+          bgcolor: '#f43789',
+          color: 'white',
+          textAlign: 'center',
           py: 2,
-          fontWeight: "bold",
-          fontSize: "1.5rem",
+          fontWeight: 'bold',
+          fontSize: '1.5rem',
         }}
       >
-        Acceso para Cajeros
+        {'Cashier Access'}
       </DialogTitle>
 
       <DialogContent sx={{ px: 4, pt: 3, pb: 1 }}>
         <Typography
           variant="body1"
           gutterBottom
-          sx={{ textAlign: "center", my: 2, color: "#555" }}
+          sx={{ textAlign: 'center', my: 2, color: '#555' }}
         >
-          Ingresa tu código de acceso
+          {'Enter your access code'}
         </Typography>
 
         <TextField
-          label="Código de acceso"
+          label="Access code"
           variant="outlined"
           fullWidth
           value={accessCode}
           onChange={(e) => setAccessCode(e.target.value)}
           sx={{
             mb: 1,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#f43789",
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '12px',
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#f43789',
               },
             },
-            "& label.Mui-focused": {
-              color: "#f43789",
+            '& label.Mui-focused': {
+              color: '#f43789',
             },
           }}
         />
@@ -90,23 +90,23 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => {
         )}
       </DialogContent>
 
-      <DialogActions sx={{ px: 4, pb: 3, justifyContent: "space-between" }}>
-        <Button onClick={onClose} sx={{ color: "#f43789" }}>
-          Cancelar
+      <DialogActions sx={{ px: 4, pb: 3, justifyContent: 'space-between' }}>
+        <Button onClick={onClose} sx={{ color: '#f43789' }}>
+          Cancel
         </Button>
         <Button
           variant="contained"
           onClick={handleLogin}
           sx={{
-            bgcolor: "#f43789",
-            "&:hover": {
-              bgcolor: "#d62b74",
+            bgcolor: '#f43789',
+            '&:hover': {
+              bgcolor: '#d62b74',
             },
-            borderRadius: "8px",
+            borderRadius: '8px',
             px: 3,
           }}
         >
-          Entrar
+          Enter
         </Button>
       </DialogActions>
     </Dialog>

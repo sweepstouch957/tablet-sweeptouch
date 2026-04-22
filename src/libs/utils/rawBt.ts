@@ -235,8 +235,6 @@ export async function printTicketWithQRCodeOnly(data: {
   ctx.fillStyle = "black";
   let y = 40;
   centerText(data.sweepstakeName.toUpperCase(), y, "bold 26px monospace");
-  y += 30;
-  centerText("TRADE SHOW", y, "24px monospace");
   y += 25;
   centerText("Your ticket QR code:", y, "20px monospace");
 
@@ -260,8 +258,7 @@ export async function printTicketWithQRCodeOnly(data: {
   y += 25;
   centerText("GOOD LUCK!", y);
 
-  // 🖨️ Imprimir con RawBT
-  // 🖨️ Imprimir con RawBT dos veces
+
   const base64Image = canvas.toDataURL("image/png");
 
   // Primera impresión
@@ -269,18 +266,4 @@ export async function printTicketWithQRCodeOnly(data: {
   iframe1.style.display = "none";
   iframe1.src = `rawbt:${base64Image}`;
   document.body.appendChild(iframe1);
-
-  setTimeout(() => {
-    document.body.removeChild(iframe1);
-
-    // Segunda impresión (después de que se quite la primera)
-    const iframe2 = document.createElement("iframe");
-    iframe2.style.display = "none";
-    iframe2.src = `rawbt:${base64Image}`;
-    document.body.appendChild(iframe2);
-
-    setTimeout(() => {
-      document.body.removeChild(iframe2);
-    }, 2000); // tiempo suficiente para que se dispare la impresión
-  }, 2000); // tiempo entre una impresión y otra
 }

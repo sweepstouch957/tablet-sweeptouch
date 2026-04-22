@@ -1,6 +1,6 @@
 // src/components/cashier/TotalParticipations.tsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -8,18 +8,16 @@ import {
   CircularProgress,
   Box,
   Stack,
-  Chip,
   Button,
+  Modal,
+  IconButton,
 } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CloseIcon from "@mui/icons-material/Close";
+import KeyIcon from "@mui/icons-material/Key";
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/http/client";
-import { useCashierRewardProgress } from "@/hooks/useCashierRewards";
-import RewardsModal from "./RewardsModal";
-import ProgressBarWithGiftCard from "./ProgressBarWithGiftCard";
-import CelebrationAnimation from "./CelebrationAnimation";
-
-const PARTICIPATION_TARGET = 500;
 
 const fetchTodayParticipation = async (userId: string) => {
   const { data } = await api.get(`/sweepstakes/participants/today/${userId}`);
@@ -28,13 +26,10 @@ const fetchTodayParticipation = async (userId: string) => {
 
 type Props = { storeId?: string };
 
-export default function TodayParticipationCard({ storeId }: Props) {
+export default function TodayParticipationCard({ storeId: _storeId }: Props) {
   const { user } = useAuth();
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [openRewards, setOpenRewards] = useState(false);
-
-  // trackear premios previos para detectar “nuevo premio”
-  const prevEarnedRef = useRef<number>(0);
+  const [openCode, setOpenCode] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { data: todayCount = 0, isLoading: loadingToday } = useQuery({
     queryKey: ["participations", "today", user?._id],
@@ -43,35 +38,19 @@ export default function TodayParticipationCard({ storeId }: Props) {
     refetchInterval: 15000,
   });
 
-  // progreso real desde la línea base (service /rewards)
-  const { data: progress } = useCashierRewardProgress(user?._id, storeId);
-
-  // Celebración: cuando el porcentaje se resetea (0%) y subieron los earnedRewards
-  useEffect(() => {
-    if (!progress) return;
-    const { percent = 0, earnedRewards = 0 } = progress;
-
-    const prevEarned = prevEarnedRef.current;
-    const earnedIncreased = earnedRewards > prevEarned;
-
-    if (percent === 0 && earnedIncreased) {
-      setShowCelebration(true);
-      const t = setTimeout(() => setShowCelebration(false), 3500);
-      return () => clearTimeout(t);
-    }
-
-    // actualizar referencia para siguiente comparación
-    prevEarnedRef.current = earnedRewards;
-  }, [progress]);
-
   if (!user) return null;
 
-  const current = progress?.current ?? 0;
-  const percent = progress?.percent ?? 0;
-  const earned = progress?.earnedRewards ?? 0;
+  const handleCopy = () => {
+    if (user.accessCode) {
+      navigator.clipboard.writeText(user.accessCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <>
+      {/* Participation count card */}
       <Card
         sx={{
           background: "linear-gradient(135deg, #fc0680, #a90065 60%)",
@@ -79,91 +58,140 @@ export default function TodayParticipationCard({ storeId }: Props) {
           borderRadius: 4,
           boxShadow: 6,
           mt: 2,
+          width: "100%",
         }}
       >
-        <CardContent sx={{ p: 2 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography variant="body1" fontWeight={800}>
-              Participaciones de Hoy
-            </Typography>
-            <Chip
-              size="small"
-              label="Gift Card"
-              sx={{ bgcolor: "#2a1522", color: "white" }}
-            />
-          </Stack>
+        <CardContent sx={{ p: 2.5 }}>
+          <Typography variant="body2" fontWeight={700} sx={{ opacity: 0.85, mb: 0.5 }}>
+            Participaciones de Hoy
+          </Typography>
 
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box display="flex" alignItems="center" gap={1.5} mt={0.5}>
             {loadingToday ? (
-              <CircularProgress size={28} sx={{ color: "white" }} />
+              <CircularProgress size={32} sx={{ color: "white" }} />
             ) : (
-              <Typography fontSize="2.6rem" fontWeight="900">
+              <Typography fontSize="3rem" fontWeight="900" lineHeight={1}>
                 {todayCount}
               </Typography>
             )}
-            <Typography>Participaciones</Typography>
+            <Typography fontSize="1rem" fontWeight={500} sx={{ opacity: 0.85 }}>
+              participaciones
+            </Typography>
           </Box>
 
-          <Typography variant="subtitle2" sx={{ opacity: 0.9, mb: 1 }}>
-            Progreso hacia Gift Card
-          </Typography>
-
-          <ProgressBarWithGiftCard
-            currentParticipations={current}
-            targetParticipations={PARTICIPATION_TARGET}
-            // <- ya soporta override explícito del porcentaje
-            percentOverride={percent}
-            onComplete={() => {}}
-          />
-
-          <Stack direction="row" spacing={2} mt={1.5} sx={{ opacity: 0.9 }}>
-            <Typography variant="caption">
-              {current} / 500 · {percent}%
-            </Typography>
-          </Stack>
-
-          {/* Resumen compacto + acceso a modal de premios */}
-          <Stack direction="row" spacing={1.5} mt={2}>
-            <Chip
-              label={`Ganados: ${earned}`}
-              sx={{ bgcolor: "#1b0f18", color: "white" }}
-            />
-            <Button
-              onClick={() => setOpenRewards(true)}
-              size="small"
-              variant="outlined"
-              sx={{
-                borderColor: "#ff7db8",
-                color: "#ff7db8",
-                "&:hover": {
-                  borderColor: "#ff97c6",
-                  background: "rgba(255,125,184,.08)",
-                },
-              }}
-            >
-              Ver premios
-            </Button>
-          </Stack>
+          {/* Access code button */}
+          <Button
+            startIcon={<KeyIcon />}
+            onClick={() => setOpenCode(true)}
+            size="small"
+            variant="outlined"
+            sx={{
+              mt: 2,
+              borderColor: "rgba(255,255,255,0.6)",
+              color: "white",
+              borderRadius: 2,
+              textTransform: "none",
+              "&:hover": {
+                borderColor: "white",
+                background: "rgba(255,255,255,0.12)",
+              },
+            }}
+          >
+            Ver mi código de acceso
+          </Button>
         </CardContent>
       </Card>
 
-      <CelebrationAnimation
-        show={showCelebration}
-        onAnimationEnd={() => setShowCelebration(false)}
-      />
+      {/* Access code modal */}
+      <Modal
+        open={openCode}
+        onClose={() => setOpenCode(false)}
+        aria-labelledby="access-code-modal-title"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "#1a1a1a",
+            color: "white",
+            boxShadow: 24,
+            borderRadius: 3,
+            p: 4,
+            width: { xs: "90%", sm: 380 },
+            textAlign: "center",
+          }}
+        >
+          {/* Close button */}
+          <IconButton
+            onClick={() => setOpenCode(false)}
+            sx={{ position: "absolute", top: 8, right: 8, color: "gray" }}
+          >
+            <CloseIcon />
+          </IconButton>
 
-      {user?._id && storeId && (
-        <RewardsModal
-          open={openRewards}
-          onClose={() => setOpenRewards(false)}
-          cashierId={user._id}
-          storeId={storeId}
-        />
-      )}
+          <KeyIcon sx={{ fontSize: 48, color: "#fc0680", mb: 1 }} />
+
+          <Typography
+            id="access-code-modal-title"
+            variant="h6"
+            fontWeight="bold"
+            mb={0.5}
+          >
+            Tu código de acceso
+          </Typography>
+
+          <Typography variant="body2" color="gray" mb={3}>
+            {user.firstName} {user.lastName}
+          </Typography>
+
+          {user.accessCode ? (
+            <>
+              <Box
+                sx={{
+                  background: "linear-gradient(135deg, #fc0680 0%, #a90065 100%)",
+                  borderRadius: 2,
+                  px: 3,
+                  py: 2,
+                  mb: 2,
+                  letterSpacing: "0.35em",
+                  fontSize: "1.9rem",
+                  fontWeight: "900",
+                  fontFamily: "monospace",
+                }}
+              >
+                {user.accessCode}
+              </Box>
+
+              <Stack direction="row" justifyContent="center">
+                <Button
+                  startIcon={<ContentCopyIcon />}
+                  onClick={handleCopy}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    borderColor: copied ? "#4caf50" : "#fc0680",
+                    color: copied ? "#4caf50" : "#fc0680",
+                    textTransform: "none",
+                    borderRadius: 2,
+                    "&:hover": {
+                      borderColor: copied ? "#4caf50" : "#e0046f",
+                      background: "rgba(252,6,128,0.08)",
+                    },
+                  }}
+                >
+                  {copied ? "¡Copiado!" : "Copiar código"}
+                </Button>
+              </Stack>
+            </>
+          ) : (
+            <Typography color="gray" fontSize="0.9rem">
+              Código no disponible
+            </Typography>
+          )}
+        </Box>
+      </Modal>
     </>
   );
 }

@@ -7,9 +7,11 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useSwipeable } from 'react-swipeable';
 import { Box, CircularProgress, Typography } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 import { Store } from '@/services/store.service';
-import LoginDialog from './login-dialog';
-import CashierDrawer from './cahierDrawer';
+import { useAuth } from "@/context/auth-context";
+import CashierDrawer from "./cahierDrawer";
+import LoginDialogCashiers from "./login-dialog-cashiers";
 
 interface RightCarouselProps {
   store?: Store;
@@ -33,8 +35,9 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
   const timerRef = useRef<number | null>(null);
 
   // UI local
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const { user } = useAuth();
+  const [openLoginDialog, setOpenLoginDialog] = useState(false);
+  const [openCashierDrawer, setOpenCashierDrawer] = useState(false);
 
   // Refs de videos
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -232,35 +235,49 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
       {store?.name && !isLoading && (
         <Box position="absolute" bottom={16} right={16} zIndex={2}>
           <Box
-            onClick={() => setOpenDrawer(true)}
+            onClick={() => {
+              if (user) {
+                setOpenCashierDrawer(true);
+              } else {
+                setOpenLoginDialog(true);
+              }
+            }}
             data-exclude-global-click="true"
             sx={{
               backgroundColor: 'rgba(0,0,0,0.8)',
               color: 'white',
-              borderRadius: '16px',
-              px: 2,
-              py: 0.5,
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              whiteSpace: 'nowrap',
+              borderRadius: '50%',
+              width: 64,
+              height: 64,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: 'rgba(0,0,0,0.9)',
+                transform: 'scale(1.05)',
+              },
             }}
           >
-            {store.name}
+            <PersonIcon sx={{ fontSize: 40 }} />
           </Box>
         </Box>
       )}
 
-      <CashierDrawer
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        onOpenLoginDialog={() => setShowLoginDialog(true)}
-        storeId={store?._id}
-      />
-      <LoginDialog
-        open={showLoginDialog}
-        onClose={() => setShowLoginDialog(false)}
-      />
+            {user ? (
+        <CashierDrawer
+          open={openCashierDrawer}
+          onClose={() => setOpenCashierDrawer(false)}
+          storeId={store?._id}
+        />
+      ) : (
+        <LoginDialogCashiers
+          open={openLoginDialog}
+          onClose={() => setOpenLoginDialog(false)}
+          storeId={store?._id}
+        />
+      )}
     </Box>
   );
 };

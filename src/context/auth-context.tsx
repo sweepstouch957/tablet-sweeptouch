@@ -16,6 +16,7 @@ interface User {
   email: string;
   phoneNumber: string;
   role: string;
+  accessCode?: string;
   store?: {
     _id: string;
     name: string;

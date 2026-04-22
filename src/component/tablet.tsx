@@ -8,7 +8,7 @@ import { Store } from "@/services/store.service";
 import LeftPanel from "./left-pannel";
 import RightCarousel from "./right-pannel";
 import PrivacyDialog from "./pannel";
-import LoginDialog from "./login-dialog";
+import LoginDialogCashiers from "./login-dialog-cashiers";
 import { formatPhone } from "@/libs/utils/formatPhone";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { usePromos } from "@/hooks/usePromos";
@@ -18,10 +18,12 @@ interface FathersDayPromoProps {
   store?: Store;
 }
 
+//"https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078551/4_euh82t.png",
+
 const imagesDummy = [
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/8a8ac749-e75e-424b-ad77-1a18a39d987b_swtqv6.webp",
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/112783a0-a34e-4108-a372-fabe93cedc16_a9oyix.webp",
-  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1750444504/08b5df1a-9220-40bf-b6f0-428c95901be7_mxzdpo.webp",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/2_oadnkv.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078132/3_dhbtm0.png",
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
 ];
 
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
@@ -104,7 +106,6 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
           sweeptakeId={data?._id || ""}
           optinType={data?.optinType}
           sweepstakeName={data?.name}
-          imageYear={data?.imageYear || ""}
           hasQR={data?.hasQr || false}
           modalOpen={modalOpen}
           setModalOpen={setModalOpen}
@@ -119,7 +120,11 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       />
 
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginDialogCashiers
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        storeId={store?._id}
+      />
     </Box>
   );
 };

@@ -256,8 +256,8 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                             selectedCashier?._id === cashier._id
                               ? "#fce4ec"
                               : index % 2 === 0
-                              ? "#fafafa"
-                              : "white",
+                                ? "#fafafa"
+                                : "white",
                           transition: "all 0.2s ease",
                           "&:hover": {
                             backgroundColor: "#f8bbd0",
@@ -272,9 +272,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                         <TableCell align="center">
                           <Avatar
                             src={
-                              cashier.profileImage
-                                ? `https://api2.sweepstouch.com/uploads/${cashier.profileImage}`
-                                : undefined
+                              cashier.profileImage || ""
                             }
                             sx={{
                               bgcolor: "#fc0680",
