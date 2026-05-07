@@ -2,15 +2,54 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { Send, Backspace } from '@mui/icons-material';
 
+type KeypadVariant = 'default' | 'pink' | 'red';
+
 interface PhoneKeypadProps {
   onSubmit: (phone: string) => void;
   onKeypadClick?: () => void;
+  variant?: KeypadVariant;
 }
+
+const variantThemes: Record<KeypadVariant, {
+  bg: string;
+  buttonBg: string;
+  buttonBorder: string;
+  headerColor: string;
+  width: string;
+  height: string;
+}> = {
+  default: {
+    bg: '#c79b34',
+    buttonBg: 'linear-gradient(135deg, #d4a853 0%, #b8932a 100%)',
+    buttonBorder: '#a0821f',
+    headerColor: 'black',
+    width: '210px',
+    height: '220px',
+  },
+  pink: {
+    bg: 'linear-gradient(160deg, #c2185b 0%, #e91e8c 60%, #f06292 100%)',
+    buttonBg: 'linear-gradient(135deg, #e91e8c 0%, #ad1457 100%)',
+    buttonBorder: 'rgba(255,255,255,0.25)',
+    headerColor: '#fff',
+    width: '240px',
+    height: '260px',
+  },
+  red: {
+    bg: 'linear-gradient(160deg, #b71c1c 0%, #e53935 60%, #ef5350 100%)',
+    buttonBg: 'linear-gradient(135deg, #e53935 0%, #b71c1c 100%)',
+    buttonBorder: 'rgba(255,255,255,0.25)',
+    headerColor: '#fff',
+    width: '260px',
+    height: '280px',
+  },
+};
 
 const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
   onSubmit,
   onKeypadClick,
+  variant = 'default',
 }) => {
+  const theme = variantThemes[variant];
   const [phone, setPhone] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -67,12 +106,12 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
 
   // Estilos comunes de los botones
   const buttonStyle = {
-    background: 'linear-gradient(135deg, #d4a853 0%, #b8932a 100%)',
+    background: theme.buttonBg,
     color: 'white',
     fontSize: '0.75rem',
     fontWeight: 'bold',
     borderRadius: '6px',
-    border: '1px solid #a0821f',
+    border: `1px solid ${theme.buttonBorder}`,
     //'&:hover': {
     //  background: 'linear-gradient(135deg, #e0b560 0%, #c49f37 100%)',
     //  transform: 'scale(0.98)',
@@ -90,13 +129,15 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
     <Box
       onClick={handleKeypadClick}
       sx={{
-        backgroundColor: '#c79b34',
+        background: theme.bg,
         borderRadius: '12px',
-        padding: '8px',
-        width: '210px',
-        height: '220px',
+        padding: variant === 'default' ? '8px' : '12px',
+        width: theme.width,
+        height: theme.height,
         textAlign: 'center',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+        boxShadow: variant === 'default'
+          ? '0 2px 4px rgba(0,0,0,0.3)'
+          : '0 8px 32px rgba(0,0,0,0.35)',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -104,8 +145,8 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
       {/* Header */}
       <Typography
         fontWeight="bold"
-        color="black"
-        fontSize="0.7rem"
+        color={theme.headerColor}
+        fontSize={variant === 'default' ? '0.7rem' : '0.8rem'}
         sx={{
           marginBottom: '6px',
           textTransform: 'uppercase',
@@ -135,34 +176,25 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
         {phone || (isAnimating ? '' : '(201) 982-41')}
       </Box>
 
-      {/* Keypad Grid */}
-
       {/* Keypad */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 45px)', // cada botón fijo en 55px
-          gridAutoRows: '25px', // altura fija
-          columnGap: '25px', // espacio entre botones
-          rowGap: '8px',
-          justifyContent: 'center', // centrado dentro del padre
-          margin: '0 auto', // centrar en el box general
-          width: 'max-content', // evita que se estiren
+          gridTemplateColumns: variant === 'default' ? 'repeat(3, 45px)' : 'repeat(3, 1fr)',
+          gridAutoRows: variant === 'default' ? '25px' : 'auto',
+          columnGap: variant === 'default' ? '25px' : '8px',
+          rowGap: variant === 'default' ? '8px' : '8px',
+          justifyContent: 'center',
+          margin: '0 auto',
+          width: variant === 'default' ? 'max-content' : '100%',
+          flex: variant === 'default' ? undefined : 1,
         }}
       >
         {[
-          '1',
-          '2',
-          '3',
-          '4',
-          '5',
-          '6',
-          '7',
-          '8',
-          '9',
-          'delete',
-          '0',
-          'send',
+          '1', '2', '3',
+          '4', '5', '6',
+          '7', '8', '9',
+          'delete', '0', 'send',
         ].map((key) => (
           <Button
             key={key}
@@ -172,14 +204,16 @@ const PhoneKeypad: React.FC<PhoneKeypadProps> = ({
             disableElevation
             sx={{
               ...buttonStyle,
-              width: '45px',
-              height: '30px', // cuadrado compacto
-              fontSize: '0.8rem',
+              width: variant === 'default' ? '45px' : '100%',
+              height: variant === 'default' ? '30px' : '44px',
+              fontSize: variant === 'default' ? '0.8rem' : '1rem',
               display: 'flex',
-              flexDirection: 'column', // icono arriba, texto abajo
+              flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               padding: '4px',
+              borderRadius: variant === 'default' ? '6px' : '8px',
+              boxShadow: variant !== 'default' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
             }}
           >
             {key === 'delete' ? (

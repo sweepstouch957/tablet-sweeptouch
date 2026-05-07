@@ -234,9 +234,34 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
                 sx={{ color: "#4caf50", mr: 1, fontSize: 20 }}
               />
             )}
-            <Typography sx={{ fontSize: 24, mr: 1.5 }}>
-              {product.emoji || "🛒"}
-            </Typography>
+            {/* Product visual: image or emoji */}
+            {product.imageUrl && product.imageUrl !== "no-image.jpg" && product.imageUrl !== "" ? (
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  minWidth: 44,
+                  borderRadius: 1.5,
+                  overflow: "hidden",
+                  mr: 1.5,
+                  bgcolor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  style={{ width: "85%", height: "85%", objectFit: "contain" }}
+                />
+              </Box>
+            ) : (
+              <Typography sx={{ fontSize: 24, mr: 1.5, minWidth: 44, textAlign: "center" }}>
+                {product.emoji || "🛒"}
+              </Typography>
+            )}
             <Box sx={{ flex: 1 }}>
               <Typography
                 sx={{

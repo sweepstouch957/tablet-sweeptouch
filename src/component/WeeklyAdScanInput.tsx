@@ -32,7 +32,11 @@ export default function WeeklyAdScanInput({ onScan, disabled }: Props) {
 
       if (e.key === "Enter") {
         const value = buffer.trim().toUpperCase();
-        if (value.startsWith("SUPER-") && value.length >= 10) {
+        // Accept both SUPER-{CODE}-{ID} barcodes and SL-{CODE} shopping list QR codes
+        if (
+          (value.startsWith("SUPER-") && value.length >= 10) ||
+          (value.startsWith("SL-") && value.length >= 5)
+        ) {
           onScan(value);
         }
         setBuffer("");
@@ -97,7 +101,7 @@ export default function WeeklyAdScanInput({ onScan, disabled }: Props) {
           color: disabled ? "#999" : "#333",
         }}
       >
-        {disabled ? "Processing..." : "Scan MMS Code"}
+        {disabled ? "Processing..." : "Scan MMS Code or QR"}
       </Typography>
 
       <Typography
@@ -105,8 +109,8 @@ export default function WeeklyAdScanInput({ onScan, disabled }: Props) {
         sx={{ color: "#666", mb: 3, maxWidth: 400 }}
       >
         {disabled
-          ? "Please wait while we process the barcode"
-          : "Point the barcode scanner at the customer's MMS code"}
+          ? "Please wait while we process the code"
+          : "Point the scanner at the customer's MMS barcode or Shopping List QR code"}
       </Typography>
 
       {/* Hidden barcode input */}

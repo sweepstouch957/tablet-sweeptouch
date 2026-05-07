@@ -13,9 +13,12 @@ import { formatPhone } from "@/libs/utils/formatPhone";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { usePromos } from "@/hooks/usePromos";
 import LeftPanelGeneric from "./left-pannel.generic";
+import KioskLayoutPink from "./KioskLayoutPink";
+import KioskLayoutRed from "./KioskLayoutRed";
 
 interface FathersDayPromoProps {
   store?: Store;
+  variant?: "pink" | "red";
 }
 
 //"https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078551/4_euh82t.png",
@@ -26,7 +29,7 @@ const imagesDummy = [
   "https://res.cloudinary.com/dg9gzic4s/image/upload/v1763078131/1_o4rplu.png",
 ];
 
-const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
+const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store, variant }) => {
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
@@ -64,6 +67,9 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
       setModalOpen(false);
     }
   };
+
+  if (variant === "pink") return <KioskLayoutPink store={store} />;
+  if (variant === "red") return <KioskLayoutRed store={store} />;
 
   return (
     <Box
@@ -130,3 +136,5 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store }) => {
 };
 
 export default FathersDayPromo;
+
+

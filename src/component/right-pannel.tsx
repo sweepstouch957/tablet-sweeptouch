@@ -12,6 +12,7 @@ import { Store } from '@/services/store.service';
 import { useAuth } from "@/context/auth-context";
 import CashierDrawer from "./cahierDrawer";
 import LoginDialogCashiers from "./login-dialog-cashiers";
+import ScanModal from "./ScanModal";
 
 interface RightCarouselProps {
   store?: Store;
@@ -38,6 +39,7 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
     const { user } = useAuth();
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [openCashierDrawer, setOpenCashierDrawer] = useState(false);
+  const [openScanModal, setOpenScanModal] = useState(false);
 
   // Refs de videos
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -232,8 +234,46 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
         })
       )}
 
+      {/* ─── Bottom-right action buttons ─── */}
       {store?.name && !isLoading && (
-        <Box position="absolute" bottom={16} right={16} zIndex={2}>
+        <Box
+          position="absolute"
+          bottom={16}
+          right={16}
+          zIndex={2}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, alignItems: 'center' }}
+        >
+          {/* Scan QR button — commented out
+          <Tooltip title="Scan MMS / QR" placement="left" arrow>
+            <Box
+              onClick={() => setOpenScanModal(true)}
+              data-exclude-global-click="true"
+              sx={{
+                backgroundColor: 'rgba(244, 55, 137, 0.85)',
+                color: 'white',
+                borderRadius: '50%',
+                width: 52,
+                height: 52,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 3px 12px rgba(244, 55, 137, 0.3)',
+                border: '2px solid rgba(255,255,255,0.2)',
+                '&:hover': {
+                  backgroundColor: 'rgba(244, 55, 137, 1)',
+                  transform: 'scale(1.08)',
+                  boxShadow: '0 4px 18px rgba(244, 55, 137, 0.5)',
+                },
+              }}
+            >
+              <QrCodeScannerIcon sx={{ fontSize: 26 }} />
+            </Box>
+          </Tooltip>
+          */}
+
+          {/* Person / Login button */}
           <Box
             onClick={() => {
               if (user) {
@@ -247,8 +287,8 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
               backgroundColor: 'rgba(0,0,0,0.8)',
               color: 'white',
               borderRadius: '50%',
-              width: 64,
-              height: 64,
+              width: 52,
+              height: 52,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -260,12 +300,12 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
               },
             }}
           >
-            <PersonIcon sx={{ fontSize: 40 }} />
+            <PersonIcon sx={{ fontSize: 32 }} />
           </Box>
         </Box>
       )}
 
-            {user ? (
+      {user ? (
         <CashierDrawer
           open={openCashierDrawer}
           onClose={() => setOpenCashierDrawer(false)}
@@ -278,8 +318,15 @@ const RightCarousel: React.FC<RightCarouselProps> = ({
           storeId={store?._id}
         />
       )}
+
+      {/* Scan Modal */}
+      <ScanModal
+        open={openScanModal}
+        onClose={() => setOpenScanModal(false)}
+      />
     </Box>
   );
 };
 
 export default RightCarousel;
+

@@ -9,6 +9,7 @@ export interface ScanResult {
     name: string;
     price: string;
     emoji?: string;
+    imageUrl?: string;
     category?: string;
     isHero?: boolean;
   }>;
@@ -26,6 +27,33 @@ export interface ConfirmResult {
   bonusPointsAwarded: number;
   totalPointsThisScan: number;
   totalPointsAllTime: number;
+}
+
+export interface ShoppingListResult {
+  _id: string;
+  qrCode: string;
+  customerId: string;
+  storeSlug: string;
+  items: Array<{
+    name: string;
+    price: string;
+    quantity: number;
+    unit: string;
+    imageUrl?: string;
+    category?: string;
+  }>;
+  totalItems: number;
+  status: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface ShoppingListValidateResult {
+  ok: boolean;
+  confirmedProducts: number;
+  pointsAwarded: number;
+  totalPointsThisScan: number;
+  validatedAt: string;
 }
 
 /**
@@ -52,6 +80,31 @@ export async function confirmPurchase(
   const { data } = await api.post(
     `/tracking/weekly-ad-scan/scan/${scanId}/confirm`,
     { purchasedProducts }
+  );
+  return data;
+}
+
+/**
+ * Look up a shopping list by QR code (SL-XXXXXX format).
+ */
+export async function fetchShoppingList(
+  qrCode: string
+): Promise<{ ok: boolean; shoppingList: ShoppingListResult }> {
+  const { data } = await api.get(`/tracking/shopping-list/${encodeURIComponent(qrCode)}`);
+  return data;
+}
+
+/**
+ * Cashier validates a shopping list and awards points.
+ */
+export async function validateShoppingList(
+  qrCode: string,
+  validatedItems: string[],
+  cashierId: string = "tablet-default"
+): Promise<ShoppingListValidateResult> {
+  const { data } = await api.post(
+    `/tracking/shopping-list/${encodeURIComponent(qrCode)}/validate`,
+    { validatedItems, cashierId }
   );
   return data;
 }

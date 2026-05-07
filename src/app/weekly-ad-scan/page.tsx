@@ -1,22 +1,27 @@
 "use client";
 
 import React, { useState, useCallback, Suspense } from "react";
-import { Box, Typography, CircularProgress, Button, Stack } from "@mui/material";
+import { Box, Typography, CircularProgress, Button } from "@mui/material";
 import WeeklyAdScanInput from "@/component/WeeklyAdScanInput";
 import WeeklyAdResult from "@/component/WeeklyAdResult";
+import ShoppingListResult from "@/component/ShoppingListResult";
 import {
   scanWeeklyAdBarcode,
   confirmPurchase,
+  fetchShoppingList,
+  validateShoppingList,
   type ScanResult,
+  type ShoppingListResult as ShoppingListResultType,
 } from "@/services/weeklyAdService";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
 
-type PageState = "waiting" | "loading" | "result" | "error";
+type PageState = "waiting" | "loading" | "result" | "shopping-list" | "error";
 
 function WeeklyAdScanContent() {
   const [state, setState] = useState<PageState>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [shoppingList, setShoppingList] = useState<ShoppingListResultType | null>(null);
   const [error, setError] = useState("");
 
   const handleScan = useCallback(async (barcode: string) => {
@@ -24,12 +29,20 @@ function WeeklyAdScanContent() {
     setError("");
 
     try {
-      const { scan } = await scanWeeklyAdBarcode(barcode);
-      setScanResult(scan);
-      setState("result");
+      // Check if it's a shopping list QR code
+      if (barcode.startsWith("SL-")) {
+        const { shoppingList: list } = await fetchShoppingList(barcode);
+        setShoppingList(list);
+        setState("shopping-list");
+      } else {
+        // Legacy barcode scan
+        const { scan } = await scanWeeklyAdBarcode(barcode);
+        setScanResult(scan);
+        setState("result");
+      }
     } catch (err: any) {
       const msg =
-        err.response?.data?.error || err.message || "Error processing barcode";
+        err.response?.data?.error || err.message || "Error processing code";
       setError(msg);
       setState("error");
     }
@@ -42,9 +55,17 @@ function WeeklyAdScanContent() {
     []
   );
 
+  const handleValidateShoppingList = useCallback(
+    async (qrCode: string, validatedItems: string[]) => {
+      return validateShoppingList(qrCode, validatedItems);
+    },
+    []
+  );
+
   const handleReset = useCallback(() => {
     setState("waiting");
     setScanResult(null);
+    setShoppingList(null);
     setError("");
   }, []);
 
@@ -153,7 +174,18 @@ function WeeklyAdScanContent() {
     );
   }
 
-  // ─── RESULT STATE ─────────────────────────────────────
+  // ─── SHOPPING LIST RESULT ──────────────────────────────
+  if (state === "shopping-list" && shoppingList) {
+    return (
+      <ShoppingListResult
+        shoppingList={shoppingList}
+        onValidate={handleValidateShoppingList}
+        onReset={handleReset}
+      />
+    );
+  }
+
+  // ─── BARCODE RESULT STATE ──────────────────────────────
   if (state === "result" && scanResult) {
     return (
       <WeeklyAdResult

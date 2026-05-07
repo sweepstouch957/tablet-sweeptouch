@@ -19,6 +19,7 @@ import Image from "next/image";
 function WinACarFormContainer() {
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug") || "";
+  const ds = searchParams.get("ds") || "";
 
   const { data: store, isLoading } = useQuery({
     queryKey: ["store", slug],
@@ -86,7 +87,7 @@ function WinACarFormContainer() {
     );
   }
 
-  return <FathersDayPromo store={store} />;
+  return <FathersDayPromo store={store} variant={ds === "1" ? "pink" : ds === "2" ? "red" : undefined} />;
 }
 
 export default function WinACarPage() {
