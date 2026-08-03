@@ -51,3 +51,27 @@ export interface CreateDefaultParticipantPayload extends CreateParticipantPayloa
   zipCode: string;
 }
 
+/** Rol elegido en el modal NSA (optinType === "nsa") tras registrarse. */
+export type NsaRole = "owner_manager" | "seller_brand";
+
+/**
+ * Guarda el rol Owner/Manager | Seller/Brand del participante recién registrado.
+ */
+export const setParticipantNsaRole = async (
+  participantId: string,
+  nsaRole: NsaRole
+) => {
+  try {
+    const res = await api.patch(
+      `/sweepstakes/participants/${participantId}/nsa-role`,
+      { nsaRole }
+    );
+    return res.data;
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.error || "Error al guardar el rol del participante";
+    console.error("❌ setParticipantNsaRole error:", message);
+    return Promise.reject(message);
+  }
+};
+

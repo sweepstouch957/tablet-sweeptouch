@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { validatePhone, formatPhone } from '@/libs/utils/formatPhone';
 import { useMutation } from '@tanstack/react-query';
-import { createSweepstake } from '@/services/sweepstake.service';
+import { createSweepstake, setParticipantNsaRole, type NsaRole } from '@/services/sweepstake.service';
 import { ThankYouModal } from './success-dialog';
 import {
   printTicketWithImage,
@@ -80,6 +80,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [showThanks, setShowThanks] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  // NSA (optinType === 'nsa'): el rol se pide DESPUÉS de registrar y se guarda por PATCH
+  const [showNsaModal, setShowNsaModal] = useState(false);
+  const [nsaParticipantId, setNsaParticipantId] = useState('');
 
   // Restaurar el número guardado cuando se abre el modal
   useEffect(() => {
@@ -121,7 +124,13 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
     },
 
     onSuccess: (resp) => {
-      setShowThanks(true);
+      // NSA: primero se pide el rol (Owner/Manager | Seller/Brand); el ThankYou sale después.
+      if (type === 'nsa') {
+        setNsaParticipantId(resp?.participantId || '');
+        setShowNsaModal(true);
+      } else {
+        setShowThanks(true);
+      }
 
       if (type !== 'generic') {
         if (hasQR) {
@@ -190,6 +199,17 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       customerName: name,
     });
   };
+
+  // NSA: guarda el rol elegido. Pase lo que pase seguimos al ThankYou —
+  // en un kiosko no se bloquea al cliente si el PATCH falla (queda el log).
+  const { mutate: saveNsaRole, isPending: isSavingNsaRole } = useMutation({
+    mutationFn: (nsaRole: NsaRole) => setParticipantNsaRole(nsaParticipantId, nsaRole),
+    onError: (err) => console.error('❌ No se pudo guardar nsaRole:', err),
+    onSettled: () => {
+      setShowNsaModal(false);
+      setShowThanks(true);
+    },
+  });
 
   // Manejar el cierre del modal SOLO a través del botón X
   const handleCloseModal = () => {
@@ -568,6 +588,66 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             >
               EMPLOYEE
             </Button>
+          </Stack>
+        </Box>
+      </Dialog>
+
+      {/* NSA Role Modal – solo para optinType 'nsa'. Sale DESPUÉS de registrar el número. */}
+      <Dialog
+        open={showNsaModal}
+        onClose={() => { }}
+        disableEscapeKeyDown
+        BackdropProps={{ onClick: (e) => { e.preventDefault(); e.stopPropagation(); } }}
+        maxWidth="xs"
+        fullWidth
+        sx={{ '& .MuiPaper-root': { background: 'transparent', overflow: 'hidden' } }}
+      >
+        <Box
+          sx={{
+            bgcolor: '#c79b34',
+            p: 4,
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            textAlign: 'center',
+          }}
+        >
+          <Typography
+            variant="h6"
+            fontWeight="bold"
+            color="white"
+            mb={3}
+            sx={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+          >
+            WHICH ONE ARE YOU?
+          </Typography>
+          <Stack spacing={2}>
+            {(
+              [
+                { label: 'OWNER / MANAGER', role: 'owner_manager' },
+                { label: 'SELLER / BRAND', role: 'seller_brand' },
+              ] as { label: string; role: NsaRole }[]
+            ).map(({ label, role }) => (
+              <Button
+                key={role}
+                variant="contained"
+                fullWidth
+                disabled={isSavingNsaRole}
+                onClick={() => saveNsaRole(role)}
+                sx={{
+                  background: 'linear-gradient(#a46c0f, #d49b34)',
+                  color: 'white',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  height: '60px',
+                  borderRadius: '8px',
+                  boxShadow: 3,
+                  '&:hover': { opacity: 0.9 },
+                  '&.Mui-disabled': { background: 'linear-gradient(#a46c0f, #d49b34)', opacity: 0.6, color: 'white' },
+                }}
+              >
+                {label}
+              </Button>
+            ))}
           </Stack>
         </Box>
       </Dialog>
