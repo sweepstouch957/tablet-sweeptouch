@@ -1,5 +1,5 @@
 // LeftPanel.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
 import { Box, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
@@ -34,51 +34,6 @@ interface LeftPanelProps {
   sweepstakeName?: string;
   hasQR?: boolean;
 }
-
-const LiveDateTime = () => {
-  const [now, setNow] = useState<Date | null>(null);
-
-  useEffect(() => {
-    const updateTime = () => setNow(new Date());
-    updateTime();
-
-    const interval = window.setInterval(updateTime, 1000);
-    return () => window.clearInterval(interval);
-  }, []);
-
-  if (!now) return null;
-
-  const date = now.toLocaleDateString("en-US", {
-    timeZone: "America/New_York",
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  const time = now.toLocaleTimeString("en-US", {
-    timeZone: "America/New_York",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-
-  return (
-    <Typography
-      component="time"
-      dateTime={now.toISOString()}
-      fontWeight={700}
-      textAlign="center"
-      sx={{
-        fontSize: { md: "0.78rem", lg: "0.9rem", xl: "1rem" },
-        lineHeight: 1.2,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {date} at {time}
-    </Typography>
-  );
-};
 
 const LeftPanelGeneric: React.FC<LeftPanelProps> = ({
   store,
@@ -223,19 +178,6 @@ const LeftPanelGeneric: React.FC<LeftPanelProps> = ({
           Contact Us: (201) 982-4102
         </Typography>
       </Stack>
-
-      <Box
-        display={{ xs: "none", md: "flex" }}
-        alignItems="center"
-        justifyContent="center"
-        width="100%"
-        order={5}
-        mt="auto"
-        px={1.5}
-        pb={2}
-      >
-        <LiveDateTime />
-      </Box>
 
       <PhoneInputModal
         open={openModal}
