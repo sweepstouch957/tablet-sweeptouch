@@ -77,7 +77,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [customerName, setCustomerName] = useState('');
 
   const [error, setError] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   // NSA (optinType === 'nsa'): el rol se pide DESPUÉS de registrar y se guarda por PATCH
@@ -97,7 +97,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       setCustomerName('');
       setError('');
-      setAcceptedTerms(true);
+      setAcceptedTerms(false);
     }
   }, [open]);
 
