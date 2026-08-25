@@ -83,6 +83,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   // NSA (optinType === 'nsa'): el rol se pide DESPUÉS de registrar y se guarda por PATCH
   const [showNsaModal, setShowNsaModal] = useState(false);
   const [nsaParticipantId, setNsaParticipantId] = useState('');
+  const isPhoneValid = validatePhone(phone);
 
   // Restaurar el número guardado cuando se abre el modal
   useEffect(() => {
@@ -109,6 +110,12 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
     }
   }, [phone]);
+
+  useEffect(() => {
+    if (open) {
+      setAcceptedTerms(isPhoneValid);
+    }
+  }, [isPhoneValid, open]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ customerName }: { customerName: string }) => {
@@ -336,7 +343,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                     <Button
                       key={key}
                       variant="contained"
-                      disabled={key === 'Send' && isPending}
+                      disabled={key === 'Send' && (isPending || !isPhoneValid)}
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
