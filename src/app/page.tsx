@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import FathersDayPromo from "@/component/tablet";
+import FloatingDateTime from "@/component/floating-date-time";
 import Tuerca from "@public/tuerca.webp";
 import Logo from "@public/logo.webp";
 import Image from "next/image";
@@ -92,22 +93,25 @@ function WinACarFormContainer() {
 
 export default function WinACarPage() {
   return (
-    <Suspense
-      fallback={
-        <Container
-          maxWidth="sm"
-          sx={{
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <CircularProgress />
-        </Container>
-      }
-    >
-      <WinACarFormContainer />
-    </Suspense>
+    <>
+      <FloatingDateTime />
+      <Suspense
+        fallback={
+          <Container
+            maxWidth="sm"
+            sx={{
+              minHeight: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress />
+          </Container>
+        }
+      >
+        <WinACarFormContainer />
+      </Suspense>
+    </>
   );
 }

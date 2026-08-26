@@ -175,6 +175,7 @@ const LeftPanelGeneric: React.FC<LeftPanelProps> = ({
           Contact Us: (201) 982-4102
         </Typography>
       </Stack>
+
       <PhoneInputModal
         open={openModal}
         onClose={() => setOpenModal(false)}
