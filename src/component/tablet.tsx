@@ -30,7 +30,11 @@ const imagesDummy = [
 ];
 
 const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store, variant }) => {
-  const [termsAccepted, setTermsAccepted] = useState(true);
+  // El consentimiento NO vive acá. Vive en inputModal.tsx, que es donde está la
+  // casilla real y el bloqueo del botón Enviar. Antes había acá un estado con
+  // default `true` que se pasaba a los paneles y nadie leía; peor: el setter NO
+  // se pasaba, y los paneles lo llamaban al registrar, así que cada alta exitosa
+  // tiraba un TypeError.
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -84,8 +88,6 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store, variant }) => 
       {isLoading ? null : isGeneric ? (
         <LeftPanelGeneric
           store={store}
-          termsAccepted={termsAccepted}
-          setTermsAccepted={setTermsAccepted}
           setPrivacyOpen={setPrivacyOpen}
           handlePhoneChange={handlePhoneChange}
           phoneNumber={phoneNumber}
@@ -101,8 +103,6 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store, variant }) => 
       ) : (
         <LeftPanel
           store={store}
-          termsAccepted={termsAccepted}
-          setTermsAccepted={setTermsAccepted}
           setPrivacyOpen={setPrivacyOpen}
           handlePhoneChange={handlePhoneChange}
           phoneNumber={phoneNumber}

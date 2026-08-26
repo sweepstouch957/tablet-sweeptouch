@@ -38,7 +38,8 @@ interface PhoneInputModalProps {
   sweepstakeName: string;
   type?: string;
   hasQR?: boolean;
-  onSuccessRegister: () => void;
+  /** Aviso opcional de alta exitosa. Opcional porque los paneles ya no necesitan reaccionar. */
+  onSuccessRegister?: () => void;
   userId?: string;
 }
 
@@ -77,7 +78,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [customerName, setCustomerName] = useState('');
 
   const [error, setError] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  // Arranca DESMARCADA y es deliberado. Un checkbox de consentimiento
+  // pre-marcado no es consentimiento: bajo TCPA el opt-in para SMS de marketing
+  // tiene que ser una acción afirmativa del titular del número. Si viene marcado
+  // de fábrica nadie lo marca, y lo que queda registrado no prueba nada.
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   // NSA (optinType === 'nsa'): el rol se pide DESPUÉS de registrar y se guarda por PATCH
@@ -97,7 +102,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       setCustomerName('');
       setError('');
-      setAcceptedTerms(true);
+      // Cada cliente marca la suya. Heredar el consentimiento del anterior es
+      // exactamente lo que hace que el registro no sirva como prueba.
+      setAcceptedTerms(false);
     }
   }, [open]);
 
@@ -155,7 +162,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
 
       // Si quieres, aquí solo avisamos al padre de que se registró bien
-      onSuccessRegister();
+      onSuccessRegister?.();
 
       // 👇 OJO: ya NO limpiamos ni cerramos aquí
       // Nada de onClose(), ni setPhone(''), ni setShowThanks(false) aquí
@@ -336,7 +343,9 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                     <Button
                       key={key}
                       variant="contained"
-                      disabled={key === 'Send' && isPending}
+                      // Enviar bloqueado hasta que acepte: el error después de
+                      // tocar el botón llegaba tarde y se leía como una falla.
+                      disabled={key === 'Send' && (isPending || !acceptedTerms)}
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -345,13 +354,13 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                       sx={{
                         backgroundColor:
                           key === 'Send'
-                            ? '#4CAF50'
+                            ? acceptedTerms ? '#4CAF50' : '#9E9E9E'
                             : key === 'Delete'
                               ? '#E53935'
                               : 'linear-gradient(#a46c0f, #d49b34)',
                         background:
                           key === 'Send'
-                            ? '#4CAF50'
+                            ? acceptedTerms ? '#4CAF50' : '#9E9E9E'
                             : key === 'Delete'
                               ? '#E53935'
                               : 'linear-gradient(#a46c0f, #d49b34)',

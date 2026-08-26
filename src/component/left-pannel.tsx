@@ -15,8 +15,6 @@ import PhoneKeypad from "./PhoneKeypad";
 
 interface LeftPanelProps {
   store?: Store;
-  termsAccepted: boolean;
-  setTermsAccepted: (value: boolean) => void;
   setPrivacyOpen: (value: boolean) => void;
   onLogin: () => void;
   handlePhoneChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -36,7 +34,6 @@ interface LeftPanelProps {
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
   store,
-  setTermsAccepted,
   sweeptakeId = "",
   prize = { name: "No Prize", image: "" },
   optinType,
@@ -327,7 +324,6 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         createdBy={user?._id || store?.id}
         sweepstakeName={sweepstakeName || ""}
         method={user ? "cashier" : "tablet"}
-        onSuccessRegister={() => setTermsAccepted(true)}
         hasQR={hasQR}
         userId={user?._id}
       />
