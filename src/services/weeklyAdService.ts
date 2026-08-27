@@ -33,6 +33,10 @@ export interface ShoppingListResult {
   _id: string;
   qrCode: string;
   customerId: string;
+  /** Nombre + inicial del apellido. Vacio si el cliente no esta en la base. */
+  customerName?: string;
+  /** Ultimos 4 digitos del telefono: alcanza para confirmar identidad en la caja. */
+  customerPhoneMasked?: string;
   storeSlug: string;
   items: Array<{
     name: string;
@@ -44,6 +48,11 @@ export interface ShoppingListResult {
   }>;
   totalItems: number;
   status: string;
+  /** El backend ya resuelve el vencimiento por fecha; no rehacerlo en el cliente. */
+  isValidated?: boolean;
+  isExpired?: boolean;
+  validatedAt?: string;
+  pointsAwarded?: number;
   createdAt: string;
   expiresAt: string;
 }
