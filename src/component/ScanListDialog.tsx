@@ -279,7 +279,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 borderRadius: "26px",
                 overflow: "hidden",
                 bgcolor: "#000",
-                boxShadow: `0 0 0 1px rgba(255,255,255,.08), 0 26px 60px -26px ${PINK}`,
+                boxShadow: "0 0 0 1px rgba(255,255,255,.10)",
               }}
             >
               <Box id="prercs-qr-reader" />
@@ -294,7 +294,6 @@ export default function ScanListDialog({ open, onClose }: Props) {
                       inset: 18,
                       borderRadius: "18px",
                       border: `2px solid ${PINK}`,
-                      boxShadow: `0 0 22px -4px ${PINK}`,
                       pointerEvents: "none",
                     }}
                   />
@@ -308,7 +307,6 @@ export default function ScanListDialog({ open, onClose }: Props) {
                       height: 2,
                       borderRadius: 2,
                       background: `linear-gradient(90deg, transparent, ${PINK}, transparent)`,
-                      boxShadow: `0 0 12px ${PINK}`,
                       animation: "prercsLaser 2.4s ease-in-out infinite",
                       pointerEvents: "none",
                     }}
@@ -409,6 +407,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 />
                 <Button
                   variant="contained"
+                  disableElevation
                   disabled={!manualOk}
                   onClick={() => lookup(manual)}
                   startIcon={<SearchRoundedIcon />}
@@ -416,8 +415,8 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     px: 3,
                     borderRadius: "12px",
                     fontWeight: 800,
-                    background: `linear-gradient(135deg, ${PINK}, ${PINK_DK})`,
-                    "&:hover": { background: PINK_DK },
+                    bgcolor: PINK,
+                    "&:hover": { bgcolor: PINK_DK },
                     "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.25)" },
                   }}
                 >
@@ -482,6 +481,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             <Button
               variant="contained"
               onClick={reset}
+              disableElevation
               sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_DK }, borderRadius: "10px", fontWeight: 800 }}
             >
               Escanear otro
@@ -506,6 +506,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             <Button
               variant="contained"
               onClick={reset}
+              disableElevation
               sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_DK }, borderRadius: "10px", fontWeight: 800 }}
             >
               Intentar de nuevo

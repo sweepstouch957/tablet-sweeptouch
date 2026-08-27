@@ -153,6 +153,7 @@ export default function ShoppingListResult({
         <Button
           variant="contained"
           onClick={onReset}
+          disableElevation
           sx={{
             mt: 2,
             px: 5,
@@ -160,8 +161,8 @@ export default function ShoppingListResult({
             borderRadius: "12px",
             fontWeight: 800,
             fontSize: "1rem",
-            background: `linear-gradient(135deg, ${PINK}, ${PINK_DK})`,
-            "&:hover": { background: PINK_DK },
+            bgcolor: PINK,
+            "&:hover": { bgcolor: PINK_DK },
           }}
         >
           Siguiente cliente
@@ -193,7 +194,7 @@ export default function ShoppingListResult({
             height: 50,
             borderRadius: "50%",
             flexShrink: 0,
-            background: `linear-gradient(135deg, ${PINK}, ${PINK_DK})`,
+            bgcolor: PINK,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -342,14 +343,14 @@ export default function ShoppingListResult({
             <CheckCircleRoundedIcon />
           )
         }
+        disableElevation
         sx={{
           py: 1.75,
           borderRadius: "14px",
           fontWeight: 900,
           fontSize: "1.05rem",
-          background: `linear-gradient(135deg, ${PINK}, ${PINK_DK})`,
-          boxShadow: `0 14px 34px -16px ${PINK}`,
-          "&:hover": { background: PINK_DK },
+          bgcolor: PINK,
+          "&:hover": { bgcolor: PINK_DK },
           "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.3)" },
         }}
       >

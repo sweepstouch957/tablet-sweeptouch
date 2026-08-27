@@ -115,6 +115,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                 cincuenta veces por turno. */}
             <Button
               variant="contained"
+              disableElevation
               fullWidth
               startIcon={<QrCodeScannerRoundedIcon />}
               onClick={() => setOpenScan(true)}
@@ -125,8 +126,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                 fontWeight: 800,
                 fontSize: "1rem",
                 backgroundColor: "#fc0680",
-                boxShadow: "0 8px 22px -10px rgba(252,6,128,.9)",
-                "&:hover": { backgroundColor: "#e0046f" },
+                "&:hover": { backgroundColor: "#c30562" },
               }}
             >
               Escanear lista
