@@ -15,10 +15,12 @@ import {
 } from "@/services/weeklyAdService";
 import Image from "next/image";
 import Logo from "@public/logo.webp";
+import { useAuth } from "@/context/auth-context";
 
 type PageState = "waiting" | "loading" | "result" | "shopping-list" | "error";
 
 function WeeklyAdScanContent() {
+  const { user } = useAuth();
   const [state, setState] = useState<PageState>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [shoppingList, setShoppingList] = useState<ShoppingListResultType | null>(null);
@@ -57,9 +59,11 @@ function WeeklyAdScanContent() {
 
   const handleValidateShoppingList = useCallback(
     async (qrCode: string, validatedItems: string[]) => {
-      return validateShoppingList(qrCode, validatedItems);
+      // La cajera logueada es la que cobra los puntos de la lista. Sin sesion se
+      // valida igual (el cliente no puede quedarse esperando) pero nadie cobra.
+      return validateShoppingList(qrCode, validatedItems, user?._id || "tablet-default");
     },
-    []
+    [user?._id]
   );
 
   const handleReset = useCallback(() => {

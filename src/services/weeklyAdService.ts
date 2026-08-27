@@ -53,6 +53,8 @@ export interface ShoppingListValidateResult {
   confirmedProducts: number;
   pointsAwarded: number;
   totalPointsThisScan: number;
+  /** Puntos que se lleva la cajera por escanear esta lista. 0 si no hay sesion. */
+  cashierPointsAwarded?: number;
   validatedAt: string;
 }
 
@@ -96,6 +98,10 @@ export async function fetchShoppingList(
 
 /**
  * Cashier validates a shopping list and awards points.
+ *
+ * `cashierId` tiene que ser el _id real de la cajera logueada: el backend le
+ * acredita puntos por cada lista escaneada y descarta cualquier id que no sea
+ * un ObjectId (el viejo "tablet-default" no cobra).
  */
 export async function validateShoppingList(
   qrCode: string,

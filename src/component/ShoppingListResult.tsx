@@ -363,6 +363,11 @@ export default function ShoppingListResult({
           <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: 12, mt: 1 }}>
             {validateResult.confirmedProducts} products confirmed
           </Typography>
+          {!!validateResult.cashierPointsAwarded && (
+            <Typography sx={{ color: "#FC0680", fontSize: 14, fontWeight: "bold", mt: 1 }}>
+              🎯 +{validateResult.cashierPointsAwarded} pts para ti
+            </Typography>
+          )}
         </Box>
       )}
 

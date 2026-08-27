@@ -78,13 +78,10 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   const [customerName, setCustomerName] = useState('');
 
   const [error, setError] = useState('');
-<<<<<<< HEAD
   // Arranca DESMARCADA y es deliberado. Un checkbox de consentimiento
   // pre-marcado no es consentimiento: bajo TCPA el opt-in para SMS de marketing
   // tiene que ser una acción afirmativa del titular del número. Si viene marcado
   // de fábrica nadie lo marca, y lo que queda registrado no prueba nada.
-=======
->>>>>>> 837dbec498f3658f6f02b78db75c37fee0886b45
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -106,11 +103,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
       }
       setCustomerName('');
       setError('');
-<<<<<<< HEAD
       // Cada cliente marca la suya. Heredar el consentimiento del anterior es
       // exactamente lo que hace que el registro no sirva como prueba.
-=======
->>>>>>> 837dbec498f3658f6f02b78db75c37fee0886b45
       setAcceptedTerms(false);
     }
   }, [open]);
@@ -356,13 +350,11 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
                     <Button
                       key={key}
                       variant="contained"
-<<<<<<< HEAD
                       // Enviar bloqueado hasta que acepte: el error después de
                       // tocar el botón llegaba tarde y se leía como una falla.
-                      disabled={key === 'Send' && (isPending || !acceptedTerms)}
-=======
-                      disabled={key === 'Send' && (isPending || !isPhoneValid)}
->>>>>>> 837dbec498f3658f6f02b78db75c37fee0886b45
+                      // Las dos condiciones: sin número válido no hay a quién
+                      // mandarle, sin consentimiento no se puede mandar.
+                      disabled={key === 'Send' && (isPending || !acceptedTerms || !isPhoneValid)}
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
