@@ -18,10 +18,13 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import QrCodeScannerRoundedIcon from "@mui/icons-material/QrCodeScannerRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { useAuth } from "@/context/auth-context";
 import TodayParticipationCard from "./TotalParticipations";
 import { useCashiersByStore } from "@/services/cashierService";
 import LoginDialog from "./login-dialog";
+import ScanListDialog from "./ScanListDialog";
 
 interface CashierDrawerProps {
   open: boolean;
@@ -38,6 +41,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
   const { user, logout, login } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [openManualLogin, setOpenManualLogin] = useState(false);
+  const [openScan, setOpenScan] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedCashier, setSelectedCashier] = useState<any | null>(null);
 
@@ -106,19 +110,48 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
 
             <TodayParticipationCard storeId={storeId} />
 
+            {/* Acción principal de la cajera con una lista Pre-RCS delante:
+                escanear. Va arriba de cerrar sesión porque es lo que hace
+                cincuenta veces por turno. */}
             <Button
               variant="contained"
-              color="error"
               fullWidth
+              startIcon={<QrCodeScannerRoundedIcon />}
+              onClick={() => setOpenScan(true)}
+              sx={{
+                mt: 1,
+                py: 1.5,
+                borderRadius: "10px",
+                fontWeight: 800,
+                fontSize: "1rem",
+                backgroundColor: "#fc0680",
+                boxShadow: "0 8px 22px -10px rgba(252,6,128,.9)",
+                "&:hover": { backgroundColor: "#e0046f" },
+              }}
+            >
+              Escanear lista
+            </Button>
+            <Typography fontSize="0.78rem" color="gray" sx={{ mt: -1 }}>
+              Suma puntos para el cliente y para ti
+            </Typography>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<LogoutRoundedIcon />}
               onClick={() => {
                 logout();
                 onClose();
               }}
               sx={{
                 mt: 2,
-                borderRadius: "8px",
-                backgroundColor: "#e0046f",
-                "&:hover": { backgroundColor: "#fc0680" },
+                borderRadius: "10px",
+                borderColor: "rgba(255,255,255,.25)",
+                color: "rgba(255,255,255,.75)",
+                "&:hover": {
+                  borderColor: "#fc0680",
+                  backgroundColor: "rgba(252,6,128,.08)",
+                },
               }}
             >
               Cerrar sesión
@@ -165,6 +198,8 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
           </Stack>
         )}
       </Drawer>
+
+      <ScanListDialog open={openScan} onClose={() => setOpenScan(false)} />
 
       {/* Modal con tabla de cajeras */}
       <Modal

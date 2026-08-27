@@ -39,7 +39,9 @@ export default function FloatingDateTime() {
         position: "fixed",
         top: { xs: 8, md: 12 },
         right: { xs: 8, md: 16 },
-        zIndex: 2000,
+        // Debajo del Drawer y de los diálogos (MUI: drawer = 1200). Con 2000 el
+        // reloj se plantaba sobre el título del panel de la cajera.
+        zIndex: (t) => t.zIndex.drawer - 1,
         pointerEvents: "none",
         px: { xs: 1.25, md: 1.75 },
         py: { xs: 0.65, md: 0.8 },
