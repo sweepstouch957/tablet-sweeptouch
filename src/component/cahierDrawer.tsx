@@ -73,8 +73,8 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
         PaperProps={{
           sx: {
             width: { xs: "100%", sm: 380 },
-            background: SURFACE.dark,
-            color: SURFACE.onDark,
+            background: SURFACE.page,
+            color: SURFACE.text,
             fontFamily: FONT,
             p: 2,
             borderRadius: "12px 0 0 12px",
@@ -104,10 +104,10 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             <Typography>
               {user.firstName} {user.lastName}
             </Typography>
-            <Typography fontSize="0.9rem" color="gray">
+            <Typography fontSize="0.9rem" color={SURFACE.textMuted}>
               {user.email}
             </Typography>
-            <Typography fontSize="0.9rem" color="gray">
+            <Typography fontSize="0.9rem" color={SURFACE.textMuted}>
               Rol: {user.role}
             </Typography>
 
@@ -135,7 +135,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             >
               Escanear lista
             </Button>
-            <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.onDarkFaint, mt: -1 }}>
+            <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted, mt: -1 }}>
               Suma puntos para el cliente y para ti
             </Typography>
 
@@ -152,8 +152,8 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                 borderRadius: `${RADIUS.md}px`,
                 fontFamily: FONT,
                 fontWeight: 500,
-                borderColor: SURFACE.darkLine,
-                color: SURFACE.onDarkMuted,
+                borderColor: SURFACE.line,
+                color: SURFACE.textBody,
                 "&:hover": {
                   borderColor: BRAND.magenta,
                   backgroundColor: MAGENTA[10],

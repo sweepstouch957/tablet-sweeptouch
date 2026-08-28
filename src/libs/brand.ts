@@ -38,17 +38,27 @@ export const NEUTRAL = {
    cuerpo. Sólo titulares grandes, botones e iconografía. Nunca párrafos ni legal.
    Carbón sobre blanco: 10.53:1. Negro suave: 15.72:1 en ambos sentidos.        */
 
-/** Superficies para las pantallas oscuras de la tablet (caja, escaneo). */
+/* ── 4.3 Proporción de uso ────────────────────────────────────────────────────
+   60% blanco / gris claro · 25% carbón · 15% magenta. Las superficies son la
+   base clara: "el blanco y el gris claro dan aire y legibilidad".            */
 export const SURFACE = {
-  /** Fondo base oscuro. El manual permite el negro suave como ground. */
-  dark: "#1A1A1A",
-  darkRaised: "#242424",
-  /** Hairlines sobre oscuro: el carbón al 40%, no un blanco lavado. */
-  darkLine: "rgba(255,255,255,0.10)",
-  /** Texto sobre oscuro. */
-  onDark: "#FFFFFF",
-  onDarkMuted: "rgba(255,255,255,0.62)",
-  onDarkFaint: "rgba(255,255,255,0.38)",
+  /** Fondo de pantalla. */
+  page: "#FFFFFF",
+  /** Tarjetas y paneles sobre el fondo. */
+  raised: "#F7F7F7",
+  /** Zonas hundidas o seleccionadas. */
+  sunken: "#E6E7E8",
+  /** Hairlines: el gris claro de la paleta, no un gris inventado. */
+  line: "#E6E7E8",
+  /** Titulares. Negro suave: 15.72:1 sobre blanco. */
+  text: "#1A1A1A",
+  /** Texto de cuerpo. Carbón: 10.53:1 sobre blanco (4.4). */
+  textBody: "#3F3F3F",
+  /** Secundario y etiquetas. */
+  textMuted: "#7A7A7A",
+  /** Único negro que queda: el interior del visor, donde va el video. */
+  viewfinder: "#000000",
+  onDarkFaint: "rgba(255,255,255,0.62)",
 } as const;
 
 /** Semánticos. No son colores de marca: sólo estado (validado, error, alerta). */

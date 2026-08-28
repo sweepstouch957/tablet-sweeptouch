@@ -34,9 +34,9 @@ const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
 /** Verde de estado, no de marca: dice "validado", no "Sweepstouch". */
 const GREEN = STATE.ok;
-const INK = SURFACE.dark;
-const PANEL = SURFACE.darkRaised;
-const HAIR = SURFACE.darkLine;
+const INK = SURFACE.page;
+const PANEL = SURFACE.raised;
+const HAIR = SURFACE.line;
 
 /** Segundos antes de volver solo a la pantalla de escaneo. */
 const AUTO_RESET_S = 60;
@@ -120,11 +120,11 @@ export default function ShoppingListResult({
       <Stack
         alignItems="center"
         justifyContent="center"
-        sx={{ bgcolor: INK, minHeight: "100%", py: 8, gap: 2, px: 4, textAlign: "center", color: "#fff" }}
+        sx={{ bgcolor: INK, minHeight: "100%", py: 8, gap: 2, px: 4, textAlign: "center", color: SURFACE.text }}
       >
         <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
         <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Compra validada</Typography>
-        <Typography sx={{ color: "rgba(255,255,255,.5)" }}>
+        <Typography sx={{ color: SURFACE.textMuted }}>
           {validateResult.confirmedProducts} producto
           {validateResult.confirmedProducts === 1 ? "" : "s"} confirmado
           {validateResult.confirmedProducts === 1 ? "" : "s"}
@@ -146,7 +146,7 @@ export default function ShoppingListResult({
         </Stack>
 
         {!validateResult.cashierPointsAwarded && (
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,.38)", maxWidth: 340 }}>
+          <Typography variant="caption" sx={{ color: SURFACE.textMuted, maxWidth: 340 }}>
             No se acreditaron tus puntos porque no hay sesión de cajera iniciada.
           </Typography>
         )}
@@ -174,7 +174,7 @@ export default function ShoppingListResult({
 
   // ── Revisión de la lista ───────────────────────────────────────────────────
   return (
-    <Box sx={{ bgcolor: INK, minHeight: "100%", color: "#fff", px: { xs: 2, sm: 3 }, py: 3 }}>
+    <Box sx={{ bgcolor: INK, minHeight: "100%", color: SURFACE.text, px: { xs: 2, sm: 3 }, py: 3 }}>
       <Box sx={{ maxWidth: 620, mx: "auto" }}>
       {/* Quién */}
       <Stack
@@ -209,12 +209,12 @@ export default function ShoppingListResult({
           <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>
             {customerName || "Cliente"}
           </Typography>
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,.45)" }}>
+          <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
             {phoneTail ? `Termina en ${phoneTail} · ` : ""}
             {shoppingList.qrCode}
           </Typography>
         </Box>
-        <Stack alignItems="center" sx={{ color: "rgba(255,255,255,.35)", flexShrink: 0 }}>
+        <Stack alignItems="center" sx={{ color: SURFACE.textMuted, flexShrink: 0 }}>
           <TimerRoundedIcon sx={{ fontSize: 18 }} />
           <Typography variant="caption" sx={{ fontVariantNumeric: "tabular-nums" }}>
             {seconds}s
@@ -224,10 +224,10 @@ export default function ShoppingListResult({
 
       {/* Qué se lleva */}
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
-        <ShoppingBasketRoundedIcon sx={{ fontSize: 19, color: "rgba(255,255,255,.5)" }} />
+        <ShoppingBasketRoundedIcon sx={{ fontSize: 19, color: SURFACE.textMuted }} />
         <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>Lo que pidió</Typography>
         <Box sx={{ flex: 1 }} />
-        <Typography variant="caption" sx={{ color: "rgba(255,255,255,.4)" }}>
+        <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
           Destilda lo que no lleve
         </Typography>
       </Stack>
@@ -247,8 +247,8 @@ export default function ShoppingListResult({
                 py: 1.5,
                 borderRadius: `${RADIUS.md}px`,
                 cursor: "pointer",
-                bgcolor: on ? "rgba(34,197,94,.08)" : "rgba(255,255,255,.03)",
-                border: `1px solid ${on ? "rgba(34,197,94,.35)" : HAIR}`,
+                bgcolor: on ? STATE.okSoft : SURFACE.raised,
+                border: `1px solid ${on ? GREEN : HAIR}`,
                 transition: "background-color .15s, border-color .15s",
                 opacity: on ? 1 : 0.5,
               }}
@@ -270,7 +270,7 @@ export default function ShoppingListResult({
                   {item.name}
                 </Typography>
                 <Stack direction="row" alignItems="center" gap={1} sx={{ mt: 0.35 }}>
-                  <Typography fontSize=".92rem" sx={{ color: "rgba(255,255,255,.55)" }}>
+                  <Typography fontSize=".92rem" sx={{ color: SURFACE.textBody }}>
                     {item.price}
                   </Typography>
                   <Chip
@@ -280,8 +280,8 @@ export default function ShoppingListResult({
                       height: 20,
                       fontSize: ".72rem",
                       fontWeight: 700,
-                      bgcolor: "rgba(255,255,255,.07)",
-                      color: "rgba(255,255,255,.7)",
+                      bgcolor: SURFACE.sunken,
+                      color: SURFACE.textBody,
                     }}
                   />
                 </Stack>
@@ -298,12 +298,12 @@ export default function ShoppingListResult({
         direction="row"
         alignItems="center"
         gap={1.25}
-        sx={{ mb: 2, px: 0.5, color: "rgba(255,255,255,.6)" }}
+        sx={{ mb: 2, px: 0.5, color: SURFACE.textBody }}
       >
         <StarRoundedIcon sx={{ fontSize: 20 }} />
         <Typography fontSize=".95rem">
           El cliente gana{" "}
-          <strong style={{ color: "#fff" }}>
+          <strong style={{ color: SURFACE.text }}>
             {selectedItems.length} punto{selectedItems.length === 1 ? "" : "s"}
           </strong>{" "}
           por esta compra
@@ -319,8 +319,8 @@ export default function ShoppingListResult({
             mb: 1.5,
             p: 1.5,
             borderRadius: "12px",
-            bgcolor: "rgba(239,68,68,.10)",
-            border: "1px solid rgba(239,68,68,.35)",
+            bgcolor: STATE.errorSoft,
+            border: `1px solid ${STATE.error}`,
           }}
         >
           <ErrorRoundedIcon sx={{ color: STATE.error, fontSize: 20 }} />
@@ -337,7 +337,7 @@ export default function ShoppingListResult({
         onClick={handleValidate}
         startIcon={
           validating ? (
-            <CircularProgress size={20} sx={{ color: "#fff" }} />
+            <CircularProgress size={20} sx={{ color: SURFACE.text }} />
           ) : (
             <CheckCircleRoundedIcon />
           )
@@ -350,7 +350,7 @@ export default function ShoppingListResult({
           fontSize: "1.05rem",
           bgcolor: PINK,
           "&:hover": { bgcolor: PINK_HOVER },
-          "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.3)" },
+          "&.Mui-disabled": { bgcolor: SURFACE.sunken, color: SURFACE.textMuted },
         }}
       >
         {validating
@@ -382,14 +382,14 @@ function Stat({
         flex: 1,
         p: 1.75,
         borderRadius: `${RADIUS.md}px`,
-        bgcolor: muted ? "rgba(255,255,255,.04)" : `${accent}1f`,
+        bgcolor: muted ? SURFACE.raised : `${accent}1f`,
         border: `1px solid ${muted ? HAIR : `${accent}55`}`,
         textAlign: "left",
       }}
     >
       <Typography
         variant="caption"
-        sx={{ color: "rgba(255,255,255,.5)", fontWeight: 700, letterSpacing: ".05em" }}
+        sx={{ color: SURFACE.textMuted, fontWeight: 700, letterSpacing: ".05em" }}
       >
         {label.toUpperCase()}
       </Typography>
@@ -397,7 +397,7 @@ function Stat({
         fontSize="1.7rem"
         fontWeight={900}
         lineHeight={1.15}
-        sx={{ color: muted ? "rgba(255,255,255,.35)" : accent, fontVariantNumeric: "tabular-nums" }}
+        sx={{ color: muted ? SURFACE.textMuted : accent, fontVariantNumeric: "tabular-nums" }}
       >
         {value}
       </Typography>

@@ -54,7 +54,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
       {/* Participation count card */}
       <Card
         sx={{
-          background: "linear-gradient(135deg, #fc0680, #a90065 60%)",
+          background: BRAND.magenta,
           color: "white",
           borderRadius: 4,
           boxShadow: 6,
@@ -115,8 +115,8 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            bgcolor: SURFACE.dark,
-            color: "white",
+            bgcolor: SURFACE.page,
+            color: SURFACE.text,
             boxShadow: 24,
             borderRadius: 3,
             p: 4,
@@ -127,7 +127,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
           {/* Close button */}
           <IconButton
             onClick={() => setOpenCode(false)}
-            sx={{ position: "absolute", top: 8, right: 8, color: "gray" }}
+            sx={{ position: "absolute", top: 8, right: 8, color: SURFACE.textMuted }}
           >
             <CloseIcon />
           </IconButton>
@@ -143,7 +143,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
             Tu código de acceso
           </Typography>
 
-          <Typography variant="body2" color="gray" mb={3}>
+          <Typography variant="body2" color={SURFACE.textMuted} mb={3}>
             {user.firstName} {user.lastName}
           </Typography>
 
@@ -151,7 +151,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
             <>
               <Box
                 sx={{
-                  background: "linear-gradient(135deg, #fc0680 0%, #a90065 100%)",
+                  background: BRAND.magenta,
                   borderRadius: 2,
                   px: 3,
                   py: 2,
@@ -187,7 +187,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
               </Stack>
             </>
           ) : (
-            <Typography color="gray" fontSize="0.9rem">
+            <Typography color={SURFACE.textMuted} fontSize="0.9rem">
               Código no disponible
             </Typography>
           )}

@@ -69,8 +69,8 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
     <Box
       sx={{
         minHeight: "100vh",
-        background: SURFACE.dark,
-        color: "white",
+        background: SURFACE.page,
+        color: SURFACE.text,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -98,8 +98,8 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
           size="small"
           onClick={onReset}
           sx={{
-            color: "white",
-            borderColor: "rgba(255,255,255,0.3)",
+            color: SURFACE.text,
+            borderColor: SURFACE.line,
             fontSize: 12,
             "&:hover": { borderColor: "white" },
           }}
@@ -140,7 +140,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
           maxWidth: 400,
           textAlign: "center",
           mb: 3,
-          color: "white",
+          color: SURFACE.text,
         }}
       >
         <Typography sx={{ fontSize: 14, opacity: 0.9, mb: 0.5 }}>
@@ -156,7 +156,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
         >
           +{confirmed && confirmResult ? confirmResult.totalPointsThisScan : scan.totalPointsThisScan}
         </Typography>
-        <Divider sx={{ my: 1.5, borderColor: "rgba(255,255,255,0.3)" }} />
+        <Divider sx={{ my: 1.5, borderColor: SURFACE.line }} />
         <Stack direction="row" justifyContent="space-between">
           <Box>
             <Typography sx={{ fontSize: 11, opacity: 0.8 }}>Base Points</Typography>
@@ -207,15 +207,15 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
               borderRadius: 2,
               background: selectedProducts.includes(product.name)
                 ? "rgba(76, 175, 80, 0.15)"
-                : "rgba(255,255,255,0.08)",
+                : SURFACE.raised,
               border: selectedProducts.includes(product.name)
                 ? "1px solid rgba(76, 175, 80, 0.5)"
-                : "1px solid rgba(255,255,255,0.1)",
+                : `1px solid ${SURFACE.line}`,
               transition: "all 0.2s ease",
               cursor: confirmed ? "default" : "pointer",
               "&:hover": confirmed
                 ? {}
-                : { background: "rgba(255,255,255,0.12)" },
+                : { background: SURFACE.sunken },
             }}
             onClick={() => !confirmed && toggleProduct(product.name)}
           >
@@ -223,7 +223,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
               <Checkbox
                 checked={selectedProducts.includes(product.name)}
                 sx={{
-                  color: "rgba(255,255,255,0.5)",
+                  color: SURFACE.textMuted,
                   "&.Mui-checked": { color: STATE.ok },
                   p: 0.5,
                   mr: 1,
@@ -245,11 +245,11 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
                   borderRadius: 1.5,
                   overflow: "hidden",
                   mr: 1.5,
-                  bgcolor: "white",
+                  bgcolor: SURFACE.text,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: "1px solid rgba(255,255,255,0.2)",
+                  border: `1px solid ${SURFACE.line}`,
                 }}
               >
                 <img

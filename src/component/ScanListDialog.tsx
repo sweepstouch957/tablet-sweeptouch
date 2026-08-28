@@ -46,7 +46,7 @@ import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand
 // antes se usaba un #c30562 inventado que no esta en el manual.
 const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
-const INK = SURFACE.dark;
+const INK = SURFACE.page;
 
 type State = "waiting" | "loading" | "result" | "shopping-list" | "used" | "error";
 
@@ -230,23 +230,23 @@ export default function ScanListDialog({ open, onClose }: Props) {
         direction="row"
         alignItems="center"
         gap={1.5}
-        sx={{ px: 2.5, py: 1.75, borderBottom: "1px solid rgba(255,255,255,.07)", flexShrink: 0 }}
+        sx={{ px: 2.5, py: 1.75, borderBottom: `1px solid ${SURFACE.line}`, flexShrink: 0 }}
       >
         <QrCodeScannerRoundedIcon sx={{ color: PINK, fontSize: 26 }} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: SURFACE.onDark }}>
+          <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: SURFACE.text }}>
             Escanear lista del cliente
           </Typography>
-          <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.onDarkFaint }}>
+          <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
             {user ? `${user.firstName} ${user.lastName}` : "Sin cajera identificada · no suma puntos"}
           </Typography>
         </Box>
         {state !== "waiting" && (
-          <Button onClick={reset} sx={{ ...TYPE.caption, fontFamily: FONT, color: SURFACE.onDarkMuted }}>
+          <Button onClick={reset} sx={{ ...TYPE.caption, fontFamily: FONT, color: SURFACE.textBody }}>
             Otro código
           </Button>
         )}
-        <IconButton onClick={onClose} sx={{ color: "#fff" }} aria-label="Cerrar">
+        <IconButton onClick={onClose} sx={{ color: SURFACE.text }} aria-label="Cerrar">
           <CloseRoundedIcon />
         </IconButton>
       </Stack>
@@ -266,10 +266,10 @@ export default function ScanListDialog({ open, onClose }: Props) {
             }}
           >
             <Stack alignItems="center" gap={0.5}>
-              <Typography sx={{ ...TYPE.h3, fontFamily: FONT, color: SURFACE.onDark }}>
+              <Typography sx={{ ...TYPE.h3, fontFamily: FONT, color: SURFACE.text }}>
                 Acerca el QR del cliente
               </Typography>
-              <Typography sx={{ ...TYPE.body, fontFamily: FONT, color: SURFACE.onDarkMuted }}>
+              <Typography sx={{ ...TYPE.body, fontFamily: FONT, color: SURFACE.textBody }}>
                 Se lee solo. No hay que tocar nada.
               </Typography>
             </Stack>
@@ -282,8 +282,8 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 aspectRatio: "1",
                 borderRadius: `${RADIUS.lg}px`,
                 overflow: "hidden",
-                bgcolor: "#000",
-                boxShadow: "0 0 0 1px rgba(255,255,255,.10)",
+                bgcolor: SURFACE.viewfinder,
+                boxShadow: `0 0 0 1px ${SURFACE.line}, 0 12px 32px -20px rgba(63,63,63,.55)`,
               }}
             >
               <Box id="prercs-qr-reader" />
@@ -328,18 +328,18 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 >
                   {camError ? (
                     <>
-                      <PhotoCameraRoundedIcon sx={{ fontSize: 42, color: "rgba(255,255,255,.35)" }} />
-                      <Typography fontWeight={700} color="rgba(255,255,255,.8)">
+                      <PhotoCameraRoundedIcon sx={{ fontSize: 42, color: "rgba(255,255,255,.5)" }} />
+                      <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: "#fff" }}>
                         Cámara no disponible
                       </Typography>
-                      <Typography variant="caption" sx={{ color: "rgba(255,255,255,.42)" }}>
+                      <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: "rgba(255,255,255,.65)" }}>
                         Usa el lector o escribe el código abajo.
                       </Typography>
                     </>
                   ) : (
                     <>
-                      <CircularProgress size={30} sx={{ color: PINK }} />
-                      <Typography variant="caption" sx={{ color: "rgba(255,255,255,.45)" }}>
+                      <CircularProgress size={30} sx={{ color: "#fff" }} />
+                      <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: "rgba(255,255,255,.65)" }}>
                         Abriendo cámara…
                       </Typography>
                     </>
@@ -356,11 +356,11 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     width: 8,
                     height: 8,
                     borderRadius: "50%",
-                    bgcolor: camReady ? STATE.ok : SURFACE.onDarkFaint,
+                    bgcolor: camReady ? STATE.ok : SURFACE.textMuted,
                     animation: camReady ? "prercsPulse 1.6s infinite" : "none",
                   }}
                 />
-                <Typography variant="caption" sx={{ color: "rgba(255,255,255,.42)" }}>
+                <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
                   {camReady ? "Cámara y lector activos" : "Preparando…"}
                 </Typography>
               </Stack>
@@ -369,14 +369,14 @@ export default function ScanListDialog({ open, onClose }: Props) {
             {/* Entrada manual */}
             <Box sx={{ width: "min(90vw, 420px)" }}>
               <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
-                <Box sx={{ flex: 1, height: "1px", bgcolor: "rgba(255,255,255,.10)" }} />
+                <Box sx={{ flex: 1, height: "1px", bgcolor: SURFACE.line }} />
                 <Stack direction="row" alignItems="center" gap={0.75}>
-                  <KeyboardRoundedIcon sx={{ fontSize: 15, color: "rgba(255,255,255,.35)" }} />
-                  <Typography variant="caption" sx={{ color: "rgba(255,255,255,.35)" }}>
+                  <KeyboardRoundedIcon sx={{ fontSize: 15, color: SURFACE.textMuted }} />
+                  <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
                     o escríbelo
                   </Typography>
                 </Stack>
-                <Box sx={{ flex: 1, height: "1px", bgcolor: "rgba(255,255,255,.10)" }} />
+                <Box sx={{ flex: 1, height: "1px", bgcolor: SURFACE.line }} />
               </Stack>
 
               <Stack direction="row" gap={1}>
@@ -396,15 +396,15 @@ export default function ScanListDialog({ open, onClose }: Props) {
                       fontWeight: 700,
                       letterSpacing: ".14em",
                       textAlign: "center",
-                      color: "#fff",
+                      color: SURFACE.text,
                     },
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      bgcolor: "rgba(255,255,255,.05)",
+                      bgcolor: SURFACE.raised,
                       borderRadius: "12px",
-                      "& fieldset": { borderColor: "rgba(255,255,255,.14)" },
-                      "&:hover fieldset": { borderColor: "rgba(255,255,255,.28)" },
+                      "& fieldset": { borderColor: SURFACE.line },
+                      "&:hover fieldset": { borderColor: SURFACE.textMuted },
                       "&.Mui-focused fieldset": { borderColor: PINK },
                     },
                   }}
@@ -421,7 +421,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     fontWeight: 800,
                     bgcolor: PINK,
                     "&:hover": { bgcolor: PINK_HOVER },
-                    "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.25)" },
+                    "&.Mui-disabled": { bgcolor: SURFACE.sunken, color: SURFACE.textMuted },
                   }}
                 >
                   Buscar
@@ -449,7 +449,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
         {state === "loading" && (
           <Stack alignItems="center" justifyContent="center" sx={{ minHeight: "70vh", gap: 2 }}>
             <CircularProgress sx={{ color: PINK }} />
-            <Typography color="rgba(255,255,255,.7)">Buscando la lista…</Typography>
+            <Typography color={SURFACE.textBody}>Buscando la lista…</Typography>
           </Stack>
         )}
 
@@ -460,10 +460,10 @@ export default function ScanListDialog({ open, onClose }: Props) {
             sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
           >
             <BlockRoundedIcon sx={{ fontSize: 60, color: STATE.warn }} />
-            <Typography variant="h5" color="#fff" fontWeight={800}>
+            <Typography variant="h5" color={SURFACE.text} fontWeight={800}>
               {usedInfo?.expired ? "Esta lista venció" : "Esta lista ya se usó"}
             </Typography>
-            <Typography variant="body2" sx={{ color: "rgba(255,255,255,.55)", maxWidth: 400 }}>
+            <Typography variant="body2" sx={{ color: SURFACE.textBody, maxWidth: 400 }}>
               {usedInfo?.expired ? (
                 "El QR pasó su fecha de validez. Pide al cliente que arme una lista nueva desde su link, o extiende la vigencia desde el panel de la tienda."
               ) : (
@@ -500,10 +500,10 @@ export default function ScanListDialog({ open, onClose }: Props) {
             sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
           >
             <ErrorRoundedIcon sx={{ fontSize: 56, color: STATE.error }} />
-            <Typography variant="h6" color="#fff" fontWeight={700}>
+            <Typography variant="h6" color={SURFACE.text} fontWeight={700}>
               {error}
             </Typography>
-            <Typography variant="body2" sx={{ color: "rgba(255,255,255,.5)", maxWidth: 380 }}>
+            <Typography variant="body2" sx={{ color: SURFACE.textMuted, maxWidth: 380 }}>
               Revisa que el código esté completo. Si la lista venció, se puede extender
               desde el panel de la tienda.
             </Typography>
