@@ -23,10 +23,10 @@ import {
 } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import QrCodeScannerRoundedIcon from "@mui/icons-material/QrCodeScannerRounded";
-import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import BlockRoundedIcon from "@mui/icons-material/BlockRounded";
-import PhotoCameraOutlinedIcon from "@mui/icons-material/PhotoCameraOutlined";
-import KeyboardOutlinedIcon from "@mui/icons-material/KeyboardOutlined";
+import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
+import KeyboardRoundedIcon from "@mui/icons-material/KeyboardRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import WeeklyAdResult from "./WeeklyAdResult";
 import ShoppingListResult from "./ShoppingListResult";
@@ -40,9 +40,13 @@ import {
   type ShoppingListResult as ShoppingListResultType,
 } from "@/services/weeklyAdService";
 
-const PINK = "#fc0680";
-const PINK_DK = "#c30562";
-const INK = "#0b0d13";
+import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
+
+// 4.1: el magenta es el color de accion. 75% es su hover segun la escala 4.2 —
+// antes se usaba un #c30562 inventado que no esta en el manual.
+const PINK = BRAND.magenta;
+const PINK_HOVER = MAGENTA[75];
+const INK = SURFACE.dark;
 
 type State = "waiting" | "loading" | "result" | "shopping-list" | "used" | "error";
 
@@ -230,15 +234,15 @@ export default function ScanListDialog({ open, onClose }: Props) {
       >
         <QrCodeScannerRoundedIcon sx={{ color: PINK, fontSize: 26 }} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography fontWeight={800} color="#fff" lineHeight={1.2} fontSize="1.05rem">
+          <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: SURFACE.onDark }}>
             Escanear lista del cliente
           </Typography>
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,.42)" }}>
+          <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.onDarkFaint }}>
             {user ? `${user.firstName} ${user.lastName}` : "Sin cajera identificada · no suma puntos"}
           </Typography>
         </Box>
         {state !== "waiting" && (
-          <Button onClick={reset} sx={{ color: "rgba(255,255,255,.7)", fontWeight: 700 }}>
+          <Button onClick={reset} sx={{ ...TYPE.caption, fontFamily: FONT, color: SURFACE.onDarkMuted }}>
             Otro código
           </Button>
         )}
@@ -262,10 +266,10 @@ export default function ScanListDialog({ open, onClose }: Props) {
             }}
           >
             <Stack alignItems="center" gap={0.5}>
-              <Typography fontSize="1.6rem" fontWeight={900} color="#fff" letterSpacing="-.02em">
+              <Typography sx={{ ...TYPE.h3, fontFamily: FONT, color: SURFACE.onDark }}>
                 Acerca el QR del cliente
               </Typography>
-              <Typography sx={{ color: "rgba(255,255,255,.45)" }}>
+              <Typography sx={{ ...TYPE.body, fontFamily: FONT, color: SURFACE.onDarkMuted }}>
                 Se lee solo. No hay que tocar nada.
               </Typography>
             </Stack>
@@ -276,7 +280,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 position: "relative",
                 width: "min(78vw, 340px)",
                 aspectRatio: "1",
-                borderRadius: "26px",
+                borderRadius: `${RADIUS.lg}px`,
                 overflow: "hidden",
                 bgcolor: "#000",
                 boxShadow: "0 0 0 1px rgba(255,255,255,.10)",
@@ -292,7 +296,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     sx={{
                       position: "absolute",
                       inset: 18,
-                      borderRadius: "18px",
+                      borderRadius: `${RADIUS.md}px`,
                       border: `2px solid ${PINK}`,
                       pointerEvents: "none",
                     }}
@@ -324,7 +328,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 >
                   {camError ? (
                     <>
-                      <PhotoCameraOutlinedIcon sx={{ fontSize: 42, color: "rgba(255,255,255,.35)" }} />
+                      <PhotoCameraRoundedIcon sx={{ fontSize: 42, color: "rgba(255,255,255,.35)" }} />
                       <Typography fontWeight={700} color="rgba(255,255,255,.8)">
                         Cámara no disponible
                       </Typography>
@@ -352,7 +356,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     width: 8,
                     height: 8,
                     borderRadius: "50%",
-                    bgcolor: camReady ? "#22c55e" : "rgba(255,255,255,.3)",
+                    bgcolor: camReady ? STATE.ok : SURFACE.onDarkFaint,
                     animation: camReady ? "prercsPulse 1.6s infinite" : "none",
                   }}
                 />
@@ -367,7 +371,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
               <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
                 <Box sx={{ flex: 1, height: "1px", bgcolor: "rgba(255,255,255,.10)" }} />
                 <Stack direction="row" alignItems="center" gap={0.75}>
-                  <KeyboardOutlinedIcon sx={{ fontSize: 15, color: "rgba(255,255,255,.35)" }} />
+                  <KeyboardRoundedIcon sx={{ fontSize: 15, color: "rgba(255,255,255,.35)" }} />
                   <Typography variant="caption" sx={{ color: "rgba(255,255,255,.35)" }}>
                     o escríbelo
                   </Typography>
@@ -416,7 +420,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     borderRadius: "12px",
                     fontWeight: 800,
                     bgcolor: PINK,
-                    "&:hover": { bgcolor: PINK_DK },
+                    "&:hover": { bgcolor: PINK_HOVER },
                     "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.25)" },
                   }}
                 >
@@ -455,7 +459,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             justifyContent="center"
             sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
           >
-            <BlockRoundedIcon sx={{ fontSize: 60, color: "#f59e0b" }} />
+            <BlockRoundedIcon sx={{ fontSize: 60, color: STATE.warn }} />
             <Typography variant="h5" color="#fff" fontWeight={800}>
               {usedInfo?.expired ? "Esta lista venció" : "Esta lista ya se usó"}
             </Typography>
@@ -482,7 +486,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
               variant="contained"
               onClick={reset}
               disableElevation
-              sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_DK }, borderRadius: "10px", fontWeight: 800 }}
+              sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_HOVER }, borderRadius: "10px", fontWeight: 800 }}
             >
               Escanear otro
             </Button>
@@ -495,7 +499,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             justifyContent="center"
             sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
           >
-            <ErrorOutlineRoundedIcon sx={{ fontSize: 56, color: "#ef4444" }} />
+            <ErrorRoundedIcon sx={{ fontSize: 56, color: STATE.error }} />
             <Typography variant="h6" color="#fff" fontWeight={700}>
               {error}
             </Typography>
@@ -507,7 +511,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
               variant="contained"
               onClick={reset}
               disableElevation
-              sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_DK }, borderRadius: "10px", fontWeight: 800 }}
+              sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_HOVER }, borderRadius: "10px", fontWeight: 800 }}
             >
               Intentar de nuevo
             </Button>

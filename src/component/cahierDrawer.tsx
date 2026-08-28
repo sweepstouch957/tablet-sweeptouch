@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import QrCodeScannerRoundedIcon from "@mui/icons-material/QrCodeScannerRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import { BRAND, MAGENTA, NEUTRAL, SURFACE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import { useAuth } from "@/context/auth-context";
 import TodayParticipationCard from "./TotalParticipations";
 import { useCashiersByStore } from "@/services/cashierService";
@@ -71,9 +72,10 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
         onClose={onClose}
         PaperProps={{
           sx: {
-            width: { xs: "100%", sm: 360 },
-            background: "#1a1a1a",
-            color: "#fff",
+            width: { xs: "100%", sm: 380 },
+            background: SURFACE.dark,
+            color: SURFACE.onDark,
+            fontFamily: FONT,
             p: 2,
             borderRadius: "12px 0 0 12px",
             boxShadow: 4,
@@ -82,7 +84,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
           },
         }}
       >
-        <Typography variant="h6" fontWeight="bold" mb={2}>
+        <Typography sx={{ ...TYPE.h4, fontFamily: FONT, mb: 2 }}>
           {user ? "Información de Cajera" : "Iniciar sesión"}
         </Typography>
 
@@ -90,9 +92,10 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
           <Stack spacing={2} alignItems="center" textAlign="center">
             <Avatar
               sx={{
-                bgcolor: "#fc0680",
+                bgcolor: BRAND.magenta,
                 width: 80,
                 height: 80,
+                fontFamily: FONT,
                 fontSize: "2rem",
               }}
             >
@@ -122,16 +125,17 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               sx={{
                 mt: 1,
                 py: 1.5,
-                borderRadius: "10px",
-                fontWeight: 800,
+                borderRadius: `${RADIUS.md}px`,
+                fontFamily: FONT,
+                fontWeight: 500, // 5.4: Medium para botones y CTA
                 fontSize: "1rem",
-                backgroundColor: "#fc0680",
-                "&:hover": { backgroundColor: "#c30562" },
+                backgroundColor: BRAND.magenta,
+                "&:hover": { backgroundColor: MAGENTA[75] },
               }}
             >
               Escanear lista
             </Button>
-            <Typography fontSize="0.78rem" color="gray" sx={{ mt: -1 }}>
+            <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.onDarkFaint, mt: -1 }}>
               Suma puntos para el cliente y para ti
             </Typography>
 
@@ -145,12 +149,15 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               }}
               sx={{
                 mt: 2,
-                borderRadius: "10px",
-                borderColor: "rgba(255,255,255,.25)",
-                color: "rgba(255,255,255,.75)",
+                borderRadius: `${RADIUS.md}px`,
+                fontFamily: FONT,
+                fontWeight: 500,
+                borderColor: SURFACE.darkLine,
+                color: SURFACE.onDarkMuted,
                 "&:hover": {
-                  borderColor: "#fc0680",
-                  backgroundColor: "rgba(252,6,128,.08)",
+                  borderColor: BRAND.magenta,
+                  backgroundColor: MAGENTA[10],
+                  color: BRAND.magenta,
                 },
               }}
             >
@@ -169,9 +176,11 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               fullWidth
               onClick={() => setOpenModal(true)}
               sx={{
-                backgroundColor: "#fc0680",
-                "&:hover": { backgroundColor: "#e0046f" },
-                borderRadius: "8px",
+                backgroundColor: BRAND.magenta,
+                "&:hover": { backgroundColor: MAGENTA[75] },
+                borderRadius: `${RADIUS.md}px`,
+                fontFamily: FONT,
+                fontWeight: 500,
                 mt: 2,
               }}
             >
@@ -184,13 +193,15 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               fullWidth
               onClick={() => setOpenManualLogin(true)}
               sx={{
-                borderColor: "#fc0680",
-                color: "#fc0680",
+                borderColor: BRAND.magenta,
+                color: BRAND.magenta,
                 "&:hover": {
-                  borderColor: "#e0046f",
-                  backgroundColor: "rgba(252, 6, 128, 0.1)",
+                  borderColor: MAGENTA[75],
+                  backgroundColor: MAGENTA[10],
                 },
-                borderRadius: "8px",
+                borderRadius: `${RADIUS.md}px`,
+                fontFamily: FONT,
+                fontWeight: 500,
               }}
             >
               Ingresar Access Code
@@ -229,14 +240,14 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             variant="h5"
             fontWeight="bold"
             mb={3}
-            sx={{ color: "#f43789" }}
+            sx={{ color: BRAND.magenta }}
           >
             Ranking de Cajeras
           </Typography>
 
           {isLoading ? (
             <Stack alignItems="center" mt={4}>
-              <CircularProgress sx={{ color: "#fc0680" }} />
+              <CircularProgress sx={{ color: BRAND.magenta }} />
               <Typography mt={2} color="text.secondary">
                 Cargando cajeras...
               </Typography>
@@ -260,7 +271,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                   <TableHead>
                     <TableRow
                       sx={{
-                        backgroundColor: "#f43789",
+                        backgroundColor: BRAND.magenta,
                         "& .MuiTableCell-head": {
                           color: "white",
                           fontWeight: "bold",
@@ -289,13 +300,13 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                           cursor: "pointer",
                           backgroundColor:
                             selectedCashier?._id === cashier._id
-                              ? "#fce4ec"
+                              ? MAGENTA[10]
                               : index % 2 === 0
-                                ? "#fafafa"
+                                ? NEUTRAL[10]
                                 : "white",
                           transition: "all 0.2s ease",
                           "&:hover": {
-                            backgroundColor: "#f8bbd0",
+                            backgroundColor: MAGENTA[25],
                             transform: "scale(1.01)",
                           },
                           "& .MuiTableCell-root": {
@@ -310,7 +321,7 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                               cashier.profileImage || ""
                             }
                             sx={{
-                              bgcolor: "#fc0680",
+                              bgcolor: BRAND.magenta,
                               width: 45,
                               height: 45,
                               fontSize: "1.1rem",
@@ -343,8 +354,8 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
                               px: 2,
                               py: 0.5,
                               borderRadius: 2,
-                              backgroundColor: "#e1f5fe",
-                              color: "#0277bd",
+                              backgroundColor: NEUTRAL[10],
+                              color: NEUTRAL[75],
                               fontSize: "0.85rem",
                               fontWeight: 600,
                             }}
@@ -380,10 +391,10 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
             onClick={() => setOpenModal(false)}
             sx={{
               mt: 3,
-              borderColor: "#f43789",
-              color: "#f43789",
+              borderColor: BRAND.magenta,
+              color: BRAND.magenta,
               "&:hover": {
-                borderColor: "#d62b74",
+                borderColor: MAGENTA[75],
                 backgroundColor: "rgba(244, 55, 137, 0.05)",
               },
               borderRadius: 2,

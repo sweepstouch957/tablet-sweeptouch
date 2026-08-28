@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import type { ScanResult, ConfirmResult } from "@/services/weeklyAdService";
+import { BRAND, MAGENTA, NEUTRAL, SURFACE, STATE, RADIUS } from "@/libs/brand";
 
 interface Props {
   scan: ScanResult;
@@ -68,7 +69,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+        background: SURFACE.dark,
         color: "white",
         display: "flex",
         flexDirection: "column",
@@ -114,7 +115,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
           variant="h3"
           sx={{
             fontWeight: "bold",
-            background: "linear-gradient(135deg, #FFD700, #FFA500)",
+            background: BRAND.magenta,
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
@@ -132,7 +133,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
       <Paper
         elevation={8}
         sx={{
-          background: "linear-gradient(135deg, #DC1F26 0%, #ff6b6b 100%)",
+          background: BRAND.magenta,
           borderRadius: 3,
           p: 3,
           width: "100%",
@@ -166,7 +167,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
           {confirmed && confirmResult && confirmResult.bonusPointsAwarded > 0 && (
             <Box>
               <Typography sx={{ fontSize: 11, opacity: 0.8 }}>Bonus</Typography>
-              <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "#FFD700" }}>
+              <Typography sx={{ fontWeight: "bold", fontSize: 18, color: BRAND.magenta }}>
                 +{confirmResult.bonusPointsAwarded}
               </Typography>
             </Box>
@@ -188,7 +189,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
             fontSize: 16,
             mb: 1.5,
             textAlign: "center",
-            color: "#FFD700",
+            color: BRAND.magenta,
           }}
         >
           📋 This Week&apos;s Offers
@@ -223,7 +224,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
                 checked={selectedProducts.includes(product.name)}
                 sx={{
                   color: "rgba(255,255,255,0.5)",
-                  "&.Mui-checked": { color: "#4caf50" },
+                  "&.Mui-checked": { color: STATE.ok },
                   p: 0.5,
                   mr: 1,
                 }}
@@ -231,7 +232,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
             )}
             {confirmed && selectedProducts.includes(product.name) && (
               <CheckCircleIcon
-                sx={{ color: "#4caf50", mr: 1, fontSize: 20 }}
+                sx={{ color: STATE.ok, mr: 1, fontSize: 20 }}
               />
             )}
             {/* Product visual: image or emoji */}
@@ -267,7 +268,7 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
                 sx={{
                   fontWeight: "bold",
                   fontSize: 14,
-                  color: product.isHero ? "#FFD700" : "white",
+                  color: product.isHero ? BRAND.magenta : "white",
                 }}
               >
                 {product.name}
@@ -279,14 +280,14 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
                       ml: 1,
                       height: 18,
                       fontSize: 9,
-                      bgcolor: "#FFD700",
-                      color: "#333",
+                      bgcolor: BRAND.magenta,
+                      color: NEUTRAL[75],
                       fontWeight: "bold",
                     }}
                   />
                 )}
               </Typography>
-              <Typography sx={{ color: "#FFD700", fontWeight: "bold", fontSize: 16 }}>
+              <Typography sx={{ color: BRAND.magenta, fontWeight: "bold", fontSize: 16 }}>
                 {product.price}
               </Typography>
             </Box>
@@ -309,10 +310,10 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
             borderRadius: 2,
             background:
               selectedProducts.length > 0
-                ? "linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)"
-                : "#555",
+                ? STATE.ok
+                : NEUTRAL[50],
             "&:hover": {
-              background: "linear-gradient(135deg, #388e3c 0%, #4caf50 100%)",
+              background: STATE.ok,
             },
             boxShadow: selectedProducts.length > 0
               ? "0 4px 20px rgba(76, 175, 80, 0.4)"
@@ -329,11 +330,11 @@ export default function WeeklyAdResult({ scan, onConfirm, onReset }: Props) {
 
       {confirmed && confirmResult && (
         <Box sx={{ textAlign: "center" }}>
-          <Typography sx={{ color: "#4caf50", fontWeight: "bold", fontSize: 18, mb: 1 }}>
+          <Typography sx={{ color: STATE.ok, fontWeight: "bold", fontSize: 18, mb: 1 }}>
             ✅ Purchase Confirmed!
           </Typography>
           {confirmResult.bonusPointsAwarded > 0 && (
-            <Typography sx={{ color: "#FFD700", fontSize: 14 }}>
+            <Typography sx={{ color: BRAND.magenta, fontSize: 14 }}>
               +{confirmResult.bonusPointsAwarded} bonus points awarded
             </Typography>
           )}

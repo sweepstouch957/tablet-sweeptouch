@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Layout } from "@/component/container";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+// Familia de marca. El manual (5.5) especifica Gotham, que es de Hoefler&Co y
+// requiere licencia comercial — no esta en el proyecto. Montserrat es geometrica
+// y comparte la construccion de circulo y cuadrado que describe 5.1, asi que
+// sostiene la jerarquia sin romper la identidad. Al comprar Gotham se reemplaza
+// aca y todo el sistema (src/libs/brand.ts) lo hereda.
+const brandSans = Montserrat({
+  variable: "--font-brand",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
 });
 
 const geistMono = Geist_Mono({
@@ -25,7 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${brandSans.variable} ${geistMono.variable}`}>
         <Layout>{children}</Layout>
       </body>
     </html>

@@ -17,23 +17,26 @@ import {
   CircularProgress,
   Divider,
 } from "@mui/material";
+// 6.3: iconos de relleno solido, esquinas redondeadas, un solo color.
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
-import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
-import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
-import ShoppingBasketOutlinedIcon from "@mui/icons-material/ShoppingBasketOutlined";
-import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import TimerRoundedIcon from "@mui/icons-material/TimerRounded";
+import ShoppingBasketRoundedIcon from "@mui/icons-material/ShoppingBasketRounded";
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
+import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type {
   ShoppingListResult as ShoppingListResultType,
   ShoppingListValidateResult,
 } from "@/services/weeklyAdService";
 
-const PINK = "#fc0680";
-const PINK_DK = "#c30562";
-const GREEN = "#22c55e";
-const INK = "#0b0d13";
-const PANEL = "rgba(255,255,255,.045)";
-const HAIR = "rgba(255,255,255,.09)";
+const PINK = BRAND.magenta;
+const PINK_HOVER = MAGENTA[75];
+/** Verde de estado, no de marca: dice "validado", no "Sweepstouch". */
+const GREEN = STATE.ok;
+const INK = SURFACE.dark;
+const PANEL = SURFACE.darkRaised;
+const HAIR = SURFACE.darkLine;
 
 /** Segundos antes de volver solo a la pantalla de escaneo. */
 const AUTO_RESET_S = 60;
@@ -120,9 +123,7 @@ export default function ShoppingListResult({
         sx={{ bgcolor: INK, minHeight: "100%", py: 8, gap: 2, px: 4, textAlign: "center", color: "#fff" }}
       >
         <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
-        <Typography fontSize="1.7rem" fontWeight={900} letterSpacing="-.02em">
-          Compra validada
-        </Typography>
+        <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Compra validada</Typography>
         <Typography sx={{ color: "rgba(255,255,255,.5)" }}>
           {validateResult.confirmedProducts} producto
           {validateResult.confirmedProducts === 1 ? "" : "s"} confirmado
@@ -162,7 +163,7 @@ export default function ShoppingListResult({
             fontWeight: 800,
             fontSize: "1rem",
             bgcolor: PINK,
-            "&:hover": { bgcolor: PINK_DK },
+            "&:hover": { bgcolor: PINK_HOVER },
           }}
         >
           Siguiente cliente
@@ -182,7 +183,7 @@ export default function ShoppingListResult({
         gap={1.75}
         sx={{
           p: 2,
-          borderRadius: "16px",
+          borderRadius: `${RADIUS.lg}px`,
           bgcolor: PANEL,
           border: `1px solid ${HAIR}`,
           mb: 2,
@@ -202,10 +203,10 @@ export default function ShoppingListResult({
             fontWeight: 800,
           }}
         >
-          {customerName ? initial : <PersonOutlineRoundedIcon />}
+          {customerName ? initial : <PersonRoundedIcon />}
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography fontWeight={800} fontSize="1.1rem" lineHeight={1.25}>
+          <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>
             {customerName || "Cliente"}
           </Typography>
           <Typography variant="caption" sx={{ color: "rgba(255,255,255,.45)" }}>
@@ -214,7 +215,7 @@ export default function ShoppingListResult({
           </Typography>
         </Box>
         <Stack alignItems="center" sx={{ color: "rgba(255,255,255,.35)", flexShrink: 0 }}>
-          <TimerOutlinedIcon sx={{ fontSize: 18 }} />
+          <TimerRoundedIcon sx={{ fontSize: 18 }} />
           <Typography variant="caption" sx={{ fontVariantNumeric: "tabular-nums" }}>
             {seconds}s
           </Typography>
@@ -223,10 +224,8 @@ export default function ShoppingListResult({
 
       {/* Qué se lleva */}
       <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
-        <ShoppingBasketOutlinedIcon sx={{ fontSize: 19, color: "rgba(255,255,255,.5)" }} />
-        <Typography fontWeight={800} fontSize="1rem">
-          Lo que pidió
-        </Typography>
+        <ShoppingBasketRoundedIcon sx={{ fontSize: 19, color: "rgba(255,255,255,.5)" }} />
+        <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>Lo que pidió</Typography>
         <Box sx={{ flex: 1 }} />
         <Typography variant="caption" sx={{ color: "rgba(255,255,255,.4)" }}>
           Destilda lo que no lleve
@@ -246,7 +245,7 @@ export default function ShoppingListResult({
               sx={{
                 px: 1.75,
                 py: 1.5,
-                borderRadius: "14px",
+                borderRadius: `${RADIUS.md}px`,
                 cursor: "pointer",
                 bgcolor: on ? "rgba(34,197,94,.08)" : "rgba(255,255,255,.03)",
                 border: `1px solid ${on ? "rgba(34,197,94,.35)" : HAIR}`,
@@ -301,7 +300,7 @@ export default function ShoppingListResult({
         gap={1.25}
         sx={{ mb: 2, px: 0.5, color: "rgba(255,255,255,.6)" }}
       >
-        <StarOutlineRoundedIcon sx={{ fontSize: 20 }} />
+        <StarRoundedIcon sx={{ fontSize: 20 }} />
         <Typography fontSize=".95rem">
           El cliente gana{" "}
           <strong style={{ color: "#fff" }}>
@@ -324,8 +323,8 @@ export default function ShoppingListResult({
             border: "1px solid rgba(239,68,68,.35)",
           }}
         >
-          <ErrorOutlineRoundedIcon sx={{ color: "#f87171", fontSize: 20 }} />
-          <Typography fontSize=".9rem" sx={{ color: "#fca5a5" }}>
+          <ErrorRoundedIcon sx={{ color: STATE.error, fontSize: 20 }} />
+          <Typography fontSize=".9rem" sx={{ color: STATE.error }}>
             {failed}
           </Typography>
         </Stack>
@@ -346,11 +345,11 @@ export default function ShoppingListResult({
         disableElevation
         sx={{
           py: 1.75,
-          borderRadius: "14px",
+          borderRadius: `${RADIUS.md}px`,
           fontWeight: 900,
           fontSize: "1.05rem",
           bgcolor: PINK,
-          "&:hover": { bgcolor: PINK_DK },
+          "&:hover": { bgcolor: PINK_HOVER },
           "&.Mui-disabled": { bgcolor: "rgba(255,255,255,.07)", color: "rgba(255,255,255,.3)" },
         }}
       >
@@ -382,7 +381,7 @@ function Stat({
       sx={{
         flex: 1,
         p: 1.75,
-        borderRadius: "14px",
+        borderRadius: `${RADIUS.md}px`,
         bgcolor: muted ? "rgba(255,255,255,.04)" : `${accent}1f`,
         border: `1px solid ${muted ? HAIR : `${accent}55`}`,
         textAlign: "left",

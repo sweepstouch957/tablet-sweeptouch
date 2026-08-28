@@ -18,6 +18,7 @@ import KeyIcon from "@mui/icons-material/Key";
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/http/client";
+import { BRAND, MAGENTA, STATE, SURFACE } from "@/libs/brand";
 
 const fetchTodayParticipation = async (userId: string) => {
   const { data } = await api.get(`/sweepstakes/participants/today/${userId}`);
@@ -114,7 +115,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            bgcolor: "#1a1a1a",
+            bgcolor: SURFACE.dark,
             color: "white",
             boxShadow: 24,
             borderRadius: 3,
@@ -131,7 +132,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
             <CloseIcon />
           </IconButton>
 
-          <KeyIcon sx={{ fontSize: 48, color: "#fc0680", mb: 1 }} />
+          <KeyIcon sx={{ fontSize: 48, color: BRAND.magenta, mb: 1 }} />
 
           <Typography
             id="access-code-modal-title"
@@ -171,12 +172,12 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
                   variant="outlined"
                   size="small"
                   sx={{
-                    borderColor: copied ? "#4caf50" : "#fc0680",
-                    color: copied ? "#4caf50" : "#fc0680",
+                    borderColor: copied ? STATE.ok : BRAND.magenta,
+                    color: copied ? STATE.ok : BRAND.magenta,
                     textTransform: "none",
                     borderRadius: 2,
                     "&:hover": {
-                      borderColor: copied ? "#4caf50" : "#e0046f",
+                      borderColor: copied ? STATE.ok : MAGENTA[75],
                       background: "rgba(252,6,128,0.08)",
                     },
                   }}
