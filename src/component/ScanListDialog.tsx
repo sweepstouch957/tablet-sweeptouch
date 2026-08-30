@@ -73,8 +73,6 @@ export default function ScanListDialog({ open, onClose }: Props) {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scannerRef = useRef<any>(null);
-  const hidRef = useRef<HTMLInputElement>(null);
-  const manualRef = useRef<HTMLInputElement>(null);
   const busyRef = useRef(false);
 
   const reset = useCallback(() => {
@@ -164,7 +162,9 @@ export default function ScanListDialog({ open, onClose }: Props) {
         const scanner = new Html5Qrcode("prercs-qr-reader");
         scannerRef.current = scanner;
         await scanner.start(
-          { facingMode: "environment" },
+          // Frontal: la tablet está montada mirando al cliente, así que el QR
+          // se acerca a esa cara. Con "environment" apuntaba a la pared.
+          { facingMode: "user" },
           { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1 },
           (decoded: string) => {
             if (!isValidCode(decoded.trim().toUpperCase())) return;
@@ -187,20 +187,40 @@ export default function ScanListDialog({ open, onClose }: Props) {
   }, [open, state, lookup, stopCamera]);
 
   // ── Lector HID ────────────────────────────────────────────────────────────
-  // Una pistola USB teclea el código y manda Enter. El input está oculto y se
-  // mantiene enfocado mientras se espera, sin robarle el foco al campo manual.
+  // Una pistola USB teclea el código y manda Enter. Se escucha en el documento
+  // y NO en un input escondido: mantener un campo de texto enfocado hacía que la
+  // tablet levantara el teclado en pantalla apenas se abría la cámara, tapando
+  // el visor. Sin foco no hay teclado, y el lector se sigue leyendo igual.
   useEffect(() => {
     if (!open || state !== "waiting") return;
-    const id = setInterval(() => {
-      const el = hidRef.current;
-      const active = document.activeElement;
-      // Comparación directa contra el input real. Con `getAttribute` alcanzaba
-      // con que MUI no propagara el data-attr para que el foco se lo robara a la
-      // cajera a media palabra.
-      if (el && active !== el && active !== manualRef.current) el.focus();
-    }, 600);
-    return () => clearInterval(id);
-  }, [open, state]);
+
+    let buffer = "";
+    let last = 0;
+
+    const onKey = (e: KeyboardEvent) => {
+      // Si la cajera está escribiendo en el campo manual, ese input manda.
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
+
+      const now = Date.now();
+      // Una pistola dispara las teclas de corrido. Una pausa larga significa que
+      // lo anterior no era un escaneo, así que el buffer arranca de cero.
+      if (now - last > 120) buffer = "";
+      last = now;
+
+      if (e.key === "Enter") {
+        const v = buffer.trim().toUpperCase();
+        buffer = "";
+        if (isValidCode(v)) lookup(v);
+        return;
+      }
+      // Sólo caracteres imprimibles: se ignoran Shift, Tab, flechas, etc.
+      if (e.key.length === 1) buffer += e.key;
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, state, lookup]);
 
   const handleValidate = useCallback(
     (qrCode: string, validatedItems: string[]) =>
@@ -388,7 +408,6 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     if (e.key === "Enter" && manualOk) lookup(manual);
                   }}
                   placeholder="SL-XXXXXX"
-                  inputRef={manualRef}
                   inputProps={{
                     style: {
                       fontFamily: "monospace",
@@ -429,20 +448,6 @@ export default function ScanListDialog({ open, onClose }: Props) {
               </Stack>
             </Box>
 
-            {/* Lector HID: teclea el código y manda Enter */}
-            <input
-              ref={hidRef}
-              type="text"
-              aria-hidden
-              tabIndex={-1}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                const v = (e.currentTarget.value || "").trim().toUpperCase();
-                e.currentTarget.value = "";
-                if (isValidCode(v)) lookup(v);
-              }}
-              style={{ position: "absolute", opacity: 0, width: 1, height: 1, pointerEvents: "none" }}
-            />
           </Box>
         )}
 
