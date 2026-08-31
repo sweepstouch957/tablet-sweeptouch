@@ -237,7 +237,7 @@ export default function ScanModal({ open, onClose }: Props) {
           <Box sx={{ px: 3, py: 3, textAlign: "center" }}>
             {/* Hidden scanner input */}
             {inputMode === "scanner" && (
-              <input ref={inputRef} type="text" autoFocus value={scanBuffer}
+              <input ref={inputRef} type="text" inputMode="none" autoComplete="off" autoFocus value={scanBuffer}
                 onChange={(e) => setScanBuffer(e.target.value)}
                 onKeyDown={handleScannerKeyDown}
                 style={{ position: "absolute", opacity: 0, width: 1, height: 1, overflow: "hidden" }}

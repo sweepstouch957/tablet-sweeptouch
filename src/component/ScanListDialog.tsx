@@ -403,12 +403,18 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 <TextField
                   fullWidth
                   value={manual}
-                  onChange={(e) => setManual(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setManual(digits ? `SL-${digits}` : "");
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && manualOk) lookup(manual);
                   }}
                   placeholder="SL-XXXXXX"
                   inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    maxLength: 9,
                     style: {
                       fontFamily: "monospace",
                       fontSize: "1.25rem",

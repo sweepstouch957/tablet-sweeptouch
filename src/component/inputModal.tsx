@@ -10,7 +10,6 @@ import {
   IconButton,
   Stack,
   Typography,
-  TextField,
   FormControlLabel,
   Checkbox,
   Link,
@@ -320,22 +319,28 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
 
             <DialogContent onClick={handleModalClick}>
               <Stack spacing={2} alignItems="center" onClick={handleModalClick}>
-                <TextField
-                  value={phone}
-                  variant="outlined"
-                  onClick={handleModalClick}
+                <Box
+                  role="textbox"
+                  aria-label="Phone number"
+                  aria-readonly="true"
                   sx={{
-                    input: {
-                      textAlign: 'center',
-                      fontSize: '1.8rem',
-                      color: 'black',
-                      backgroundColor: 'white',
-                      borderRadius: 2,
-                    },
+                    width: '100%',
+                    minHeight: '83px',
+                    px: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    fontSize: '1.8rem',
+                    color: 'black',
+                    backgroundColor: 'white',
+                    border: '1px solid rgba(0, 0, 0, 0.23)',
+                    borderRadius: 2,
+                    boxSizing: 'border-box',
                   }}
-                  inputProps={{ maxLength: 14, inputMode: 'numeric' }}
-                  fullWidth
-                />
+                >
+                  {phone}
+                </Box>
 
                 <Box
                   onClick={handleModalClick}
