@@ -6,23 +6,17 @@
 // está validando, después qué se lleva, y recién al final el botón. Los puntos
 // no encabezan porque no son la decisión — son la consecuencia.
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Typography,
   Button,
   Stack,
-  Chip,
-  Switch,
   CircularProgress,
-  Divider,
 } from "@mui/material";
 // 6.3: iconos de relleno solido, esquinas redondeadas, un solo color.
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import TimerRoundedIcon from "@mui/icons-material/TimerRounded";
-import ShoppingBasketRoundedIcon from "@mui/icons-material/ShoppingBasketRounded";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type {
@@ -55,11 +49,10 @@ export default function ShoppingListResult({
   onValidate,
   onReset,
 }: Props) {
-  // Todo marcado de entrada: lo normal es que el cliente lleve lo que pidió, y
-  // así la cajera sólo destilda lo que falta en vez de tildar de a uno.
-  const [selectedItems, setSelectedItems] = useState<string[]>(
-    shoppingList.items.map((i) => i.name)
-  );
+  // Se valida la lista COMPLETA: el cliente ya eligió en su celular y la cajera
+  // no revisa el carrito producto por producto. Ese paso frenaba la fila y era
+  // lo primero que se salteaba en hora pico.
+  const allItems = useMemo(() => shoppingList.items.map((i) => i.name), [shoppingList.items]);
   const [validated, setValidated] = useState(false);
   const [validateResult, setValidateResult] =
     useState<ShoppingListValidateResult | null>(null);
@@ -82,18 +75,12 @@ export default function ShoppingListResult({
     return () => clearInterval(id);
   }, [onReset]);
 
-  const toggleItem = useCallback((name: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
-    );
-  }, []);
-
   const handleValidate = useCallback(async () => {
-    if (selectedItems.length === 0 || validating) return;
+    if (allItems.length === 0 || validating) return;
     setValidating(true);
     setFailed("");
     try {
-      const result = await onValidate(shoppingList.qrCode, selectedItems);
+      const result = await onValidate(shoppingList.qrCode, allItems);
       setValidateResult(result);
       setValidated(true);
     } catch (err: unknown) {
@@ -108,7 +95,17 @@ export default function ShoppingListResult({
     } finally {
       setValidating(false);
     }
-  }, [shoppingList.qrCode, selectedItems, onValidate, validating]);
+  }, [shoppingList.qrCode, allItems, onValidate, validating]);
+
+  // Acredita apenas se lee el QR. `ranRef` la deja correr una sola vez aunque
+  // React vuelva a montar el efecto (StrictMode en dev lo hace) — si no, se
+  // dispara dos veces y la segunda vuelve con 409.
+  const ranRef = useRef(false);
+  useEffect(() => {
+    if (ranRef.current) return;
+    ranRef.current = true;
+    handleValidate();
+  }, [handleValidate]);
 
   const customerName = shoppingList.customerName?.trim();
   const phoneTail = shoppingList.customerPhoneMasked;
@@ -172,195 +169,51 @@ export default function ShoppingListResult({
     );
   }
 
-  // ── Revisión de la lista ───────────────────────────────────────────────────
+  // ── Acreditando ────────────────────────────────────────────────────────────
+  // Ya no hay paso de revisión: al leer el QR se valida la lista entera y se
+  // acreditan los puntos. Esta pantalla es sólo el rato que tarda la petición,
+  // más el error si algo sale mal.
   return (
-    <Box sx={{ bgcolor: INK, minHeight: "100%", color: SURFACE.text, px: { xs: 2, sm: 3 }, py: 3 }}>
-      <Box sx={{ maxWidth: 620, mx: "auto" }}>
-      {/* Quién */}
-      <Stack
-        direction="row"
-        alignItems="center"
-        gap={1.75}
-        sx={{
-          p: 2,
-          borderRadius: `${RADIUS.lg}px`,
-          bgcolor: PANEL,
-          border: `1px solid ${HAIR}`,
-          mb: 2,
-        }}
-      >
-        <Box
-          sx={{
-            width: 50,
-            height: 50,
-            borderRadius: "50%",
-            flexShrink: 0,
-            bgcolor: PINK,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.3rem",
-            fontWeight: 800,
-          }}
-        >
-          {customerName ? initial : <PersonRoundedIcon />}
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      sx={{ bgcolor: INK, minHeight: "100%", py: 8, px: 4, gap: 2, textAlign: "center", color: SURFACE.text }}
+    >
+      {failed ? (
+        <>
+          <ErrorRoundedIcon sx={{ fontSize: 56, color: STATE.error }} />
+          <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>{failed}</Typography>
+          <Button
+            variant="contained"
+            disableElevation
+            onClick={onReset}
+            sx={{
+              mt: 1,
+              px: 4,
+              py: 1.3,
+              borderRadius: `${RADIUS.md}px`,
+              fontFamily: FONT,
+              fontWeight: 500,
+              bgcolor: PINK,
+              color: "#fff",
+              "&:hover": { bgcolor: PINK_HOVER },
+            }}
+          >
+            Escanear otro
+          </Button>
+        </>
+      ) : (
+        <>
+          <CircularProgress sx={{ color: PINK }} />
           <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>
-            {customerName || "Cliente"}
+            Acreditando puntos{customerName ? ` a ${customerName}` : ""}…
           </Typography>
-          <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
-            {phoneTail ? `Termina en ${phoneTail} · ` : ""}
-            {shoppingList.qrCode}
+          <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
+            {allItems.length} producto{allItems.length === 1 ? "" : "s"} · {shoppingList.qrCode}
           </Typography>
-        </Box>
-        <Stack alignItems="center" sx={{ color: SURFACE.textMuted, flexShrink: 0 }}>
-          <TimerRoundedIcon sx={{ fontSize: 18 }} />
-          <Typography variant="caption" sx={{ fontVariantNumeric: "tabular-nums" }}>
-            {seconds}s
-          </Typography>
-        </Stack>
-      </Stack>
-
-      {/* Qué se lleva */}
-      <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
-        <ShoppingBasketRoundedIcon sx={{ fontSize: 19, color: SURFACE.textMuted }} />
-        <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>Lo que pidió</Typography>
-        <Box sx={{ flex: 1 }} />
-        <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
-          Destilda lo que no lleve
-        </Typography>
-      </Stack>
-
-      <Stack gap={1} sx={{ mb: 2.5 }}>
-        {shoppingList.items.map((item) => {
-          const on = selectedItems.includes(item.name);
-          return (
-            <Stack
-              key={item.name}
-              direction="row"
-              alignItems="center"
-              gap={1.5}
-              onClick={() => toggleItem(item.name)}
-              sx={{
-                px: 1.75,
-                py: 1.5,
-                borderRadius: `${RADIUS.md}px`,
-                cursor: "pointer",
-                bgcolor: on ? STATE.okSoft : SURFACE.raised,
-                border: `1px solid ${on ? GREEN : HAIR}`,
-                transition: "background-color .15s, border-color .15s",
-                opacity: on ? 1 : 0.5,
-              }}
-            >
-              <Switch
-                checked={on}
-                onChange={() => toggleItem(item.name)}
-                onClick={(e) => e.stopPropagation()}
-                sx={{
-                  "& .Mui-checked": { color: `${GREEN} !important` },
-                  "& .Mui-checked + .MuiSwitch-track": { backgroundColor: `${GREEN} !important` },
-                }}
-              />
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  fontWeight={700}
-                  sx={{ textDecoration: on ? "none" : "line-through" }}
-                >
-                  {item.name}
-                </Typography>
-                <Stack direction="row" alignItems="center" gap={1} sx={{ mt: 0.35 }}>
-                  <Typography fontSize=".92rem" sx={{ color: SURFACE.textBody }}>
-                    {item.price}
-                  </Typography>
-                  <Chip
-                    label={`×${item.quantity}${item.unit ? ` ${item.unit}` : ""}`}
-                    size="small"
-                    sx={{
-                      height: 20,
-                      fontSize: ".72rem",
-                      fontWeight: 700,
-                      bgcolor: SURFACE.sunken,
-                      color: SURFACE.textBody,
-                    }}
-                  />
-                </Stack>
-              </Box>
-            </Stack>
-          );
-        })}
-      </Stack>
-
-      <Divider sx={{ borderColor: HAIR, mb: 2 }} />
-
-      {/* Puntos: consecuencia, no encabezado */}
-      <Stack
-        direction="row"
-        alignItems="center"
-        gap={1.25}
-        sx={{ mb: 2, px: 0.5, color: SURFACE.textBody }}
-      >
-        <StarRoundedIcon sx={{ fontSize: 20 }} />
-        <Typography fontSize=".95rem">
-          El cliente gana{" "}
-          <strong style={{ color: SURFACE.text }}>
-            {selectedItems.length} punto{selectedItems.length === 1 ? "" : "s"}
-          </strong>{" "}
-          por esta compra
-        </Typography>
-      </Stack>
-
-      {failed && (
-        <Stack
-          direction="row"
-          alignItems="center"
-          gap={1.25}
-          sx={{
-            mb: 1.5,
-            p: 1.5,
-            borderRadius: "12px",
-            bgcolor: STATE.errorSoft,
-            border: `1px solid ${STATE.error}`,
-          }}
-        >
-          <ErrorRoundedIcon sx={{ color: STATE.error, fontSize: 20 }} />
-          <Typography fontSize=".9rem" sx={{ color: STATE.error }}>
-            {failed}
-          </Typography>
-        </Stack>
+        </>
       )}
-
-      <Button
-        fullWidth
-        variant="contained"
-        disabled={selectedItems.length === 0 || validating}
-        onClick={handleValidate}
-        startIcon={
-          validating ? (
-            <CircularProgress size={20} sx={{ color: SURFACE.text }} />
-          ) : (
-            <CheckCircleRoundedIcon />
-          )
-        }
-        disableElevation
-        sx={{
-          py: 1.75,
-          borderRadius: `${RADIUS.md}px`,
-          fontWeight: 900,
-          fontSize: "1.05rem",
-          bgcolor: PINK,
-          "&:hover": { bgcolor: PINK_HOVER },
-          "&.Mui-disabled": { bgcolor: SURFACE.sunken, color: SURFACE.textMuted },
-        }}
-      >
-        {validating
-          ? "Validando…"
-          : selectedItems.length === 0
-          ? "Marca al menos un producto"
-          : `Validar ${selectedItems.length} y dar puntos`}
-        </Button>
-      </Box>
-    </Box>
+    </Stack>
   );
 }
 
