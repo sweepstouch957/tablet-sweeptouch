@@ -43,11 +43,17 @@ const PORT = { w: 768, h: 1280 };
 const DEMO = {
   logoH: "/kiosk2026/logo-horizontal.webp",
   logoV: "/kiosk2026/logo-vertical.webp",
-  storePhoto: "/kiosk2026/store-photo.webp",
   dealsArt: "/kiosk2026/deals-art.webp",
-  heroV: "/kiosk2026/hero-promo-v.webp",
   bottomV: "/kiosk2026/bottom-promo-v.webp",
 } as const;
+
+/* ── Arte del opt-in (WIN A FREE TV) ─────────────────────────────────────────
+   Vienen las dos orientaciones porque los huecos son opuestos: en apaisado el
+   panel es alto y angosto (343×500) y en vertical el hero es una franja ancha
+   (768×232). Estirar una sola version en el otro hueco recorta el titular o el
+   "1 LUCKY WINNER", que es justo lo que la pieza tiene que comunicar. */
+const OPTIN_V = "/optin-vertical.png";
+const OPTIN_H = "/optin-horizontal.png";
 
 /* ── Colores del diseño ─────────────────────────────────────────────────── */
 const PINK = "#E6007E";
@@ -189,11 +195,14 @@ function Slot({
   label,
   fit = "cover",
   radius = 0,
+  bg,
 }: {
   src?: string;
   label: string;
   fit?: "cover" | "contain";
   radius?: number;
+  /** Relleno detrás de un `contain`, para que las bandas no canten. */
+  bg?: string;
 }) {
   if (src) {
     return (
@@ -201,7 +210,14 @@ function Slot({
       <img
         src={src}
         alt={label}
-        style={{ width: "100%", height: "100%", objectFit: fit, display: "block", borderRadius: radius }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: fit,
+          display: "block",
+          borderRadius: radius,
+          background: bg,
+        }}
       />
     );
   }
@@ -607,7 +623,10 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* HERO */}
           <div style={{ height: 232, flex: "0 0 auto", position: "relative" }}>
-            <Slot src={art[0] || DEMO.heroV} label="Arte promocional (WIN A FREE TV)" />
+            {/* `contain` sobre negro: el arte es 2.36:1 y la franja 3.31:1, así que
+                `cover` se comía casi un tercio del alto — con el "1 LUCKY WINNER"
+                adentro. El fondo del arte ya es negro, así que no se nota borde. */}
+            <Slot src={OPTIN_H} label="Gana una TV gratis" fit="contain" bg="#000" />
           </div>
 
           {/* BANNER QR */}
@@ -758,7 +777,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={art[1] || DEMO.bottomV} label="Arte: Descuentos exclusivos" fit="contain" />
+            <Slot src={art[0] || DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -851,7 +870,11 @@ export default function KioskLayout2026({ store }: Props) {
             {/* IZQUIERDA */}
             <div style={{ width: 343, flex: "0 0 auto", position: "relative", background: "#1a0a12", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                <Slot src={art[0] || DEMO.storePhoto} label="Foto de la tienda" />
+                {/* Siempre el arte del opt-in, nunca una promo de la tienda: este panel
+                    es la pieza que invita a registrarse, y es la que está pegada al
+                    teclado. Antes tomaba `art[0]` y si la tienda tenía una promo
+                    cargada, entraba ahí recortada y desplazaba al opt-in. */}
+                <Slot src={OPTIN_V} label="Gana una TV gratis" />
               </div>
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
                 <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
@@ -905,7 +928,10 @@ export default function KioskLayout2026({ store }: Props) {
             {/* DERECHA */}
             <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#f4f2f3", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                <Slot src={art[1] || DEMO.dealsArt} label="Arte promocional (DEALS YOU'LL LOVE)" />
+                {/* `contain` sobre el gris del panel: acá entran promos de la
+                    tienda con proporciones cualquiera, y `cover` les cortaba el
+                    titular por los lados. */}
+                <Slot src={art[0] || DEMO.dealsArt} label="Descuentos exclusivos" fit="contain" bg="#f4f2f3" />
               </div>
             </div>
           </div>
