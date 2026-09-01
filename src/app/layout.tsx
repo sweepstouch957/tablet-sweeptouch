@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Montserrat } from "next/font/google";
+import { Geist, Geist_Mono, Montserrat, Archivo } from "next/font/google";
 import "./globals.css";
 import { Layout } from "@/component/container";
 
@@ -19,6 +19,15 @@ const brandSans = Montserrat({
   weight: ["300", "400", "500", "700", "900"],
 });
 
+// Kiosco 2026: el diseño se apoya en Archivo, sobre todo en su italic 900 para
+// los titulares. Sin ella los titulares pierden la inclinación y el peso.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+});
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -36,7 +45,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} ${brandSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${brandSans.variable} ${archivo.variable} ${geistMono.variable}`}>
         <Layout>{children}</Layout>
       </body>
     </html>
