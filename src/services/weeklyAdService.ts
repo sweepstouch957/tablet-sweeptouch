@@ -64,6 +64,8 @@ export interface ShoppingListValidateResult {
   totalPointsThisScan: number;
   /** Puntos que se lleva la cajera por escanear esta lista. 0 si no hay sesion. */
   cashierPointsAwarded?: number;
+  /** Si salio el SMS de agradecimiento al cliente. */
+  smsSent?: boolean;
   validatedAt: string;
 }
 

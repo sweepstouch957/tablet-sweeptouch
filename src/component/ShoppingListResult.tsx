@@ -18,6 +18,8 @@ import {
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
+import SmsRoundedIcon from "@mui/icons-material/SmsRounded";
+import SmsFailedRoundedIcon from "@mui/icons-material/SmsFailedRounded";
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type {
   ShoppingListResult as ShoppingListResultType,
@@ -62,7 +64,14 @@ export default function ShoppingListResult({
 
   // Vuelve solo al escaneo: si la cajera se distrae, la caja no se queda con la
   // lista del cliente anterior en pantalla.
+  //
+  // El reloj arranca cuando aparece la CONFIRMACION, no al montar. Antes corria
+  // durante el "Acreditando...", asi que si la peticion tardaba, la pantalla de
+  // puntos se llevaba lo que sobraba del minuto — y con una red lenta podia
+  // desaparecer casi enseguida.
   useEffect(() => {
+    if (!validated) return;
+    setSeconds(AUTO_RESET_S);
     const id = setInterval(() => {
       setSeconds((prev) => {
         if (prev <= 1) {
@@ -73,7 +82,7 @@ export default function ShoppingListResult({
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [onReset]);
+  }, [validated, onReset]);
 
   const handleValidate = useCallback(async () => {
     if (allItems.length === 0 || validating) return;
@@ -140,6 +149,24 @@ export default function ShoppingListResult({
             accent={GREEN}
             muted={!validateResult.cashierPointsAwarded}
           />
+        </Stack>
+
+        <Stack direction="row" alignItems="center" gap={0.75} sx={{ mt: 0.5 }}>
+          {validateResult.smsSent ? (
+            <>
+              <SmsRoundedIcon sx={{ fontSize: 17, color: STATE.ok }} />
+              <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: STATE.ok }}>
+                Le enviamos el resumen por SMS
+              </Typography>
+            </>
+          ) : (
+            <>
+              <SmsFailedRoundedIcon sx={{ fontSize: 17, color: SURFACE.textMuted }} />
+              <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
+                No salió el SMS — los puntos igual quedaron acreditados
+              </Typography>
+            </>
+          )}
         </Stack>
 
         {!validateResult.cashierPointsAwarded && (
