@@ -738,6 +738,7 @@ export default function KioskLayout2026({ store }: Props) {
                 Escanea tu QR y recibe tu descuento
               </div>
             </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 9, flex: "0 0 auto" }}>
             <QrScan size={56} onClick={() => setScanOpen(true)} />
 
             <button
@@ -761,6 +762,7 @@ export default function KioskLayout2026({ store }: Props) {
                 ESCANEAR
               </span>
             </button>
+            </div>
           </div>
 
           {/* TARJETA DE REGISTRO */}
@@ -1107,9 +1109,10 @@ export default function KioskLayout2026({ store }: Props) {
               Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
             </div>
           </div>
-          {/* El QR es su propia pieza, separada del botón: mismo alto, aire en
-              medio. Metido adentro se leía como un solo bloque y perdía la
-              lectura de "icono + acción". */}
+          {/* QR y botón viajan juntos, con su propio gap chico. Si se dejaban
+              sueltos en la franja tomaban el gap general (26px) y quedaban
+              lejos; agrupados se leen como "icono + acción" sin pegarse. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "0 0 auto" }}>
           <QrScan size={58} onClick={() => setScanOpen(true)} />
 
           <button
@@ -1135,6 +1138,7 @@ export default function KioskLayout2026({ store }: Props) {
               ESCANEAR
             </span>
           </button>
+          </div>
         </div>
 
       </Frame>
