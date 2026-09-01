@@ -173,9 +173,11 @@ const IconPhone = ({ size = 22 }: { size?: number }) => (
  * se lee como una sola pieza. El contenedor recorta con `overflow: hidden`, que
  * es lo que mantiene la línea dentro del cuadro mientras baja y sube.
  */
-const QrScan = ({ size }: { size: number }) => (
+const QrScan = ({ size, onClick }: { size: number; onClick?: () => void }) => (
   <span
-    aria-hidden
+    role={onClick ? "button" : undefined}
+    aria-label={onClick ? "Escanear código QR" : undefined}
+    onClick={onClick}
     style={{
       position: "relative",
       width: size,
@@ -183,6 +185,9 @@ const QrScan = ({ size }: { size: number }) => (
       flex: "0 0 auto",
       overflow: "hidden",
       display: "block",
+      borderRadius: 12,
+      cursor: onClick ? "pointer" : undefined,
+      boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
     }}
   >
     <svg viewBox="0 0 100 100" width={size} height={size} style={{ display: "block" }}>
@@ -598,7 +603,7 @@ export default function KioskLayout2026({ store }: Props) {
       position:absolute; left:0; right:0; top:0; height:3px;
       background:${PINK};
       box-shadow:0 0 8px 2px rgba(230,0,126,.8);
-      animation:kioskScan 2s ease-in-out infinite;
+      animation:kioskScan 3.6s ease-in-out infinite;
     }
     @keyframes kioskScan{0%{top:4%}50%{top:92%}100%{top:4%}}
     @media (prefers-reduced-motion: reduce){
@@ -733,6 +738,8 @@ export default function KioskLayout2026({ store }: Props) {
                 Escanea tu QR y recibe tu descuento
               </div>
             </div>
+            <QrScan size={56} onClick={() => setScanOpen(true)} />
+
             <button
               type="button"
               onClick={() => setScanOpen(true)}
@@ -745,16 +752,11 @@ export default function KioskLayout2026({ store }: Props) {
                 border: "1px solid #dcdcdc",
                 borderRadius: 14,
                 height: 56,
-                // Sin padding a la izquierda ni gap: el QR va calzado contra el
-                // borde y ocupa el alto completo del botón.
-                padding: "0 22px 0 0",
-                gap: 14,
-                overflow: "hidden",
+                padding: "0 22px",
                 cursor: "pointer",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               }}
             >
-              <QrScan size={56} />
               <span style={{ color: PINK, fontSize: 20, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
                 ESCANEAR
               </span>
@@ -1105,6 +1107,11 @@ export default function KioskLayout2026({ store }: Props) {
               Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
             </div>
           </div>
+          {/* El QR es su propia pieza, separada del botón: mismo alto, aire en
+              medio. Metido adentro se leía como un solo bloque y perdía la
+              lectura de "icono + acción". */}
+          <QrScan size={58} onClick={() => setScanOpen(true)} />
+
           <button
             type="button"
             onClick={() => setScanOpen(true)}
@@ -1117,15 +1124,13 @@ export default function KioskLayout2026({ store }: Props) {
               background: "#f1f1f1",
               border: "1px solid #dcdcdc",
               borderRadius: 16,
-              padding: "0 26px 0 0",
-              overflow: "hidden",
+              padding: "0 30px",
               cursor: "pointer",
               boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               height: 58,
-              width: 250,
+              width: 220,
             }}
           >
-            <QrScan size={58} />
             <span style={{ color: PINK, fontSize: 26, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
               ESCANEAR
             </span>
