@@ -98,8 +98,8 @@ export default function ShoppingListResult({
       const e = err as { response?: { status?: number; data?: { error?: string } }; message?: string };
       setFailed(
         e.response?.status === 409
-          ? "Esta lista ya fue validada. Pide al cliente que genere un QR nuevo."
-          : e.response?.data?.error || e.message || "No se pudo validar. Intenta de nuevo."
+          ? "This list was already validated. Ask the customer to generate a new QR."
+          : e.response?.data?.error || e.message || "Could not validate. Try again."
       );
     } finally {
       setValidating(false);
@@ -129,22 +129,21 @@ export default function ShoppingListResult({
         sx={{ bgcolor: INK, py: 5, gap: 2, px: 4, textAlign: "center", color: SURFACE.text }}
       >
         <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
-        <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Compra validada</Typography>
+        <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Purchase validated</Typography>
         <Typography sx={{ color: SURFACE.textMuted }}>
-          {validateResult.confirmedProducts} producto
-          {validateResult.confirmedProducts === 1 ? "" : "s"} confirmado
-          {validateResult.confirmedProducts === 1 ? "" : "s"}
+          {validateResult.confirmedProducts} product
+          {validateResult.confirmedProducts === 1 ? "" : "s"} confirmed
           {customerName ? ` · ${customerName}` : ""}
         </Typography>
 
         <Stack direction="row" gap={1.5} sx={{ mt: 1.5, width: "min(90vw, 420px)" }}>
           <Stat
-            label="Para el cliente"
+            label="For the customer"
             value={`+${validateResult.pointsAwarded}`}
             accent={PINK}
           />
           <Stat
-            label="Para ti"
+            label="For you"
             value={`+${validateResult.cashierPointsAwarded ?? 0}`}
             accent={GREEN}
             muted={!validateResult.cashierPointsAwarded}
@@ -156,14 +155,14 @@ export default function ShoppingListResult({
             <>
               <SmsRoundedIcon sx={{ fontSize: 17, color: STATE.ok }} />
               <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: STATE.ok }}>
-                Le enviamos el resumen por SMS
+                Summary sent by SMS
               </Typography>
             </>
           ) : (
             <>
               <SmsFailedRoundedIcon sx={{ fontSize: 17, color: SURFACE.textMuted }} />
               <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
-                No salió el SMS — los puntos igual quedaron acreditados
+                SMS did not go out — points were credited anyway
               </Typography>
             </>
           )}
@@ -171,7 +170,7 @@ export default function ShoppingListResult({
 
         {!validateResult.cashierPointsAwarded && (
           <Typography variant="caption" sx={{ color: SURFACE.textMuted, maxWidth: 340 }}>
-            No se acreditaron tus puntos porque no hay sesión de cajera iniciada.
+            Your points were not credited because no cashier is signed in.
           </Typography>
         )}
 
@@ -190,7 +189,7 @@ export default function ShoppingListResult({
             "&:hover": { bgcolor: PINK_HOVER },
           }}
         >
-          Siguiente cliente
+          Next customer
         </Button>
       </Stack>
     );
@@ -226,17 +225,17 @@ export default function ShoppingListResult({
               "&:hover": { bgcolor: PINK_HOVER },
             }}
           >
-            Escanear otro
+            Scan another
           </Button>
         </>
       ) : (
         <>
           <CircularProgress sx={{ color: PINK }} />
           <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>
-            Acreditando puntos{customerName ? ` a ${customerName}` : ""}…
+            Crediting points{customerName ? ` to ${customerName}` : ""}…
           </Typography>
           <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
-            {allItems.length} producto{allItems.length === 1 ? "" : "s"} · {shoppingList.qrCode}
+            {allItems.length} product{allItems.length === 1 ? "" : "s"} · {shoppingList.qrCode}
           </Typography>
         </>
       )}

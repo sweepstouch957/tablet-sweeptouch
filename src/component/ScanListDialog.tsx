@@ -50,6 +50,9 @@ const INK = SURFACE.page;
 
 type State = "waiting" | "loading" | "result" | "shopping-list" | "used" | "error";
 
+/** Segundos de inactividad antes de cerrar solo. */
+const IDLE_S = 60;
+
 /** Los dos formatos que la caja sabe leer. */
 function isValidCode(v: string) {
   return (v.startsWith("SL-") && v.length >= 5) || (v.startsWith("SUPER-") && v.length >= 10);
@@ -124,7 +127,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
       }
     } catch (err: unknown) {
       const e = err as { response?: { data?: { error?: string } }; message?: string };
-      setError(e.response?.data?.error || e.message || "No se pudo leer el código");
+      setError(e.response?.data?.error || e.message || "Could not read the code");
       setState("error");
     } finally {
       busyRef.current = false;
@@ -176,7 +179,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
         if (!cancelled) setCamReady(true);
       } catch (err: unknown) {
         const e = err as { message?: string };
-        if (!cancelled) setCamError(e?.message || "No pudimos abrir la cámara");
+        if (!cancelled) setCamError(e?.message || "Could not open the camera");
       }
     })();
 
@@ -222,6 +225,28 @@ export default function ScanListDialog({ open, onClose }: Props) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open, state, lookup]);
 
+  // Cierra solo tras un minuto sin actividad. En un kiosco el cliente se va sin
+  // cerrar nada, y el modal abierto tapa la pantalla de registro para el que
+  // llega atrás. Cualquier toque o tecla dentro del modal reinicia la cuenta,
+  // igual que un cambio de paso: leer un QR también es actividad.
+  const [idle, setIdle] = useState(IDLE_S);
+  useEffect(() => {
+    if (!open) return;
+    setIdle(IDLE_S);
+    const id = setInterval(() => {
+      setIdle((n) => {
+        if (n <= 1) {
+          onClose();
+          return 0;
+        }
+        return n - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [open, state, onClose]);
+
+  const bumpIdle = useCallback(() => setIdle(IDLE_S), []);
+
   const handleValidate = useCallback(
     (qrCode: string, validatedItems: string[]) =>
       // La cajera logueada es la que cobra los puntos de la lista.
@@ -265,31 +290,54 @@ export default function ScanListDialog({ open, onClose }: Props) {
         }
       `}</style>
 
-      {/* Barra */}
+      {/* Barra: sin título ni nombre de cajera. El titular de abajo ya dice
+          qué hacer, y repetirlo arriba llenaba de texto un modal que se mira un
+          segundo. Queda sólo lo accionable. */}
       <Stack
         direction="row"
         alignItems="center"
-        gap={1.5}
-        sx={{ px: 2.5, py: 1.75, borderBottom: `1px solid ${SURFACE.line}`, flexShrink: 0 }}
+        justifyContent="flex-end"
+        gap={1}
+        sx={{ px: 1.5, pt: 1.5, pb: 0.5, flexShrink: 0 }}
       >
-        <QrCodeScannerRoundedIcon sx={{ color: PINK, fontSize: 26 }} />
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: SURFACE.text }}>
-            Escanear lista del cliente
-          </Typography>
-          <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
-            {user ? `${user.firstName} ${user.lastName}` : "Sin cajera identificada · no suma puntos"}
-          </Typography>
-        </Box>
         {state !== "waiting" && (
           <Button onClick={reset} sx={{ ...TYPE.caption, fontFamily: FONT, color: SURFACE.textBody }}>
-            Otro código
+            Another code
           </Button>
         )}
-        <IconButton onClick={onClose} sx={{ color: SURFACE.text }} aria-label="Cerrar">
+        <IconButton onClick={onClose} sx={{ color: SURFACE.text }} aria-label="Close">
           <CloseRoundedIcon />
         </IconButton>
       </Stack>
+
+      {/* Cuánto queda antes de cerrarse solo. Es una barra y no un número
+          porque quien mira es la cajera de reojo: el largo se entiende sin
+          leer. Los últimos 10s pasan a ámbar y ahí sí aparece la cuenta, que
+          es cuando conviene avisar de verdad. */}
+      <Box sx={{ height: 3, bgcolor: SURFACE.line, flexShrink: 0, position: "relative" }}>
+        <Box
+          sx={{
+            height: "100%",
+            width: `${(idle / IDLE_S) * 100}%`,
+            bgcolor: idle <= 10 ? STATE.warn : PINK,
+            transition: "width 1s linear, background-color .3s",
+          }}
+        />
+        {idle <= 10 && (
+          <Typography
+            sx={{
+              ...TYPE.caption,
+              fontFamily: FONT,
+              color: STATE.warn,
+              position: "absolute",
+              right: 12,
+              top: 6,
+            }}
+          >
+            Closing in {idle}s
+          </Typography>
+        )}
+      </Box>
 
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         {state === "waiting" && (
@@ -305,11 +353,14 @@ export default function ScanListDialog({ open, onClose }: Props) {
             }}
           >
             <Stack alignItems="center" gap={0.5}>
-              <Typography sx={{ ...TYPE.h3, fontFamily: FONT, color: SURFACE.text }}>
-                Acerca el QR del cliente
-              </Typography>
+              <Stack direction="row" alignItems="center" gap={1.25}>
+                <QrCodeScannerRoundedIcon sx={{ color: PINK, fontSize: 30 }} />
+                <Typography sx={{ ...TYPE.h3, fontFamily: FONT, color: SURFACE.text }}>
+                  Scan the QR here
+                </Typography>
+              </Stack>
               <Typography sx={{ ...TYPE.body, fontFamily: FONT, color: SURFACE.textBody }}>
-                Se lee solo. No hay que tocar nada.
+                It reads by itself. Nothing to tap.
               </Typography>
             </Stack>
 
@@ -369,41 +420,23 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     <>
                       <PhotoCameraRoundedIcon sx={{ fontSize: 42, color: "rgba(255,255,255,.5)" }} />
                       <Typography sx={{ ...TYPE.h4, fontFamily: FONT, color: "#fff" }}>
-                        Cámara no disponible
+                        Camera not available
                       </Typography>
                       <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: "rgba(255,255,255,.65)" }}>
-                        Usa el lector o escribe el código abajo.
+                        Use the scanner or type the code below.
                       </Typography>
                     </>
                   ) : (
                     <>
                       <CircularProgress size={30} sx={{ color: "#fff" }} />
                       <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: "rgba(255,255,255,.65)" }}>
-                        Abriendo cámara…
+                        Opening camera…
                       </Typography>
                     </>
                   )}
                 </Stack>
               )}
             </Box>
-
-            {/* Estado del lector: informa sin gritar */}
-            {!camError && (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    bgcolor: camReady ? STATE.ok : SURFACE.textMuted,
-                    animation: camReady ? "prercsPulse 1.6s infinite" : "none",
-                  }}
-                />
-                <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
-                  {camReady ? "Cámara y lector activos" : "Preparando…"}
-                </Typography>
-              </Stack>
-            )}
 
             {/* Entrada manual */}
             <Box sx={{ width: "min(90vw, 420px)" }}>
@@ -412,7 +445,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                 <Stack direction="row" alignItems="center" gap={0.75}>
                   <KeyboardRoundedIcon sx={{ fontSize: 15, color: SURFACE.textMuted }} />
                   <Typography variant="caption" sx={{ color: SURFACE.textMuted }}>
-                    o escríbelo
+                    or type it
                   </Typography>
                 </Stack>
                 <Box sx={{ flex: 1, height: "1px", bgcolor: SURFACE.line }} />
@@ -468,7 +501,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
                     "&.Mui-disabled": { bgcolor: SURFACE.sunken, color: SURFACE.textMuted },
                   }}
                 >
-                  Buscar
+                  Search
                 </Button>
               </Stack>
             </Box>
@@ -479,7 +512,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
         {state === "loading" && (
           <Stack alignItems="center" justifyContent="center" sx={{ minHeight: 320, py: 6, gap: 2 }}>
             <CircularProgress sx={{ color: PINK }} />
-            <Typography color={SURFACE.textBody}>Buscando la lista…</Typography>
+            <Typography color={SURFACE.textBody}>Looking up the list…</Typography>
           </Stack>
         )}
 
@@ -491,24 +524,24 @@ export default function ScanListDialog({ open, onClose }: Props) {
           >
             <BlockRoundedIcon sx={{ fontSize: 60, color: STATE.warn }} />
             <Typography variant="h5" color={SURFACE.text} fontWeight={800}>
-              {usedInfo?.expired ? "Esta lista venció" : "Esta lista ya se usó"}
+              {usedInfo?.expired ? "This list expired" : "This list was already used"}
             </Typography>
             <Typography variant="body2" sx={{ color: SURFACE.textBody, maxWidth: 400 }}>
               {usedInfo?.expired ? (
-                "El QR pasó su fecha de validez. Pide al cliente que arme una lista nueva desde su link, o extiende la vigencia desde el panel de la tienda."
+                "The QR is past its validity date. Ask the customer to build a new list from their link, or extend it from the store panel."
               ) : (
                 <>
-                  Se validó
+                  Validated
                   {usedInfo?.at
-                    ? ` el ${new Date(usedInfo.at).toLocaleString("es", {
+                    ? ` on ${new Date(usedInfo.at).toLocaleString("en-US", {
                         day: "2-digit",
                         month: "short",
                         hour: "2-digit",
                         minute: "2-digit",
                       })}`
                     : ""}
-                  {usedInfo?.points ? ` y se acreditaron ${usedInfo.points} puntos` : ""}. Cada QR sirve
-                  una sola vez: pide al cliente que genere uno nuevo.
+                  {usedInfo?.points ? `, ${usedInfo.points} points credited` : ""}. Each QR works
+                  only once: ask the customer to generate a new one.
                 </>
               )}
             </Typography>
@@ -518,7 +551,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
               disableElevation
               sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_HOVER }, borderRadius: "10px", fontWeight: 800 }}
             >
-              Escanear otro
+              Scan another
             </Button>
           </Stack>
         )}
@@ -543,7 +576,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
               disableElevation
               sx={{ mt: 1, bgcolor: PINK, "&:hover": { bgcolor: PINK_HOVER }, borderRadius: "10px", fontWeight: 800 }}
             >
-              Intentar de nuevo
+              Try again
             </Button>
           </Stack>
         )}

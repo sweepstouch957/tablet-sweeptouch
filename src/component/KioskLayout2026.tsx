@@ -916,7 +916,7 @@ export default function KioskLayout2026({ store }: Props) {
         <div style={{ flex: 1, display: "flex", minHeight: 0, background: "#000", padding: "10px 12px 12px", boxSizing: "border-box" }}>
           <div style={{ flex: 1, display: "flex", minHeight: 0, borderRadius: 18, overflow: "hidden" }}>
             {/* IZQUIERDA */}
-            <div style={{ width: 343, flex: "0 0 auto", position: "relative", background: "#1a0a12", display: "flex", flexDirection: "column" }}>
+            <div style={{ width: 326, flex: "0 0 auto", position: "relative", background: "#1a0a12", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "absolute", inset: 0 }}>
                 {/* Siempre el arte del opt-in, nunca una promo de la tienda: este panel
                     es la pieza que invita a registrarse, y es la que está pegada al
@@ -930,7 +930,7 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
 
             {/* CENTRO: teclado */}
-            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "41px 34px 8px" }}>
+            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "41px 24px 8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14, alignSelf: "flex-start", marginLeft: 6 }}>
                 <div
                   style={{
@@ -946,7 +946,10 @@ export default function KioskLayout2026({ store }: Props) {
                 >
                   <IconPhone size={22} />
                 </div>
-                <span style={{ fontSize: 26, color: INK }}>Enter your phone number.</span>
+                {/* En un renglón sí o sí: partido en dos se leía como dos frases y
+                    empujaba el teclado hacia abajo. El centro se ensanchó de 425
+                    a 484px sacándole ancho a los dos paneles de arte. */}
+                <span style={{ fontSize: 26, color: INK, whiteSpace: "nowrap" }}>Enter your phone number.</span>
               </div>
 
               <div style={{ width: "100%", maxWidth: 396, marginTop: 10 }}>
@@ -968,13 +971,15 @@ export default function KioskLayout2026({ store }: Props) {
               <div style={{ marginTop: 8, width: "100%", maxWidth: 396 }}>
                 <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="left" onLegal={() => setPrivacyOpen(true)} />
               </div>
-              <div style={{ alignSelf: "flex-start" }}>
+              {/* Separado del teclado a propósito: pegado al 0 y al SEND, el
+                  dedo lo abría solo mientras se marcaba el número. */}
+              <div style={{ alignSelf: "flex-start", marginTop: 14 }}>
                 <LegalLinks centered={false} onOpen={() => setPrivacyOpen(true)} />
               </div>
             </div>
 
             {/* DERECHA */}
-            <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#FBF1F4", overflow: "hidden" }}>
+            <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#FBF1F4", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
                 {/* El arte es 1187×1325 y el hueco 512×500: `cover` se comería
                     el 13% de abajo, justo donde está el sello de "UP TO 30% OFF".
