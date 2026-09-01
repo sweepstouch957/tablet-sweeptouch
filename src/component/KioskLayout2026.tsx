@@ -28,6 +28,9 @@ import ScanListDialog from "./ScanListDialog";
 import { useAuth } from "@/context/auth-context";
 
 /* ── Medidas nativas del diseño ─────────────────────────────────────────── */
+/** Inclinación del panel blanco de la barra: 38px a lo alto del panel. */
+const SKEW = 23;
+
 const LAND = { w: 1280, h: 768 };
 const PORT = { w: 768, h: 1280 };
 
@@ -813,7 +816,23 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
           </div>
 
-          {/* panel blanco inclinado */}
+          {/*
+            Panel blanco inclinado CON esquinas redondeadas.
+
+            El diseño lo resolvía con `clip-path: polygon(...)`, que corta en
+            diagonal pero deja las puntas en ángulo vivo — un polígono no admite
+            radio. Acá se inclina el panel con `skewX` y se redondea con
+            `border-radius` normal: la caja sigue siendo un rectángulo, así que
+            el radio se aplica y queda la diagonal con las puntas romas.
+
+            El contenido va dentro de un hijo con el `skew` inverso, si no el
+            texto saldría torcido junto con la caja.
+
+            Ángulo: el diseño desplaza 38px a lo alto del panel (~23°). Al
+            inclinar, la forma sobresale ~15px de su caja de layout a cada lado
+            —`transform` no ocupa espacio— y por eso los márgenes laterales son
+            más anchos: sin ellos la punta se le monta al logo y a la fecha.
+          */}
           <div
             style={{
               flex: 1,
@@ -821,20 +840,22 @@ export default function KioskLayout2026({ store }: Props) {
               background: "#fff",
               display: "flex",
               alignItems: "center",
-              // Centrado dentro del panel inclinado. El padding va simétrico a
-              // propósito: con 52 a la derecha y 34 a la izquierda, `center`
-              // dejaba el bloque corrido 9px hacia un lado.
               justifyContent: "center",
-              gap: 14,
-              padding: "0 52px",
-              // Tarjeta redondeada en vez del corte diagonal. El `clip-path`
-              // recortaba 38px en diagonal de cada lado, y sobre ese sesgo el
-              // texto quedaba pegado al borde justo en las esquinas.
               borderRadius: 18,
-              margin: "9px 12px 9px 0",
+              margin: "9px 30px 9px 18px",
+              transform: `skewX(-${SKEW}deg)`,
               position: "relative",
             }}
           >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                padding: "0 40px",
+                transform: `skewX(${SKEW}deg)`,
+              }}
+            >
             <div
               style={{
                 width: 64,
@@ -857,6 +878,7 @@ export default function KioskLayout2026({ store }: Props) {
               <div style={{ fontSize: 18, color: INK, marginTop: 4 }}>
                 Enter your phone number to join for free.
               </div>
+            </div>
             </div>
           </div>
 
