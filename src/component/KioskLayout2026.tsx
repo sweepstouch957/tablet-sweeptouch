@@ -968,7 +968,9 @@ export default function KioskLayout2026({ store }: Props) {
               </div>
               {errorLine}
 
-              <div style={{ marginTop: 8, width: "100%", maxWidth: 396 }}>
+              {/* Bien separado de la fila DELETE/0/SEND: el legal queda justo
+                  bajo las teclas y con el dedo marcando se tildaba solo. */}
+              <div style={{ marginTop: 26, width: "100%", maxWidth: 396 }}>
                 <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="left" onLegal={() => setPrivacyOpen(true)} />
               </div>
               {/* Separado del teclado a propósito: pegado al 0 y al SEND, el

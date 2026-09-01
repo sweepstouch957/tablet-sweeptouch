@@ -271,6 +271,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
         sx: {
           bgcolor: INK,
           borderRadius: `${RADIUS.lg}px`,
+          position: "relative", // ancla de la barra de tiempo
           m: 2,
           maxHeight: "92vh",
           overflow: "hidden",
@@ -314,7 +315,20 @@ export default function ScanListDialog({ open, onClose }: Props) {
           porque quien mira es la cajera de reojo: el largo se entiende sin
           leer. Los últimos 10s pasan a ámbar y ahí sí aparece la cuenta, que
           es cuando conviene avisar de verdad. */}
-      <Box sx={{ height: 3, bgcolor: SURFACE.line, flexShrink: 0, position: "relative" }}>
+      <Box
+        sx={{
+          // Absoluta sobre el borde del modal: marca el tiempo sin robarle
+          // alto al contenido. Como franja en el flujo empujaba todo hacia
+          // abajo por 3px de información secundaria.
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          bgcolor: SURFACE.line,
+          zIndex: 1,
+        }}
+      >
         <Box
           sx={{
             height: "100%",
@@ -330,8 +344,8 @@ export default function ScanListDialog({ open, onClose }: Props) {
               fontFamily: FONT,
               color: STATE.warn,
               position: "absolute",
-              right: 12,
-              top: 6,
+              left: 16,
+              top: 9,
             }}
           >
             Closing in {idle}s
@@ -359,16 +373,13 @@ export default function ScanListDialog({ open, onClose }: Props) {
                   Scan the QR here
                 </Typography>
               </Stack>
-              <Typography sx={{ ...TYPE.body, fontFamily: FONT, color: SURFACE.textBody }}>
-                It reads by itself. Nothing to tap.
-              </Typography>
             </Stack>
 
             {/* Visor */}
             <Box
               sx={{
                 position: "relative",
-                width: "min(78vw, 340px)",
+                width: "min(88vw, 430px)",
                 aspectRatio: "1",
                 borderRadius: `${RADIUS.lg}px`,
                 overflow: "hidden",
