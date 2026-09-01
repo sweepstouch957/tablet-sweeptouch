@@ -117,6 +117,8 @@ export default function WeeklyAdScanInput({ onScan, disabled }: Props) {
       <input
         ref={inputRef}
         type="text"
+        inputMode="none"
+        autoComplete="off"
         autoFocus
         value={buffer}
         onChange={(e) => setBuffer(e.target.value)}
