@@ -14,12 +14,11 @@
 // un breakpoint de ancho: una tablet de 800px de ancho puede estar en horizontal
 // o en vertical y el layout tiene que seguirla.
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { Store } from "@/services/store.service";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
-import { usePromos } from "@/hooks/usePromos";
 import { createSweepstake } from "@/services/sweepstake.service";
 import { ThankYouModal } from "./success-dialog";
 import PrivacyDialog from "./pannel";
@@ -489,7 +488,6 @@ export default function KioskLayout2026({ store }: Props) {
   const { dateShort, timeShort } = useClock();
 
   const { data: sweepstake } = useActiveSweepstake(store?._id);
-  const { data: promos } = usePromos("tablet", store?._id);
 
   const [digits, setDigits] = useState("");
   const [consent, setConsent] = useState(false);
@@ -499,8 +497,6 @@ export default function KioskLayout2026({ store }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [thanksOpen, setThanksOpen] = useState(false);
   const [error, setError] = useState("");
-
-  const art = useMemo(() => (promos || []).map((p) => p.imageMobile).filter(Boolean), [promos]);
 
   const addDigit = useCallback((n: string) => {
     setError("");
@@ -781,7 +777,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={art[0] || DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
+            <Slot src={DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -825,8 +821,12 @@ export default function KioskLayout2026({ store }: Props) {
               background: "#fff",
               display: "flex",
               alignItems: "center",
+              // Centrado dentro del panel inclinado. El padding va simétrico a
+              // propósito: con 52 a la derecha y 34 a la izquierda, `center`
+              // dejaba el bloque corrido 9px hacia un lado.
+              justifyContent: "center",
               gap: 14,
-              padding: "0 52px 0 34px",
+              padding: "0 52px",
               clipPath: "polygon(38px 0, 100% 0, calc(100% - 38px) 100%, 0 100%)",
               marginRight: 12,
               position: "relative",
@@ -938,10 +938,12 @@ export default function KioskLayout2026({ store }: Props) {
             {/* DERECHA */}
             <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#f4f2f3", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                {/* `contain` sobre el gris del panel: acá entran promos de la
-                    tienda con proporciones cualquiera, y `cover` les cortaba el
-                    titular por los lados. */}
-                <Slot src={art[0] || DEMO.dealsArt} label="Descuentos exclusivos" fit="contain" bg="#f4f2f3" />
+                {/* Arte fijo del diseño, no la promo de la tienda. Las promos
+                    vienen en cualquier proporción — anchas casi siempre — y en
+                    este hueco (512×500, casi cuadrado) se les cortaba el titular:
+                    "Exclusive Discounts" salía a medias. El arte del HTML está
+                    hecho para esta caja. `contain` remata: nada se recorta. */}
+                <Slot src={DEMO.dealsArt} label="Descuentos exclusivos" fit="contain" bg="#f4f2f3" />
               </div>
             </div>
           </div>
