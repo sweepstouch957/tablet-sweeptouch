@@ -764,7 +764,7 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ color: "#fff", fontSize: 23, fontWeight: 900, fontStyle: "italic", lineHeight: 1, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
-                ¿YA TIENES TU LISTA?
+                GOT YOUR SHOPPING LIST?
               </div>
               <div style={{ color: "#f2f2f2", fontSize: 14.5, lineHeight: 1.15, marginTop: 2 }}>
                 Escanea tu QR y recibe tu descuento
@@ -785,13 +785,13 @@ export default function KioskLayout2026({ store }: Props) {
                 border: "1px solid #dcdcdc",
                 borderRadius: 14,
                 height: 56,
-                padding: "0 22px",
+                padding: "0 14px",
                 cursor: "pointer",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               }}
             >
-              <span style={{ color: PINK, fontSize: 20, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
-                ESCANEAR
+              <span style={{ color: PINK, fontSize: 14, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+                TAP FOR POINTS
               </span>
             </button>
             </div>
@@ -1135,7 +1135,7 @@ export default function KioskLayout2026({ store }: Props) {
                 whiteSpace: "nowrap",
               }}
             >
-              ¿YA TIENES TU LISTA DE COMPRAS?
+              GOT YOUR SHOPPING LIST?
             </div>
             <div style={{ color: "#f2f2f2", fontSize: 16, lineHeight: 1.15, marginTop: 2, whiteSpace: "nowrap" }}>
               Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
@@ -1166,8 +1166,8 @@ export default function KioskLayout2026({ store }: Props) {
               width: 220,
             }}
           >
-            <span style={{ color: PINK, fontSize: 26, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
-              ESCANEAR
+            <span style={{ color: PINK, fontSize: 18, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+              TAP FOR POINTS
             </span>
           </button>
           </div>

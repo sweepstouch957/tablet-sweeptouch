@@ -11,14 +11,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import {
   fetchShoppingList, validateShoppingList,
   type ShoppingListResult as ShoppingListType,
-  type ShoppingListValidateResult,
 } from "@/services/weeklyAdService";
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -48,7 +46,6 @@ export default function ScanModal({ open, onClose }: Props) {
   const [manualCode, setManualCode] = useState("");
   const [shoppingList, setShoppingList] = useState<ShoppingListType | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [validateResult, setValidateResult] = useState<ShoppingListValidateResult | null>(null);
   const [error, setError] = useState("");
   const [validating, setValidating] = useState(false);
   const [cameraError, setCameraError] = useState("");
@@ -78,7 +75,7 @@ export default function ScanModal({ open, onClose }: Props) {
       stopCamera();
       setTimeout(() => {
         setStep("scan"); setInputMode("scanner"); setManualCode("");
-        setShoppingList(null); setSelectedItems([]); setValidateResult(null);
+        setShoppingList(null); setSelectedItems([]);
         setError(""); setScanBuffer(""); setCameraError("");
       }, 300);
     }
@@ -178,8 +175,7 @@ export default function ScanModal({ open, onClose }: Props) {
     if (!shoppingList || selectedItems.length === 0) return;
     setValidating(true);
     try {
-      const result = await validateShoppingList(shoppingList.qrCode, selectedItems);
-      setValidateResult(result);
+      await validateShoppingList(shoppingList.qrCode, selectedItems);
       setStep("validated");
     } catch (err: any) {
       setError(err.response?.data?.error || "Validation failed");
@@ -427,16 +423,11 @@ export default function ScanModal({ open, onClose }: Props) {
         )}
 
         {/* ═══════ VALIDATED ═══════ */}
-        {step === "validated" && validateResult && (
+        {step === "validated" && (
           <Box sx={{ py: 5, px: 3, textAlign: "center" }}>
-            <Box sx={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #4caf50, #66bb6a)", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 2, boxShadow: "0 0 30px rgba(76,175,80,0.4)" }}>
-              <CheckCircleIcon sx={{ fontSize: 48, color: "white" }} />
-            </Box>
-            <Typography variant="h5" fontWeight="bold" sx={{ color: "#4caf50", mb: 1 }}>Purchase Validated!</Typography>
-            <Typography variant="h3" fontWeight="bold" sx={{ color: "#FFD700", mb: 1 }}>+{validateResult.pointsAwarded} pts</Typography>
-            <Typography sx={{ color: "rgba(255,255,255,0.5)", fontSize: 13, mb: 3 }}>{validateResult.confirmedProducts} products confirmed</Typography>
+            <Typography variant="h5" fontWeight="bold" sx={{ color: "#4caf50", mb: 3 }}>Purchase Validated!</Typography>
             <Button variant="outlined" onClick={onClose} sx={{ borderColor: "rgba(255,255,255,0.2)", color: "white", textTransform: "none", borderRadius: 2, px: 4, "&:hover": { borderColor: "#f43789", color: "#f43789" } }}>
-              Done — Close
+              Close
             </Button>
           </Box>
         )}
