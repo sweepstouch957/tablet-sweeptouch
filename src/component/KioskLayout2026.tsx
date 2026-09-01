@@ -530,6 +530,68 @@ function BottomIcons({
   );
 }
 
+/* ── Marco: centra y escala el lienzo nativo ───────────────────────────────
+   A NIVEL DE MÓDULO a propósito. Declarado dentro del componente, su identidad
+   cambiaba en cada render y React desmontaba y volvía a montar todo lo de
+   adentro: la animación del QR arrancaba de cero con cada tecla, y la cámara
+   del modal se reiniciaba igual. */
+const SCAN_CSS = `
+  .kiosk-scan-line{
+    position:absolute; left:0; right:0; top:0; height:3px;
+    background:${PINK};
+    box-shadow:0 0 8px 2px rgba(230,0,126,.8);
+    animation:kioskScan 3.6s ease-in-out infinite;
+  }
+  /* Recorre el cuadro entero: de borde a borde, descontando su propio grosor. */
+  @keyframes kioskScan{0%{top:0}50%{top:calc(100% - 3px)}100%{top:0}}
+  @media (prefers-reduced-motion: reduce){
+    .kiosk-scan-line{animation:none; top:48%}
+  }
+`;
+
+function Frame({
+  base,
+  scale,
+  children,
+}: {
+  base: { w: number; h: number };
+  scale: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      <style>{SCAN_CSS}</style>
+      <div
+        style={{
+          width: base.w,
+          height: base.h,
+          flex: "0 0 auto",
+          transform: `scale(${scale})`,
+          transformOrigin: "center center",
+          background: "#000",
+          position: "relative",
+          overflow: "hidden",
+          fontFamily: FONT,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 /* ── Componente ─────────────────────────────────────────────────────────── */
 
 interface Props {
@@ -558,7 +620,20 @@ export default function KioskLayout2026({ store }: Props) {
 
   const addDigit = useCallback((n: string) => {
     setError("");
-    setDigits((d) => (d.length >= 10 ? d : d + n));
+    setDigits((d) => {
+      if (d.length >= 10) return d;
+      const next = d + n;
+      // Al completar los 10 dígitos se marca la casilla sola, para que el
+      // cliente no tenga que buscarla antes de tocar SEND.
+      //
+      // OJO — esto es una decisión de negocio, no técnica: bajo TCPA el opt-in
+      // para SMS de marketing pide un acto afirmativo sobre el consentimiento
+      // en sí, y marcarlo por él es lo mismo que traerlo premarcado. Si algún
+      // día hay que defender un registro, lo que queda guardado no lo prueba.
+      // Se puede destildar, y el texto legal sigue a la vista.
+      if (next.length === 10) setConsent(true);
+      return next;
+    });
   }, []);
 
   const { mutate: register, isPending } = useMutation({
@@ -596,53 +671,10 @@ export default function KioskLayout2026({ store }: Props) {
   const openCashier = () => (user ? setDrawerOpen(true) : setLoginOpen(true));
   const openSupport = () => router.push("/control-soporte");
 
-  /* ── Marco: centra y escala el lienzo nativo ─────────────────────────── */
-  // `top` en % para que la animación sirva igual en los dos tamaños de botón.
-  const scanCss = `
-    .kiosk-scan-line{
-      position:absolute; left:0; right:0; top:0; height:3px;
-      background:${PINK};
-      box-shadow:0 0 8px 2px rgba(230,0,126,.8);
-      animation:kioskScan 3.6s ease-in-out infinite;
-    }
-    @keyframes kioskScan{0%{top:4%}50%{top:92%}100%{top:4%}}
-    @media (prefers-reduced-motion: reduce){
-      .kiosk-scan-line{animation:none; top:48%}
-    }
-  `;
-
-  const Frame = ({ children }: { children: React.ReactNode }) => (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "#000",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-      }}
-    >
-      <style>{scanCss}</style>
-      <div
-        style={{
-          width: base.w,
-          height: base.h,
-          flex: "0 0 auto",
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-          background: "#000",
-          position: "relative",
-          overflow: "hidden",
-          fontFamily: FONT,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
+  /* El marco ahora vive fuera del componente (ver `Frame` arriba): definido
+     acá adentro, cada tecla creaba un tipo de componente nuevo y React
+     remontaba el árbol entero — por eso la animación del QR se reiniciaba
+     con cada dígito. */
 
   const dialogs = (
     <>
@@ -662,7 +694,7 @@ export default function KioskLayout2026({ store }: Props) {
   if (portrait) {
     return (
       <>
-        <Frame>
+        <Frame base={base} scale={scale}>
           {/* TOP BAR */}
           <div
             style={{
@@ -867,7 +899,7 @@ export default function KioskLayout2026({ store }: Props) {
   /* ══ APAISADO ══════════════════════════════════════════════════════════ */
   return (
     <>
-      <Frame>
+      <Frame base={base} scale={scale}>
         {/* TOP BAR */}
         <div style={{ height: 88, background: "#000", display: "flex", alignItems: "stretch", position: "relative", flex: "0 0 auto" }}>
           <div
