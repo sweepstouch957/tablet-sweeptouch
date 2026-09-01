@@ -606,12 +606,16 @@ export default function KioskLayout2026({ store }: Props) {
               padding: "0 24px",
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/kiosk2026/sweepstouch-logo.png" alt="sweepsTOUCH" style={{ width: 190, height: "auto", display: "block" }} />
+            <div style={{ width: 170, height: 54 }}>
+              <Slot src={store?.image || DEMO.logoV} label={store?.name || "LOGO TIENDA"} fit="contain" />
+            </div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ width: 104, height: 52 }}>
-                <Slot src={store?.image || DEMO.logoV} label="LOGO TIENDA" fit="contain" radius={12} />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/kiosk2026/sweepstouch-logo.png"
+                alt="sweepsTOUCH"
+                style={{ width: 112, height: "auto", display: "block", flex: "0 0 auto" }}
+              />
               <div style={{ width: 1, height: 40, background: "rgba(255,255,255,0.35)" }} />
               <div style={{ color: "#fff", fontSize: 17, lineHeight: 1.3, whiteSpace: "nowrap" }}>
                 {dateShort}
@@ -638,8 +642,8 @@ export default function KioskLayout2026({ store }: Props) {
               borderRadius: 18,
               display: "flex",
               alignItems: "center",
-              gap: 20,
-              padding: "20px 26px",
+              gap: 18,
+              padding: "13px 24px",
             }}
           >
             <div
@@ -658,10 +662,10 @@ export default function KioskLayout2026({ store }: Props) {
               <img src="/kiosk2026/list-icon.png" alt="Lista de compras" style={{ width: 54, height: "auto", display: "block" }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: "#fff", fontSize: 24, fontWeight: 900, fontStyle: "italic", lineHeight: 1.1, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
+              <div style={{ color: "#fff", fontSize: 23, fontWeight: 900, fontStyle: "italic", lineHeight: 1, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
                 ¿YA TIENES TU LISTA?
               </div>
-              <div style={{ color: "#f2f2f2", fontSize: 15, marginTop: 4 }}>
+              <div style={{ color: "#f2f2f2", fontSize: 14.5, lineHeight: 1.15, marginTop: 2 }}>
                 Escanea tu QR y recibe tu descuento
               </div>
             </div>
@@ -806,8 +810,11 @@ export default function KioskLayout2026({ store }: Props) {
               paddingLeft: 30,
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/kiosk2026/sweepstouch-logo.png" alt="sweepsTOUCH" style={{ width: 230, height: "auto", display: "block" }} />
+            {/* La tienda va primero: es la marca que el cliente reconoce al
+                entrar, y Sweepstouch queda como el "powered by" del otro extremo. */}
+            <div style={{ width: 210, height: 66 }}>
+              <Slot src={store?.image || DEMO.logoH} label={store?.name || "LOGO TIENDA"} fit="contain" />
+            </div>
           </div>
 
           {/* panel blanco inclinado */}
@@ -852,9 +859,12 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* logo tienda + fecha */}
           <div style={{ width: 270, flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, paddingRight: 10 }}>
-            <div style={{ width: 104, height: 62 }}>
-              <Slot src={store?.image || DEMO.logoH} label="LOGO TIENDA" fit="contain" radius={12} />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/kiosk2026/sweepstouch-logo.png"
+              alt="sweepsTOUCH"
+              style={{ width: 132, height: "auto", display: "block", flex: "0 0 auto" }}
+            />
             <div style={{ width: 1, height: 48, background: "rgba(255,255,255,0.35)" }} />
             <div style={{ color: "#fff", fontSize: 17, lineHeight: 1.3, whiteSpace: "nowrap" }}>
               {dateShort}
@@ -944,21 +954,24 @@ export default function KioskLayout2026({ store }: Props) {
         {/* BANNER QR */}
         <div
           style={{
-            height: 111,
+            // Compactada: 111px eran demasiado aire arriba y abajo para dos
+            // renglones de texto. 84 deja la franja como un cintillo y le
+            // devuelve alto al cuerpo, que es donde está el teclado.
+            height: 84,
             flex: "0 0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 30,
+            gap: 26,
             padding: "0 40px",
             background: PINK,
           }}
         >
           <div
             style={{
-              width: 82,
-              height: 52,
-              borderRadius: 14,
+              width: 74,
+              height: 48,
+              borderRadius: 12,
               background: "rgba(255,255,255,0.35)",
               display: "flex",
               alignItems: "center",
@@ -973,18 +986,18 @@ export default function KioskLayout2026({ store }: Props) {
             <div
               style={{
                 color: "#fff",
-                fontSize: 31,
+                fontSize: 29,
                 fontWeight: 900,
                 fontStyle: "italic",
-                letterSpacing: "0.5px",
-                lineHeight: 1.1,
+                letterSpacing: "0.3px",
+                lineHeight: 1,
                 textShadow: "0 1px 2px rgba(0,0,0,0.15)",
                 whiteSpace: "nowrap",
               }}
             >
               ¿YA TIENES TU LISTA DE COMPRAS?
             </div>
-            <div style={{ color: "#f2f2f2", fontSize: 17.5, marginTop: 6, whiteSpace: "nowrap" }}>
+            <div style={{ color: "#f2f2f2", fontSize: 16, lineHeight: 1.15, marginTop: 2, whiteSpace: "nowrap" }}>
               Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
             </div>
           </div>
@@ -1003,8 +1016,8 @@ export default function KioskLayout2026({ store }: Props) {
               padding: "0 30px",
               cursor: "pointer",
               boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
-              height: 70,
-              width: 260,
+              height: 58,
+              width: 240,
             }}
           >
             <IconScan size={28} />
