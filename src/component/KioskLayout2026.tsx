@@ -827,8 +827,11 @@ export default function KioskLayout2026({ store }: Props) {
               justifyContent: "center",
               gap: 14,
               padding: "0 52px",
-              clipPath: "polygon(38px 0, 100% 0, calc(100% - 38px) 100%, 0 100%)",
-              marginRight: 12,
+              // Tarjeta redondeada en vez del corte diagonal. El `clip-path`
+              // recortaba 38px en diagonal de cada lado, y sobre ese sesgo el
+              // texto quedaba pegado al borde justo en las esquinas.
+              borderRadius: 18,
+              margin: "9px 12px 9px 0",
               position: "relative",
             }}
           >
