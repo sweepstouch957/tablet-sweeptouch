@@ -185,8 +185,8 @@ const IconSend = ({ size = 26 }: { size?: number }) => (
   </svg>
 );
 
-const IconCheck = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="3.4">
+const IconCheck = ({ size = 14 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="3.4">
     <path d="M4 13 l5 5 L20 6" />
   </svg>
 );
@@ -377,10 +377,11 @@ function Consent({
           if (e.key === "Enter" || e.key === " ") onToggle();
         }}
         style={{
-          width: 17,
-          height: 17,
-          border: "1.5px solid #9aa0a6",
-          borderRadius: 4,
+          // Es un objetivo táctil, no un adorno: a 17px había que apuntarle.
+          width: 24,
+          height: 24,
+          border: "2px solid #9aa0a6",
+          borderRadius: 5,
           background: "#fff",
           flex: "0 0 auto",
           marginTop: 2,
@@ -390,7 +391,7 @@ function Consent({
           cursor: "pointer",
         }}
       >
-        {checked && <IconCheck />}
+        {checked && <IconCheck size={18} />}
       </div>
       <div
         onClick={onLegal}
@@ -883,14 +884,13 @@ export default function KioskLayout2026({ store }: Props) {
             >
               <IconGift size={38} />
             </div>
-            <div>
-              <div style={{ fontSize: 26, fontWeight: 900, fontStyle: "italic", letterSpacing: "-0.5px", lineHeight: 1.1, whiteSpace: "nowrap" }}>
-                <span style={{ color: INK }}>GET DEALS </span>
-                <span style={{ color: PINK }}>ON YOUR PHONE</span>
-              </div>
-              <div style={{ fontSize: 18, color: INK, marginTop: 4 }}>
-                Enter your phone number to join for free.
-              </div>
+            {/* Sin bajada: "Enter your phone number" ya está sobre el teclado,
+                justo donde se necesita. Repetirla acá arriba era decir dos veces
+                lo mismo en la misma pantalla. Con un solo renglón, el
+                `align-items: center` del panel lo centra vertical solo. */}
+            <div style={{ fontSize: 34, fontWeight: 900, fontStyle: "italic", letterSpacing: "-0.5px", lineHeight: 1, whiteSpace: "nowrap" }}>
+              <span style={{ color: INK }}>GET DEALS </span>
+              <span style={{ color: PINK }}>ON YOUR PHONE</span>
             </div>
             </div>
           </div>

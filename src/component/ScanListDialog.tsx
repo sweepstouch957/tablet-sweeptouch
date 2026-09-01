@@ -264,7 +264,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       scroll="paper"
       PaperProps={{
@@ -361,9 +361,13 @@ export default function ScanListDialog({ open, onClose }: Props) {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: 2.5,
-              px: 3,
-              py: 3.5,
+              // Poco aire arriba: el visor es lo que el cliente tiene que
+              // encontrar, y cada píxel de padding lo empuja fuera del alcance
+              // cómodo en una tablet montada.
+              gap: 1.75,
+              px: 2.5,
+              pt: 1,
+              pb: 3,
             }}
           >
             <Stack alignItems="center" gap={0.5}>
@@ -379,7 +383,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             <Box
               sx={{
                 position: "relative",
-                width: "min(88vw, 430px)",
+                width: "min(92vw, 520px)",
                 aspectRatio: "1",
                 borderRadius: `${RADIUS.lg}px`,
                 overflow: "hidden",
