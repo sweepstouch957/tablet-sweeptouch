@@ -166,10 +166,50 @@ const IconPhone = ({ size = 22 }: { size?: number }) => (
   </svg>
 );
 
-const IconScan = ({ size = 28 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" strokeWidth="2">
-    <path d="M4 8 V5 a1 1 0 0 1 1-1 h3 M16 4 h3 a1 1 0 0 1 1 1 v3 M20 16 v3 a1 1 0 0 1-1 1 h-3 M8 20 H5 a1 1 0 0 1-1-1 v-3 M4 12 h16" />
-  </svg>
+/**
+ * QR con la línea de escaneo recorriéndolo.
+ *
+ * Va a la altura exacta del botón y pegado a su borde izquierdo, así el bloque
+ * se lee como una sola pieza. El contenedor recorta con `overflow: hidden`, que
+ * es lo que mantiene la línea dentro del cuadro mientras baja y sube.
+ */
+const QrScan = ({ size }: { size: number }) => (
+  <span
+    aria-hidden
+    style={{
+      position: "relative",
+      width: size,
+      height: size,
+      flex: "0 0 auto",
+      overflow: "hidden",
+      display: "block",
+    }}
+  >
+    <svg viewBox="0 0 100 100" width={size} height={size} style={{ display: "block" }}>
+      <rect width="100" height="100" fill="#fff" />
+      <g fill="#111">
+        <rect x="10" y="10" width="24" height="24" />
+        <rect x="16" y="16" width="12" height="12" fill="#fff" />
+        <rect x="66" y="10" width="24" height="24" />
+        <rect x="72" y="16" width="12" height="12" fill="#fff" />
+        <rect x="10" y="66" width="24" height="24" />
+        <rect x="16" y="72" width="12" height="12" fill="#fff" />
+        <rect x="42" y="14" width="6" height="6" />
+        <rect x="54" y="14" width="6" height="6" />
+        <rect x="42" y="42" width="6" height="6" />
+        <rect x="54" y="48" width="6" height="6" />
+        <rect x="66" y="42" width="6" height="6" />
+        <rect x="78" y="48" width="6" height="6" />
+        <rect x="42" y="66" width="6" height="6" />
+        <rect x="54" y="72" width="6" height="6" />
+        <rect x="66" y="66" width="6" height="6" />
+        <rect x="78" y="78" width="6" height="6" />
+        <rect x="42" y="78" width="6" height="6" />
+        <rect x="66" y="78" width="6" height="6" />
+      </g>
+    </svg>
+    <span className="kiosk-scan-line" />
+  </span>
 );
 
 const IconBackspace = ({ size = 26 }: { size?: number }) => (
@@ -552,6 +592,20 @@ export default function KioskLayout2026({ store }: Props) {
   const openSupport = () => router.push("/control-soporte");
 
   /* ── Marco: centra y escala el lienzo nativo ─────────────────────────── */
+  // `top` en % para que la animación sirva igual en los dos tamaños de botón.
+  const scanCss = `
+    .kiosk-scan-line{
+      position:absolute; left:0; right:0; top:0; height:3px;
+      background:${PINK};
+      box-shadow:0 0 8px 2px rgba(230,0,126,.8);
+      animation:kioskScan 2s ease-in-out infinite;
+    }
+    @keyframes kioskScan{0%{top:4%}50%{top:92%}100%{top:4%}}
+    @media (prefers-reduced-motion: reduce){
+      .kiosk-scan-line{animation:none; top:48%}
+    }
+  `;
+
   const Frame = ({ children }: { children: React.ReactNode }) => (
     <div
       style={{
@@ -564,6 +618,7 @@ export default function KioskLayout2026({ store }: Props) {
         overflow: "hidden",
       }}
     >
+      <style>{scanCss}</style>
       <div
         style={{
           width: base.w,
@@ -686,17 +741,20 @@ export default function KioskLayout2026({ store }: Props) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 10,
                 background: "#f1f1f1",
                 border: "1px solid #dcdcdc",
                 borderRadius: 14,
                 height: 56,
-                padding: "0 22px",
+                // Sin padding a la izquierda ni gap: el QR va calzado contra el
+                // borde y ocupa el alto completo del botón.
+                padding: "0 22px 0 0",
+                gap: 14,
+                overflow: "hidden",
                 cursor: "pointer",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               }}
             >
-              <IconScan size={22} />
+              <QrScan size={56} />
               <span style={{ color: PINK, fontSize: 20, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
                 ESCANEAR
               </span>
@@ -1055,18 +1113,19 @@ export default function KioskLayout2026({ store }: Props) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: 14,
+              gap: 16,
               background: "#f1f1f1",
               border: "1px solid #dcdcdc",
               borderRadius: 16,
-              padding: "0 30px",
+              padding: "0 26px 0 0",
+              overflow: "hidden",
               cursor: "pointer",
               boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               height: 58,
-              width: 240,
+              width: 250,
             }}
           >
-            <IconScan size={28} />
+            <QrScan size={58} />
             <span style={{ color: PINK, fontSize: 26, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
               ESCANEAR
             </span>
