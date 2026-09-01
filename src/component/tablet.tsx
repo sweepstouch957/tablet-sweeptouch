@@ -18,7 +18,7 @@ import KioskLayoutRed from "./KioskLayoutRed";
 import KioskLayout2026 from "./KioskLayout2026";
 
 /** Tiendas en el piloto del kiosco 2026. */
-const KIOSK_2026_PILOT = new Set(["merchant-r-street-lar-azul-55-barueri-sp"]);
+export const KIOSK_2026_PILOT = new Set(["merchant-r-street-lar-azul-55-barueri-sp"]);
 
 interface FathersDayPromoProps {
   store?: Store;

@@ -232,7 +232,27 @@ export default function ScanListDialog({ open, onClose }: Props) {
   const manualOk = isValidCode(manual.trim().toUpperCase());
 
   return (
-    <Dialog open={open} onClose={onClose} fullScreen PaperProps={{ sx: { bgcolor: INK } }}>
+    // Modal centrado, no pantalla completa: en el kiosco el fondo tiene que
+    // seguir siendo el kiosco. Un takeover completo hacia perder el contexto de
+    // donde estaba parado el cliente, y en una tablet montada se leia como que
+    // la app se habia cambiado sola.
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      scroll="paper"
+      PaperProps={{
+        sx: {
+          bgcolor: INK,
+          borderRadius: `${RADIUS.lg}px`,
+          m: 2,
+          maxHeight: "92vh",
+          overflow: "hidden",
+        },
+      }}
+      slotProps={{ backdrop: { sx: { bgcolor: "rgba(26,26,26,.72)" } } }}
+    >
       <style>{`
         @keyframes prercsLaser{0%{top:6%}50%{top:88%}100%{top:6%}}
         @keyframes prercsPulse{0%,100%{opacity:1}50%{opacity:.35}}
@@ -275,14 +295,13 @@ export default function ScanListDialog({ open, onClose }: Props) {
         {state === "waiting" && (
           <Box
             sx={{
-              minHeight: "100%",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              gap: 3,
+              gap: 2.5,
               px: 3,
-              py: 4,
+              py: 3.5,
             }}
           >
             <Stack alignItems="center" gap={0.5}>
@@ -458,7 +477,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
         )}
 
         {state === "loading" && (
-          <Stack alignItems="center" justifyContent="center" sx={{ minHeight: "70vh", gap: 2 }}>
+          <Stack alignItems="center" justifyContent="center" sx={{ minHeight: 320, py: 6, gap: 2 }}>
             <CircularProgress sx={{ color: PINK }} />
             <Typography color={SURFACE.textBody}>Buscando la lista…</Typography>
           </Stack>
@@ -468,7 +487,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
           <Stack
             alignItems="center"
             justifyContent="center"
-            sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
+            sx={{ minHeight: 320, py: 6, gap: 2, px: 4, textAlign: "center" }}
           >
             <BlockRoundedIcon sx={{ fontSize: 60, color: STATE.warn }} />
             <Typography variant="h5" color={SURFACE.text} fontWeight={800}>
@@ -508,7 +527,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
           <Stack
             alignItems="center"
             justifyContent="center"
-            sx={{ minHeight: "70vh", gap: 2, px: 4, textAlign: "center" }}
+            sx={{ minHeight: 320, py: 6, gap: 2, px: 4, textAlign: "center" }}
           >
             <ErrorRoundedIcon sx={{ fontSize: 56, color: STATE.error }} />
             <Typography variant="h6" color={SURFACE.text} fontWeight={700}>

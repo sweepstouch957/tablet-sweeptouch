@@ -32,6 +32,23 @@ import { useAuth } from "@/context/auth-context";
 const LAND = { w: 1280, h: 768 };
 const PORT = { w: 768, h: 1280 };
 
+/* ── Arte de demo ────────────────────────────────────────────────────────────
+   Sale del propio archivo de diseño (sus huecos venían con las imágenes
+   embebidas). Es el respaldo mientras la tienda no tenga promos cargadas: sin
+   esto el kiosco del piloto se ve con recuadros punteados en sala.
+
+   El logo de la tienda tiene dos versiones porque el hueco no tiene la misma
+   forma en cada diseño: apaisado es 104×62 y vertical 104×52. Un solo archivo
+   largo se achica de más en uno de los dos. */
+const DEMO = {
+  logoH: "/kiosk2026/logo-horizontal.webp",
+  logoV: "/kiosk2026/logo-vertical.webp",
+  storePhoto: "/kiosk2026/store-photo.webp",
+  dealsArt: "/kiosk2026/deals-art.webp",
+  heroV: "/kiosk2026/hero-promo-v.webp",
+  bottomV: "/kiosk2026/bottom-promo-v.webp",
+} as const;
+
 /* ── Colores del diseño ─────────────────────────────────────────────────── */
 const PINK = "#E6007E";
 const PINK_DK = "#c40068";
@@ -577,7 +594,7 @@ export default function KioskLayout2026({ store }: Props) {
             <img src="/kiosk2026/sweepstouch-logo.png" alt="sweepsTOUCH" style={{ width: 190, height: "auto", display: "block" }} />
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ width: 104, height: 52 }}>
-                <Slot src={store?.image} label="LOGO TIENDA" fit="contain" radius={12} />
+                <Slot src={store?.image || DEMO.logoV} label="LOGO TIENDA" fit="contain" radius={12} />
               </div>
               <div style={{ width: 1, height: 40, background: "rgba(255,255,255,0.35)" }} />
               <div style={{ color: "#fff", fontSize: 17, lineHeight: 1.3, whiteSpace: "nowrap" }}>
@@ -590,7 +607,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* HERO */}
           <div style={{ height: 232, flex: "0 0 auto", position: "relative" }}>
-            <Slot src={art[0]} label="Arte promocional (WIN A FREE TV)" />
+            <Slot src={art[0] || DEMO.heroV} label="Arte promocional (WIN A FREE TV)" />
           </div>
 
           {/* BANNER QR */}
@@ -741,7 +758,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={art[1] || art[0]} label="Arte: Descuentos exclusivos" fit="contain" />
+            <Slot src={art[1] || DEMO.bottomV} label="Arte: Descuentos exclusivos" fit="contain" />
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -817,7 +834,7 @@ export default function KioskLayout2026({ store }: Props) {
           {/* logo tienda + fecha */}
           <div style={{ width: 270, flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, paddingRight: 10 }}>
             <div style={{ width: 104, height: 62 }}>
-              <Slot src={store?.image} label="LOGO TIENDA" fit="contain" radius={12} />
+              <Slot src={store?.image || DEMO.logoH} label="LOGO TIENDA" fit="contain" radius={12} />
             </div>
             <div style={{ width: 1, height: 48, background: "rgba(255,255,255,0.35)" }} />
             <div style={{ color: "#fff", fontSize: 17, lineHeight: 1.3, whiteSpace: "nowrap" }}>
@@ -828,6 +845,76 @@ export default function KioskLayout2026({ store }: Props) {
           </div>
         </div>
 
+        {/* CUERPO */}
+        <div style={{ flex: 1, display: "flex", minHeight: 0, background: "#000", padding: "10px 12px 12px", boxSizing: "border-box" }}>
+          <div style={{ flex: 1, display: "flex", minHeight: 0, borderRadius: 18, overflow: "hidden" }}>
+            {/* IZQUIERDA */}
+            <div style={{ width: 343, flex: "0 0 auto", position: "relative", background: "#1a0a12", display: "flex", flexDirection: "column" }}>
+              <div style={{ position: "absolute", inset: 0 }}>
+                <Slot src={art[0] || DEMO.storePhoto} label="Foto de la tienda" />
+              </div>
+              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
+                <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
+              </div>
+            </div>
+
+            {/* CENTRO: teclado */}
+            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "41px 34px 8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, alignSelf: "flex-start", marginLeft: 6 }}>
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    background: PINK,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flex: "0 0 auto",
+                  }}
+                >
+                  <IconPhone size={22} />
+                </div>
+                <span style={{ fontSize: 26, color: INK }}>Enter your phone number.</span>
+              </div>
+
+              <div style={{ width: "100%", maxWidth: 396, marginTop: 10 }}>
+                <Display digits={digits} height={54} />
+              </div>
+              <div style={{ width: "100%", maxWidth: 396, marginTop: 10 }}>
+                <Keypad
+                  onDigit={addDigit}
+                  onBackspace={() => setDigits((d) => d.slice(0, -1))}
+                  onSend={send}
+                  keyH={54}
+                  gap={10}
+                  stacked
+                  sending={isPending}
+                />
+              </div>
+              {errorLine}
+
+              <div style={{ marginTop: 6, maxWidth: 420 }}>
+                <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="right" width={352} onLegal={() => setPrivacyOpen(true)} />
+              </div>
+              <div style={{ alignSelf: "flex-start" }}>
+                <LegalLinks centered={false} onOpen={() => setPrivacyOpen(true)} />
+              </div>
+            </div>
+
+            {/* DERECHA */}
+            <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#f4f2f3", overflow: "hidden" }}>
+              <div style={{ position: "absolute", inset: 0 }}>
+                <Slot src={art[1] || DEMO.dealsArt} label="Arte promocional (DEALS YOU'LL LOVE)" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* La franja va al PIE, no debajo de la barra superior como venia en
+            el archivo: arriba partia en dos la lectura del kiosco — logo,
+            franja, y recien el teclado. Abajo cierra la pantalla y queda a la
+            altura de la mano, que es donde el cliente busca el boton. */}
         {/* BANNER QR */}
         <div
           style={{
@@ -901,71 +988,6 @@ export default function KioskLayout2026({ store }: Props) {
           </button>
         </div>
 
-        {/* CUERPO */}
-        <div style={{ flex: 1, display: "flex", minHeight: 0, background: "#000", padding: "10px 12px 12px", boxSizing: "border-box" }}>
-          <div style={{ flex: 1, display: "flex", minHeight: 0, borderRadius: 18, overflow: "hidden" }}>
-            {/* IZQUIERDA */}
-            <div style={{ width: 343, flex: "0 0 auto", position: "relative", background: "#1a0a12", display: "flex", flexDirection: "column" }}>
-              <div style={{ position: "absolute", inset: 0 }}>
-                <Slot src={store?.image || art[0]} label="Foto de la tienda" />
-              </div>
-              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
-                <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
-              </div>
-            </div>
-
-            {/* CENTRO: teclado */}
-            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "41px 34px 8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14, alignSelf: "flex-start", marginLeft: 6 }}>
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    background: PINK,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flex: "0 0 auto",
-                  }}
-                >
-                  <IconPhone size={22} />
-                </div>
-                <span style={{ fontSize: 26, color: INK }}>Enter your phone number.</span>
-              </div>
-
-              <div style={{ width: "100%", maxWidth: 396, marginTop: 10 }}>
-                <Display digits={digits} height={54} />
-              </div>
-              <div style={{ width: "100%", maxWidth: 396, marginTop: 10 }}>
-                <Keypad
-                  onDigit={addDigit}
-                  onBackspace={() => setDigits((d) => d.slice(0, -1))}
-                  onSend={send}
-                  keyH={54}
-                  gap={10}
-                  stacked
-                  sending={isPending}
-                />
-              </div>
-              {errorLine}
-
-              <div style={{ marginTop: 6, maxWidth: 420 }}>
-                <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="right" width={352} onLegal={() => setPrivacyOpen(true)} />
-              </div>
-              <div style={{ alignSelf: "flex-start" }}>
-                <LegalLinks centered={false} onOpen={() => setPrivacyOpen(true)} />
-              </div>
-            </div>
-
-            {/* DERECHA */}
-            <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#f4f2f3", overflow: "hidden" }}>
-              <div style={{ position: "absolute", inset: 0 }}>
-                <Slot src={art[0]} label="Arte promocional (DEALS YOU'LL LOVE)" />
-              </div>
-            </div>
-          </div>
-        </div>
       </Frame>
       {dialogs}
     </>

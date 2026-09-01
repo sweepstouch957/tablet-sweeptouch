@@ -126,7 +126,7 @@ export default function ShoppingListResult({
       <Stack
         alignItems="center"
         justifyContent="center"
-        sx={{ bgcolor: INK, minHeight: "100%", py: 8, gap: 2, px: 4, textAlign: "center", color: SURFACE.text }}
+        sx={{ bgcolor: INK, py: 5, gap: 2, px: 4, textAlign: "center", color: SURFACE.text }}
       >
         <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
         <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Compra validada</Typography>
@@ -204,7 +204,7 @@ export default function ShoppingListResult({
     <Stack
       alignItems="center"
       justifyContent="center"
-      sx={{ bgcolor: INK, minHeight: "100%", py: 8, px: 4, gap: 2, textAlign: "center", color: SURFACE.text }}
+      sx={{ bgcolor: INK, py: 5, px: 4, gap: 2, textAlign: "center", color: SURFACE.text }}
     >
       {failed ? (
         <>
