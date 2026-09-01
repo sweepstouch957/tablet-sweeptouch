@@ -45,7 +45,7 @@ const PORT = { w: 768, h: 1280 };
 const DEMO = {
   logoH: "/kiosk2026/logo-horizontal.webp",
   logoV: "/kiosk2026/logo-vertical.webp",
-  dealsArt: "/kiosk2026/deals-art.webp",
+  dealsArt: "/kiosk2026/deals-banner.jpeg",
   bottomV: "/kiosk2026/bottom-promo-v.webp",
 } as const;
 
@@ -198,6 +198,7 @@ function Slot({
   fit = "cover",
   radius = 0,
   bg,
+  position,
 }: {
   src?: string;
   label: string;
@@ -205,6 +206,8 @@ function Slot({
   radius?: number;
   /** Relleno detrás de un `contain`, para que las bandas no canten. */
   bg?: string;
+  /** Qué parte se conserva cuando `cover` recorta. */
+  position?: string;
 }) {
   if (src) {
     return (
@@ -216,6 +219,7 @@ function Slot({
           width: "100%",
           height: "100%",
           objectFit: fit,
+          objectPosition: position,
           display: "block",
           borderRadius: radius,
           background: bg,
@@ -264,8 +268,9 @@ function Keypad({ onDigit, onBackspace, onSend, keyH, gap, stacked, sending }: K
     background: "#fff",
     border: "1px solid #d9d9d9",
     borderRadius: 10,
-    fontSize: 32,
-    fontWeight: stacked ? 400 : 700,
+    // Más grandes: es un kiosco, se toca de pie y a un brazo de distancia.
+    fontSize: 38,
+    fontWeight: stacked ? 500 : 700,
     fontFamily: FONT,
     color: INK,
     cursor: "pointer",
@@ -353,12 +358,16 @@ function Consent({
 }: {
   checked: boolean;
   onToggle: () => void;
-  align: "right" | "center";
+  align: "left" | "center";
   width?: number;
   onLegal: () => void;
 }) {
   return (
-    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+    // Gap chico y texto alineado a la izquierda: el legal arranca pegado a la
+    // casilla. Antes iba alineado a la derecha con ancho fijo, así que entre el
+    // cuadrito y la primera palabra quedaba un hueco de casi cien píxeles y no
+    // se leía como una sola cosa.
+    <div style={{ display: "flex", gap: 7, alignItems: "flex-start" }}>
       <div
         role="checkbox"
         aria-checked={checked}
@@ -368,8 +377,8 @@ function Consent({
           if (e.key === "Enter" || e.key === " ") onToggle();
         }}
         style={{
-          width: 20,
-          height: 20,
+          width: 17,
+          height: 17,
           border: "1.5px solid #9aa0a6",
           borderRadius: 4,
           background: "#fff",
@@ -386,10 +395,10 @@ function Consent({
       <div
         onClick={onLegal}
         style={{
-          fontSize: align === "right" ? 12.5 : 12,
+          fontSize: 10.5,
           color: "#8a8f98",
-          lineHeight: align === "right" ? 1.45 : 1.4,
-          textAlign: align,
+          lineHeight: 1.3,
+          textAlign: align === "center" ? "center" : "left",
           width,
           cursor: "pointer",
         }}
@@ -842,7 +851,11 @@ export default function KioskLayout2026({ store }: Props) {
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 18,
-              margin: "9px 30px 9px 18px",
+              // Alto completo de la barra: los tres bloques —logo, panel y
+              // reloj— se encastran borde con borde. Con margen arriba y abajo
+              // el panel flotaba como una tarjeta suelta y se perdía el juego
+              // de diagonales entre los tres.
+              margin: "0 30px 0 18px",
               transform: `skewX(-${SKEW}deg)`,
               position: "relative",
             }}
@@ -952,8 +965,8 @@ export default function KioskLayout2026({ store }: Props) {
               </div>
               {errorLine}
 
-              <div style={{ marginTop: 6, maxWidth: 420 }}>
-                <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="right" width={352} onLegal={() => setPrivacyOpen(true)} />
+              <div style={{ marginTop: 8, width: "100%", maxWidth: 396 }}>
+                <Consent checked={consent} onToggle={() => setConsent((c) => !c)} align="left" onLegal={() => setPrivacyOpen(true)} />
               </div>
               <div style={{ alignSelf: "flex-start" }}>
                 <LegalLinks centered={false} onOpen={() => setPrivacyOpen(true)} />
@@ -961,14 +974,13 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
 
             {/* DERECHA */}
-            <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#f4f2f3", overflow: "hidden" }}>
+            <div style={{ width: 512, flex: "0 0 auto", position: "relative", background: "#FBF1F4", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                {/* Arte fijo del diseño, no la promo de la tienda. Las promos
-                    vienen en cualquier proporción — anchas casi siempre — y en
-                    este hueco (512×500, casi cuadrado) se les cortaba el titular:
-                    "Exclusive Discounts" salía a medias. El arte del HTML está
-                    hecho para esta caja. `contain` remata: nada se recorta. */}
-                <Slot src={DEMO.dealsArt} label="Descuentos exclusivos" fit="contain" bg="#f4f2f3" />
+                {/* El arte es 1187×1325 y el hueco 512×500: `cover` se comería
+                    el 13% de abajo, justo donde está el sello de "UP TO 30% OFF".
+                    Va `contain` con el fondo pintado del mismo rosa clarísimo del
+                    banner, así las bandas de 32px no se ven y no se recorta nada. */}
+                <Slot src={DEMO.dealsArt} label="Deals you'll love" fit="contain" bg="#FBF1F4" />
               </div>
             </div>
           </div>
