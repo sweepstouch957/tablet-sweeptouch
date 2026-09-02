@@ -66,10 +66,7 @@ const FONT = "var(--font-archivo), Archivo, 'Segoe UI', sans-serif";
 const LEGAL =
   "By checking this box, you agree to receive recurring promotional text messages from Sweepstouch, including sales, coupons, and promotional offers. Message frequency varies. Message and data rates may apply. Reply STOP to opt out and HELP for help. View our Terms and Conditions and Privacy Policy.";
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+const NEW_YORK_TIME_ZONE = "America/New_York";
 
 /** Formato del diseño: (555) 555-5555, construido a medida que se teclea. */
 function formatDigits(d: string) {
@@ -141,13 +138,19 @@ function useClock() {
   }, []);
   // null hasta el primer efecto: el server no puede renderizar una hora.
   if (!now) return { dateShort: "", timeShort: "" };
-  let h = now.getHours();
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  const pad = (n: number) => String(n).padStart(2, "0");
   return {
-    dateShort: `${MONTHS[now.getMonth()].slice(0, 3)} ${now.getDate()}, ${now.getFullYear()}`,
-    timeShort: `${h}:${pad(now.getMinutes())} ${ampm}`,
+    dateShort: now.toLocaleDateString("en-US", {
+      timeZone: NEW_YORK_TIME_ZONE,
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    timeShort: now.toLocaleTimeString("en-US", {
+      timeZone: NEW_YORK_TIME_ZONE,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }),
   };
 }
 
