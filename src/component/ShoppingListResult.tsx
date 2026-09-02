@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 // 6.3: iconos de relleno solido, esquinas redondeadas, un solo color.
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type {
@@ -23,6 +24,7 @@ import type {
 
 const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
+const GREEN = STATE.ok;
 const INK = SURFACE.page;
 
 /** Segundos antes de volver solo a la pantalla de escaneo. */
@@ -117,8 +119,9 @@ export default function ShoppingListResult({
       <Stack
         alignItems="center"
         justifyContent="center"
-        sx={{ bgcolor: INK, py: 5, px: 4, textAlign: "center", color: SURFACE.text }}
+        sx={{ bgcolor: INK, py: 5, px: 4, gap: 2, textAlign: "center", color: SURFACE.text }}
       >
+        <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
         <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Purchase Validated</Typography>
       </Stack>
     );
