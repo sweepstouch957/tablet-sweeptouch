@@ -83,6 +83,8 @@ export default function ScanListDialog({ open, onClose }: Props) {
     onCloseRef.current = onClose;
   }, [onClose]);
 
+  const closeDialog = useCallback(() => onCloseRef.current(), []);
+
   const reset = useCallback(() => {
     busyRef.current = false;
     setState("waiting");
@@ -608,6 +610,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             shoppingList={shoppingList}
             onValidate={handleValidate}
             onReset={reset}
+            onValidatedClose={closeDialog}
           />
         )}
 

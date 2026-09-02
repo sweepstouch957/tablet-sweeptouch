@@ -27,8 +27,8 @@ const PINK_HOVER = MAGENTA[75];
 const GREEN = STATE.ok;
 const INK = SURFACE.page;
 
-/** Segundos antes de volver solo a la pantalla de escaneo. */
-const AUTO_RESET_S = 60;
+/** Tiempo que permanece visible la confirmación antes de cerrar el modal. */
+const CONFIRMATION_MS = 3000;
 
 interface Props {
   shoppingList: ShoppingListResultType;
@@ -37,12 +37,14 @@ interface Props {
     validatedItems: string[]
   ) => Promise<ShoppingListValidateResult>;
   onReset: () => void;
+  onValidatedClose?: () => void;
 }
 
 export default function ShoppingListResult({
   shoppingList,
   onValidate,
   onReset,
+  onValidatedClose,
 }: Props) {
   // Se valida la lista COMPLETA: el cliente ya eligió en su celular y la cajera
   // no revisa el carrito producto por producto. Ese paso frenaba la fila y era
@@ -53,29 +55,13 @@ export default function ShoppingListResult({
     useState<ShoppingListValidateResult | null>(null);
   const [validating, setValidating] = useState(false);
   const [failed, setFailed] = useState("");
-  const [seconds, setSeconds] = useState(AUTO_RESET_S);
-
-  // Vuelve solo al escaneo: si la cajera se distrae, la caja no se queda con la
-  // lista del cliente anterior en pantalla.
-  //
-  // El reloj arranca cuando aparece la CONFIRMACION, no al montar. Antes corria
-  // durante el "Acreditando...", asi que si la peticion tardaba, la pantalla de
-  // puntos se llevaba lo que sobraba del minuto — y con una red lenta podia
-  // desaparecer casi enseguida.
+  // La confirmación se muestra tres segundos y luego cierra el modal completo.
+  // Si se cierra manualmente antes, el desmontaje cancela este temporizador.
   useEffect(() => {
-    if (!validated) return;
-    setSeconds(AUTO_RESET_S);
-    const id = setInterval(() => {
-      setSeconds((prev) => {
-        if (prev <= 1) {
-          onReset();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [validated, onReset]);
+    if (!validated || !onValidatedClose) return;
+    const id = setTimeout(onValidatedClose, CONFIRMATION_MS);
+    return () => clearTimeout(id);
+  }, [validated, onValidatedClose]);
 
   const handleValidate = useCallback(async () => {
     if (allItems.length === 0 || validating) return;
