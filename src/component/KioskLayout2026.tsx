@@ -28,20 +28,19 @@ import ScanListDialog from "./ScanListDialog";
 import { useAuth } from "@/context/auth-context";
 
 /* ── Medidas nativas del diseño ─────────────────────────────────────────── */
-/* ── Barra superior: es el SVG entregado, tal cual ─────────────────────────
-   "barra superior.svg" (1339.65 × 131.81) va de fondo de la barra estirado a
-   1280 × 88 con `background-size: 100% 100%`. Redibujarlo con `skewX` +
-   `border-radius` daba "casi igual", y casi igual es lo que no se quería.
-   Sólo se le cambió el negro (#231f20 → #000) y el blanco (#f6f7f7 → #fff)
-   para que no haya costura con el cuerpo.
+/* ── Barra superior ────────────────────────────────────────────────────────
+   Réplica en CSS del SVG entregado ("barra superior.svg", 1339.65 × 131.81):
+   panel blanco inclinado con las cuatro puntas redondeadas. El SVG de fondo se
+   probó y se descartó: como imagen conserva su proporción (`preserveAspectRatio`)
+   y en vez de estirarse a la barra se centraba más angosto, con el titular
+   saliéndose del blanco.
 
-   El texto no lleva forma propia: se centra en la caja que ocupa el panel
-   blanco a media altura —de x=326.49…386.37 a 942.42…998.79 en el SVG, o sea
-   341 → 927 escalado a 1280. */
-const TOP_BAR_SVG = "/kiosk2026/top-bar.svg";
-/** Bordes del panel blanco a media altura, en el lienzo de 1280. */
-const PANEL_L = 341;
-const PANEL_R = 1280 - 927;
+   Ángulo: 59.88px de corrimiento en 131.81 de alto → 24.4°.
+
+   El panel NO tiene ancho fijo: se ajusta al titular con padding y se centra
+   entre el logo y el reloj. Así el texto nunca se sale del blanco, mida lo
+   que mida. Un ancho fijo copiado del SVG era exacto para ese SVG y nada más. */
+const SKEW = 24.4;
 
 const LAND = { w: 1280, h: 768 };
 const PORT = { w: 768, h: 1280 };
@@ -919,7 +918,7 @@ export default function KioskLayout2026({ store }: Props) {
         <div
           style={{
             height: 88,
-            background: `#000 url(${TOP_BAR_SVG}) center / 100% 100% no-repeat`,
+            background: "#000",
             display: "flex",
             alignItems: "stretch",
             position: "relative",
@@ -944,18 +943,27 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
           </div>
 
-          {/* Contenido sobre el panel blanco del SVG. La forma la pone el fondo
-              de la barra; esta caja sólo centra el titular donde cae el blanco. */}
+          {/*
+            Panel blanco inclinado. `skewX` sobre una caja rectangular +
+            `border-radius`: la diagonal sale del skew y las puntas romas del
+            radio (un `clip-path: polygon()` no admite radio). El contenido va
+            en un hijo con el skew inverso para que el texto no salga torcido.
+
+            Padding lateral de 44: al inclinar, cada borde se corre ±20px entre
+            el centro y las puntas, así que con menos aire la diagonal se comía
+            la primera o la última letra.
+          */}
           <div
             style={{
-              position: "absolute",
-              left: PANEL_L,
-              right: PANEL_R,
-              top: 0,
-              bottom: 0,
+              flex: "0 0 auto",
+              margin: "0 auto",
+              background: "#fff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              // Las puntas del SVG redondean unos 14px.
+              borderRadius: 14,
+              transform: `skewX(-${SKEW}deg)`,
             }}
           >
             <div
@@ -963,10 +971,8 @@ export default function KioskLayout2026({ store }: Props) {
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                // El panel del SVG es más angosto que el de antes (587 contra
-                // 682): el ícono, el aire y el cuerpo del texto bajan con él o
-                // el titular se come la diagonal.
-                padding: "0 26px",
+                padding: "0 44px",
+                transform: `skewX(${SKEW}deg)`,
               }}
             >
             <div
@@ -994,9 +1000,8 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
           </div>
 
-          {/* logo tienda + fecha — pegado a la derecha: el panel blanco ya no es
-              un hijo del flex, así que no queda nada que empuje este bloque. */}
-          <div style={{ width: 270, flex: "0 0 auto", marginLeft: "auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, paddingRight: 10 }}>
+          {/* logo tienda + fecha */}
+          <div style={{ width: 270, flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, paddingRight: 10 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/kiosk2026/sweepstouch-logo.png"
