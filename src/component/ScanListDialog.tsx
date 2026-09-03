@@ -65,6 +65,7 @@ interface Props {
 
 export default function ScanListDialog({ open, onClose }: Props) {
   const { user } = useAuth();
+  const onCloseRef = useRef(onClose);
   const [state, setState] = useState<State>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [shoppingList, setShoppingList] = useState<ShoppingListResultType | null>(null);
@@ -77,6 +78,12 @@ export default function ScanListDialog({ open, onClose }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const scannerRef = useRef<any>(null);
   const busyRef = useRef(false);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  const closeDialog = useCallback(() => onCloseRef.current(), []);
 
   const reset = useCallback(() => {
     busyRef.current = false;
@@ -236,14 +243,14 @@ export default function ScanListDialog({ open, onClose }: Props) {
     const id = setInterval(() => {
       setIdle((n) => {
         if (n <= 1) {
-          onClose();
+          onCloseRef.current();
           return 0;
         }
         return n - 1;
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [open, state, onClose]);
+  }, [open, state]);
 
   const bumpIdle = useCallback(() => setIdle(IDLE_S), []);
 
@@ -264,6 +271,8 @@ export default function ScanListDialog({ open, onClose }: Props) {
     <Dialog
       open={open}
       onClose={onClose}
+      onPointerDownCapture={bumpIdle}
+      onKeyDownCapture={bumpIdle}
       maxWidth="md"
       fullWidth
       scroll="paper"
@@ -605,6 +614,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
             shoppingList={shoppingList}
             onValidate={handleValidate}
             onReset={reset}
+            onValidatedClose={closeDialog}
           />
         )}
 

@@ -8,7 +8,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Box,
   Typography,
   Button,
   Stack,
@@ -16,10 +15,7 @@ import {
 } from "@mui/material";
 // 6.3: iconos de relleno solido, esquinas redondeadas, un solo color.
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
-import SmsRoundedIcon from "@mui/icons-material/SmsRounded";
-import SmsFailedRoundedIcon from "@mui/icons-material/SmsFailedRounded";
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type {
   ShoppingListResult as ShoppingListResultType,
@@ -28,14 +24,11 @@ import type {
 
 const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
-/** Verde de estado, no de marca: dice "validado", no "Sweepstouch". */
 const GREEN = STATE.ok;
 const INK = SURFACE.page;
-const PANEL = SURFACE.raised;
-const HAIR = SURFACE.line;
 
-/** Segundos antes de volver solo a la pantalla de escaneo. */
-const AUTO_RESET_S = 60;
+/** Tiempo que permanece visible la confirmación antes de cerrar el modal. */
+const CONFIRMATION_MS = 3000;
 
 interface Props {
   shoppingList: ShoppingListResultType;
@@ -44,12 +37,14 @@ interface Props {
     validatedItems: string[]
   ) => Promise<ShoppingListValidateResult>;
   onReset: () => void;
+  onValidatedClose?: () => void;
 }
 
 export default function ShoppingListResult({
   shoppingList,
   onValidate,
   onReset,
+  onValidatedClose,
 }: Props) {
   // Se valida la lista COMPLETA: el cliente ya eligió en su celular y la cajera
   // no revisa el carrito producto por producto. Ese paso frenaba la fila y era
@@ -60,29 +55,13 @@ export default function ShoppingListResult({
     useState<ShoppingListValidateResult | null>(null);
   const [validating, setValidating] = useState(false);
   const [failed, setFailed] = useState("");
-  const [seconds, setSeconds] = useState(AUTO_RESET_S);
-
-  // Vuelve solo al escaneo: si la cajera se distrae, la caja no se queda con la
-  // lista del cliente anterior en pantalla.
-  //
-  // El reloj arranca cuando aparece la CONFIRMACION, no al montar. Antes corria
-  // durante el "Acreditando...", asi que si la peticion tardaba, la pantalla de
-  // puntos se llevaba lo que sobraba del minuto — y con una red lenta podia
-  // desaparecer casi enseguida.
+  // La confirmación se muestra tres segundos y luego cierra el modal completo.
+  // Si se cierra manualmente antes, el desmontaje cancela este temporizador.
   useEffect(() => {
-    if (!validated) return;
-    setSeconds(AUTO_RESET_S);
-    const id = setInterval(() => {
-      setSeconds((prev) => {
-        if (prev <= 1) {
-          onReset();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [validated, onReset]);
+    if (!validated || !onValidatedClose) return;
+    const id = setTimeout(onValidatedClose, CONFIRMATION_MS);
+    return () => clearTimeout(id);
+  }, [validated, onValidatedClose]);
 
   const handleValidate = useCallback(async () => {
     if (allItems.length === 0 || validating) return;
@@ -126,71 +105,10 @@ export default function ShoppingListResult({
       <Stack
         alignItems="center"
         justifyContent="center"
-        sx={{ bgcolor: INK, py: 5, gap: 2, px: 4, textAlign: "center", color: SURFACE.text }}
+        sx={{ bgcolor: INK, py: 5, px: 4, gap: 2, textAlign: "center", color: SURFACE.text }}
       >
         <CheckCircleRoundedIcon sx={{ fontSize: 76, color: GREEN }} />
-        <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Purchase validated</Typography>
-        <Typography sx={{ color: SURFACE.textMuted }}>
-          {validateResult.confirmedProducts} product
-          {validateResult.confirmedProducts === 1 ? "" : "s"} confirmed
-          {customerName ? ` · ${customerName}` : ""}
-        </Typography>
-
-        <Stack direction="row" gap={1.5} sx={{ mt: 1.5, width: "min(90vw, 420px)" }}>
-          <Stat
-            label="For the customer"
-            value={`+${validateResult.pointsAwarded}`}
-            accent={PINK}
-          />
-          <Stat
-            label="For you"
-            value={`+${validateResult.cashierPointsAwarded ?? 0}`}
-            accent={GREEN}
-            muted={!validateResult.cashierPointsAwarded}
-          />
-        </Stack>
-
-        <Stack direction="row" alignItems="center" gap={0.75} sx={{ mt: 0.5 }}>
-          {validateResult.smsSent ? (
-            <>
-              <SmsRoundedIcon sx={{ fontSize: 17, color: STATE.ok }} />
-              <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: STATE.ok }}>
-                Summary sent by SMS
-              </Typography>
-            </>
-          ) : (
-            <>
-              <SmsFailedRoundedIcon sx={{ fontSize: 17, color: SURFACE.textMuted }} />
-              <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
-                SMS did not go out — points were credited anyway
-              </Typography>
-            </>
-          )}
-        </Stack>
-
-        {!validateResult.cashierPointsAwarded && (
-          <Typography variant="caption" sx={{ color: SURFACE.textMuted, maxWidth: 340 }}>
-            Your points were not credited because no cashier is signed in.
-          </Typography>
-        )}
-
-        <Button
-          variant="contained"
-          onClick={onReset}
-          disableElevation
-          sx={{
-            mt: 2,
-            px: 5,
-            py: 1.4,
-            borderRadius: "12px",
-            fontWeight: 800,
-            fontSize: "1rem",
-            bgcolor: PINK,
-            "&:hover": { bgcolor: PINK_HOVER },
-          }}
-        >
-          Next customer
-        </Button>
+        <Typography sx={{ ...TYPE.h2, fontFamily: FONT }}>Purchase Validated</Typography>
       </Stack>
     );
   }
@@ -232,7 +150,7 @@ export default function ShoppingListResult({
         <>
           <CircularProgress sx={{ color: PINK }} />
           <Typography sx={{ ...TYPE.h4, fontFamily: FONT }}>
-            Crediting points{customerName ? ` to ${customerName}` : ""}…
+            Validating purchase{customerName ? ` for ${customerName}` : ""}…
           </Typography>
           <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted }}>
             {allItems.length} product{allItems.length === 1 ? "" : "s"} · {shoppingList.qrCode}
@@ -240,46 +158,5 @@ export default function ShoppingListResult({
         </>
       )}
     </Stack>
-  );
-}
-
-/** Tarjetita de resultado. Sólo se usa en la confirmación. */
-function Stat({
-  label,
-  value,
-  accent,
-  muted,
-}: {
-  label: string;
-  value: string;
-  accent: string;
-  muted?: boolean;
-}) {
-  return (
-    <Box
-      sx={{
-        flex: 1,
-        p: 1.75,
-        borderRadius: `${RADIUS.md}px`,
-        bgcolor: muted ? SURFACE.raised : `${accent}1f`,
-        border: `1px solid ${muted ? HAIR : `${accent}55`}`,
-        textAlign: "left",
-      }}
-    >
-      <Typography
-        variant="caption"
-        sx={{ color: SURFACE.textMuted, fontWeight: 700, letterSpacing: ".05em" }}
-      >
-        {label.toUpperCase()}
-      </Typography>
-      <Typography
-        fontSize="1.7rem"
-        fontWeight={900}
-        lineHeight={1.15}
-        sx={{ color: muted ? SURFACE.textMuted : accent, fontVariantNumeric: "tabular-nums" }}
-      >
-        {value}
-      </Typography>
-    </Box>
   );
 }

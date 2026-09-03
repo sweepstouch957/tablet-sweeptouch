@@ -77,10 +77,7 @@ const FONT = "var(--font-archivo), Archivo, 'Segoe UI', sans-serif";
 const LEGAL =
   "By checking this box, you agree to receive recurring promotional text messages from Sweepstouch, including sales, coupons, and promotional offers. Message frequency varies. Message and data rates may apply. Reply STOP to opt out and HELP for help. View our Terms and Conditions and Privacy Policy.";
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+const NEW_YORK_TIME_ZONE = "America/New_York";
 
 /** Formato del diseño: (555) 555-5555, construido a medida que se teclea. */
 function formatDigits(d: string) {
@@ -152,13 +149,19 @@ function useClock() {
   }, []);
   // null hasta el primer efecto: el server no puede renderizar una hora.
   if (!now) return { dateShort: "", timeShort: "" };
-  let h = now.getHours();
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  const pad = (n: number) => String(n).padStart(2, "0");
   return {
-    dateShort: `${MONTHS[now.getMonth()].slice(0, 3)} ${now.getDate()}, ${now.getFullYear()}`,
-    timeShort: `${h}:${pad(now.getMinutes())} ${ampm}`,
+    dateShort: now.toLocaleDateString("en-US", {
+      timeZone: NEW_YORK_TIME_ZONE,
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    timeShort: now.toLocaleTimeString("en-US", {
+      timeZone: NEW_YORK_TIME_ZONE,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }),
   };
 }
 
@@ -775,7 +778,7 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ color: "#fff", fontSize: 23, fontWeight: 900, fontStyle: "italic", lineHeight: 1, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
-                ¿YA TIENES TU LISTA?
+                GOT YOUR SHOPPING LIST?
               </div>
               <div style={{ color: "#f2f2f2", fontSize: 14.5, lineHeight: 1.15, marginTop: 2 }}>
                 Escanea tu QR y recibe tu descuento
@@ -796,13 +799,13 @@ export default function KioskLayout2026({ store }: Props) {
                 border: "1px solid #dcdcdc",
                 borderRadius: 14,
                 height: 56,
-                padding: "0 22px",
+                padding: "0 14px",
                 cursor: "pointer",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
               }}
             >
-              <span style={{ color: PINK, fontSize: 20, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
-                ESCANEAR
+              <span style={{ color: PINK, fontSize: 14, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+                TAP FOR POINTS
               </span>
             </button>
             </div>
@@ -1147,7 +1150,7 @@ export default function KioskLayout2026({ store }: Props) {
                 whiteSpace: "nowrap",
               }}
             >
-              ¿YA TIENES TU LISTA DE COMPRAS?
+              GOT YOUR SHOPPING LIST?
             </div>
             <div style={{ color: "#f2f2f2", fontSize: 16, lineHeight: 1.15, marginTop: 2, whiteSpace: "nowrap" }}>
               Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
@@ -1178,8 +1181,8 @@ export default function KioskLayout2026({ store }: Props) {
               width: 220,
             }}
           >
-            <span style={{ color: PINK, fontSize: 26, fontWeight: 900, fontStyle: "italic", letterSpacing: 1 }}>
-              ESCANEAR
+            <span style={{ color: PINK, fontSize: 18, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+              TAP FOR POINTS
             </span>
           </button>
           </div>
