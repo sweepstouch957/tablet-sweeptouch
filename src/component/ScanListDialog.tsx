@@ -282,7 +282,11 @@ export default function ScanListDialog({ open, onClose }: Props) {
       <style>{`
         @keyframes prercsLaser{0%{top:6%}50%{top:88%}100%{top:6%}}
         @keyframes prercsPulse{0%,100%{opacity:1}50%{opacity:.35}}
-        #prercs-qr-reader video{width:100%!important;height:100%!important;object-fit:cover;display:block;}
+        /* Espejo: la camara frontal entrega la imagen sin espejar, asi que mover
+           el QR a la derecha lo movia a la izquierda en pantalla y nadie acertaba
+           al recuadro. El decodificador lee del stream, no del CSS, asi que
+           espejar la vista no afecta la lectura. */
+        #prercs-qr-reader video{width:100%!important;height:100%!important;object-fit:cover;display:block;transform:scaleX(-1);}
         #prercs-qr-reader{width:100%;height:100%;}
         #prercs-qr-reader__dashboard{display:none!important;}
         #prercs-qr-reader__scan_region img{display:none!important;}
