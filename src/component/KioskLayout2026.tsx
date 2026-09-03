@@ -28,17 +28,18 @@ import ScanListDialog from "./ScanListDialog";
 import { useAuth } from "@/context/auth-context";
 
 /* ── Medidas nativas del diseño ─────────────────────────────────────────── */
-/* ── Barra superior: medidas del SVG entregado ────────────────────────────
-   El archivo ("barra superior.svg") viene en 1339.65 × 131.81. El panel blanco
-   corre de x=326.49 a 942.42 abajo y de 386.37 a 998.79 arriba, o sea 59.88px
-   de corrimiento en 131.81 de alto → 24.4°.
+/* ── Barra superior: es el SVG entregado, tal cual ─────────────────────────
+   "barra superior.svg" (1339.65 × 131.81) va de fondo de la barra estirado a
+   1280 × 88 con `background-size: 100% 100%`. Redibujarlo con `skewX` +
+   `border-radius` daba "casi igual", y casi igual es lo que no se quería.
+   Sólo se le cambió el negro (#231f20 → #000) y el blanco (#f6f7f7 → #fff)
+   para que no haya costura con el cuerpo.
 
-   Acá la barra es más baja (88px, no los 126 que saldrían de escalar el SVG
-   entero), así que se conserva el ÁNGULO y la posición horizontal del panel a
-   media altura —que es donde el `skewX` deja los bordes de la caja— en vez de
-   la altura. Escalado a 1280 de ancho: el panel va de 341 a 927. */
-const SKEW = 24.4;
-/** Bordes de la caja del panel a media altura, en el lienzo de 1280. */
+   El texto no lleva forma propia: se centra en la caja que ocupa el panel
+   blanco a media altura —de x=326.49…386.37 a 942.42…998.79 en el SVG, o sea
+   341 → 927 escalado a 1280. */
+const TOP_BAR_SVG = "/kiosk2026/top-bar.svg";
+/** Bordes del panel blanco a media altura, en el lienzo de 1280. */
 const PANEL_L = 341;
 const PANEL_R = 1280 - 927;
 
@@ -915,7 +916,16 @@ export default function KioskLayout2026({ store }: Props) {
     <>
       <Frame base={base} scale={scale}>
         {/* TOP BAR */}
-        <div style={{ height: 88, background: "#000", display: "flex", alignItems: "stretch", position: "relative", flex: "0 0 auto" }}>
+        <div
+          style={{
+            height: 88,
+            background: `#000 url(${TOP_BAR_SVG}) center / 100% 100% no-repeat`,
+            display: "flex",
+            alignItems: "stretch",
+            position: "relative",
+            flex: "0 0 auto",
+          }}
+        >
           <div
             style={{
               width: 280,
@@ -934,22 +944,8 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
           </div>
 
-          {/*
-            Panel blanco inclinado, según el SVG entregado.
-
-            El SVG lo dibuja como un solo `path`: una diagonal a 24.4° con las
-            cuatro puntas redondeadas. Un `clip-path: polygon()` corta la
-            diagonal pero deja las puntas en ángulo vivo —un polígono no admite
-            radio—, así que acá la caja sigue siendo un rectángulo, se inclina
-            con `skewX` y se redondea con `border-radius` normal. Misma silueta,
-            y el contenido va en un hijo con el `skew` inverso para que el texto
-            no salga torcido.
-
-            Posición: absoluta y no por márgenes de flex. `transform` no ocupa
-            espacio, así que con márgenes había que compensar a mano lo que la
-            punta se sale de la caja; con `left`/`right` los 341 y 927 del SVG
-            se escriben tal cual.
-          */}
+          {/* Contenido sobre el panel blanco del SVG. La forma la pone el fondo
+              de la barra; esta caja sólo centra el titular donde cae el blanco. */}
           <div
             style={{
               position: "absolute",
@@ -957,13 +953,9 @@ export default function KioskLayout2026({ store }: Props) {
               right: PANEL_R,
               top: 0,
               bottom: 0,
-              background: "#fff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              // Las puntas del SVG redondean unos 14px; con 18 se veían romas.
-              borderRadius: 14,
-              transform: `skewX(-${SKEW}deg)`,
             }}
           >
             <div
@@ -975,7 +967,6 @@ export default function KioskLayout2026({ store }: Props) {
                 // 682): el ícono, el aire y el cuerpo del texto bajan con él o
                 // el titular se come la diagonal.
                 padding: "0 26px",
-                transform: `skewX(${SKEW}deg)`,
               }}
             >
             <div
