@@ -623,6 +623,15 @@ export default function KioskLayout2026({ store }: Props) {
 
   const { data: sweepstake } = useActiveSweepstake(store?._id);
 
+  /* Arte del opt-in: manda lo que Marketing cargue en el sorteo desde el panel
+     (Sweepstakes → crear/editar). Los archivos estáticos quedan de respaldo:
+     una tablet sin sorteo activo, o un sorteo al que todavía no le subieron el
+     arte, no puede quedarse con el hueco vacío en sala.
+     Ojo con los nombres: el banner "landscape" es el que se ve con la tablet
+     acostada, y ahí el hueco es un panel ALTO y angosto. */
+  const optinLandscape = sweepstake?.kioskBannerLandscape || OPTIN_V;
+  const optinPortrait = sweepstake?.kioskBannerPortrait || OPTIN_H;
+
   const [digits, setDigits] = useState("");
   const [consent, setConsent] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -745,7 +754,7 @@ export default function KioskLayout2026({ store }: Props) {
             {/* `contain` sobre negro: el arte es 2.36:1 y la franja 3.31:1, así que
                 `cover` se comía casi un tercio del alto — con el "1 LUCKY WINNER"
                 adentro. El fondo del arte ya es negro, así que no se nota borde. */}
-            <Slot src={OPTIN_H} label="Gana una TV gratis" fit="contain" bg="#000" />
+            <Slot src={optinPortrait} label="Gana una TV gratis" fit="contain" bg="#000" />
           </div>
 
           {/* BANNER QR */}
@@ -1027,7 +1036,7 @@ export default function KioskLayout2026({ store }: Props) {
                     es la pieza que invita a registrarse, y es la que está pegada al
                     teclado. Antes tomaba `art[0]` y si la tienda tenía una promo
                     cargada, entraba ahí recortada y desplazaba al opt-in. */}
-                <Slot src={OPTIN_V} label="Gana una TV gratis" />
+                <Slot src={optinLandscape} label="Gana una TV gratis" />
               </div>
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
                 <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
