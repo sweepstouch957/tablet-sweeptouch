@@ -17,9 +17,6 @@ import KioskLayoutPink from "./KioskLayoutPink";
 import KioskLayoutRed from "./KioskLayoutRed";
 import KioskLayout2026 from "./KioskLayout2026";
 
-/** Tiendas en el piloto del kiosco 2026. */
-export const KIOSK_2026_PILOT = new Set(["merchant-r-street-lar-azul-55-barueri-sp"]);
-
 interface FathersDayPromoProps {
   store?: Store;
   variant?: "pink" | "red";
@@ -76,12 +73,10 @@ const FathersDayPromo: React.FC<FathersDayPromoProps> = ({ store, variant }) => 
     }
   };
 
-  // Piloto del kiosco 2026: por ahora una sola tienda, para probarlo en sala sin
-  // tocar el resto de la flota. Sumar tiendas es agregar un slug; cuando el
-  // piloto termine, esto se borra y KioskLayout2026 pasa a ser el default.
-  if (store?.slug && KIOSK_2026_PILOT.has(store.slug)) {
-    return <KioskLayout2026 store={store} />;
-  }
+  // Kiosco 2026: terminado el piloto, es el layout default de toda la flota.
+  // Los layouts viejos quedan atras de ?ds=1 (pink) y ?ds=2 (red) por si hay
+  // que volver atras en sala sin redeploy.
+  if (variant !== "pink" && variant !== "red") return <KioskLayout2026 store={store} />;
 
   if (variant === "pink") return <KioskLayoutPink store={store} />;
   if (variant === "red") return <KioskLayoutRed store={store} />;

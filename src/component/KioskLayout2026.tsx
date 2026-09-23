@@ -606,6 +606,10 @@ function Frame({
   );
 }
 
+// ponytail: franja "GOT YOUR SHOPPING LIST?" apagada por ahora (el flujo de
+// escaneo de lista todavia no sale a sala). Poner en true para prenderla.
+const SHOW_SCAN_BANNER = false;
+
 /* ── Componente ─────────────────────────────────────────────────────────── */
 
 interface Props {
@@ -1111,7 +1115,7 @@ export default function KioskLayout2026({ store }: Props) {
             el archivo: arriba partia en dos la lectura del kiosco — logo,
             franja, y recien el teclado. Abajo cierra la pantalla y queda a la
             altura de la mano, que es donde el cliente busca el boton. */}
-        {/* BANNER QR */}
+        {SHOW_SCAN_BANNER && (
         <div
           style={{
             // Compactada: 111px eran demasiado aire arriba y abajo para dos
@@ -1192,6 +1196,7 @@ export default function KioskLayout2026({ store }: Props) {
           </button>
           </div>
         </div>
+        )}
 
       </Frame>
       {dialogs}

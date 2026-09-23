@@ -11,7 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import FathersDayPromo, { KIOSK_2026_PILOT } from "@/component/tablet";
+import FathersDayPromo from "@/component/tablet";
 import FloatingDateTime from "@/component/floating-date-time";
 import Tuerca from "@public/tuerca.webp";
 import Logo from "@public/logo.webp";
@@ -89,14 +89,11 @@ function WinACarFormContainer() {
     );
   }
 
-  // El kiosco 2026 trae su propio reloj en la barra superior. El flotante es
-  // `position: fixed` arriba a la derecha — justo encima del logo de la tienda —
-  // así que ahí se apaga en vez de quedar uno sobre el otro.
-  const isKiosk2026 = !!store.slug && KIOSK_2026_PILOT.has(store.slug);
-
   return (
     <>
-      {!isKiosk2026 && <FloatingDateTime />}
+      {/* El kiosco 2026 trae su propio reloj en la barra superior; el flotante
+          solo hace falta en los layouts viejos (?ds=1 | ?ds=2). */}
+      {(ds === "1" || ds === "2") && <FloatingDateTime />}
       <FathersDayPromo store={store} variant={ds === "1" ? "pink" : ds === "2" ? "red" : undefined} />
     </>
   );
