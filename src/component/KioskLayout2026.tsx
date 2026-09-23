@@ -1048,7 +1048,12 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
 
             {/* CENTRO: teclado */}
-            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "41px 24px 8px" }}>
+            {/* Centrado vertical: el bloque de registro tiene alto fijo y la columna
+                sobra, asi que anclado arriba dejaba un hueco blanco abajo — mas
+                todavia desde que la franja del pie esta apagada. `safe center` y no
+                `center` a secas: si algun dia el contenido crece mas que la columna,
+                se ancla arriba en vez de cortar el "Enter your phone number". */}
+            <div style={{ flex: 1, background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "safe center", padding: "20px 24px 20px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14, alignSelf: "flex-start", marginLeft: 6 }}>
                 <div
                   style={{
