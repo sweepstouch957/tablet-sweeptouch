@@ -606,9 +606,11 @@ function Frame({
   );
 }
 
-// ponytail: franja "GOT YOUR SHOPPING LIST?" apagada por ahora (el flujo de
-// escaneo de lista todavia no sale a sala). Poner en true para prenderla.
-const SHOW_SCAN_BANNER = false;
+// La franja del pie vuelve, ahora como el punto de canje: el cliente termina la
+// encuesta en su telefono, se queda con un QR de premio (RW-) y en caja lo pasa
+// por aca. El mismo visor lee las listas del Pre-RCS (SL-), asi que la cajera
+// tiene un solo lugar donde escanear.
+const SHOW_SCAN_BANNER = true;
 
 /* ── Componente ─────────────────────────────────────────────────────────── */
 
@@ -705,7 +707,12 @@ export default function KioskLayout2026({ store }: Props) {
 
   const dialogs = (
     <>
-      <ScanListDialog open={scanOpen} onClose={() => setScanOpen(false)} />
+      <ScanListDialog
+        open={scanOpen}
+        onClose={() => setScanOpen(false)}
+        storeSlug={store?.slug}
+        onNeedsLogin={() => setLoginOpen(true)}
+      />
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
       <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} isGeneric />
       <LoginDialogCashiers open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id} />
@@ -791,10 +798,10 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ color: "#fff", fontSize: 23, fontWeight: 900, fontStyle: "italic", lineHeight: 1, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>
-                GOT YOUR SHOPPING LIST?
+                GOT A REWARD OR LIST?
               </div>
               <div style={{ color: "#f2f2f2", fontSize: 14.5, lineHeight: 1.15, marginTop: 2 }}>
-                Escanea tu QR y recibe tu descuento
+                Canjea tu premio o tu lista acá
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 9, flex: "0 0 auto" }}>
@@ -818,7 +825,7 @@ export default function KioskLayout2026({ store }: Props) {
               }}
             >
               <span style={{ color: PINK, fontSize: 14, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
-                TAP FOR POINTS
+                SCAN & REDEEM
               </span>
             </button>
             </div>
@@ -1164,10 +1171,10 @@ export default function KioskLayout2026({ store }: Props) {
                 whiteSpace: "nowrap",
               }}
             >
-              GOT YOUR SHOPPING LIST?
+              GOT A REWARD OR LIST?
             </div>
             <div style={{ color: "#f2f2f2", fontSize: 16, lineHeight: 1.15, marginTop: 2, whiteSpace: "nowrap" }}>
-              Escanea tu código QR y recibe tu descuento · Scan your list to get your discount
+              Canjea tu premio o tu lista · Scan your reward or list at the register
             </div>
           </div>
           {/* QR y botón viajan juntos, con su propio gap chico. Si se dejaban
@@ -1196,7 +1203,7 @@ export default function KioskLayout2026({ store }: Props) {
             }}
           >
             <span style={{ color: PINK, fontSize: 18, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
-              TAP FOR POINTS
+              SCAN & REDEEM
             </span>
           </button>
           </div>

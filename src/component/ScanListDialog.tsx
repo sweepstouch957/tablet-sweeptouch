@@ -1,8 +1,14 @@
 "use client";
 
-// Escaneo de listas Pre-RCS desde el kiosco, sin que la cajera se salga de la
-// pantalla principal. Antes esto sólo vivía en la ruta /weekly-ad-scan, que deja
-// la tablet fuera del flujo de opt-ins mientras tanto.
+// Escaneo desde el kiosco, sin que la cajera se salga de la pantalla principal.
+// Antes esto sólo vivía en la ruta /weekly-ad-scan, que deja la tablet fuera del
+// flujo de opt-ins mientras tanto.
+//
+// Tres familias de código, todas por el mismo visor — la cajera no tiene que
+// elegir modo, el prefijo dice qué es:
+//   SL-    lista de compras del Pre-RCS  → valida y acredita puntos
+//   RW-    premio del cliente            → muestra el cupón y lo entrega
+//   SUPER- recibo / weekly ad
 //
 // Tres formas de entrar un código, las tres vivas a la vez:
 //   1. Cámara — el cliente acerca su pantalla, es el camino normal.
@@ -30,6 +36,7 @@ import KeyboardRoundedIcon from "@mui/icons-material/KeyboardRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import WeeklyAdResult from "./WeeklyAdResult";
 import ShoppingListResult from "./ShoppingListResult";
+import RewardClaimResult from "./RewardClaimResult";
 import { useAuth } from "@/context/auth-context";
 import {
   scanWeeklyAdBarcode,
@@ -39,6 +46,12 @@ import {
   type ScanResult,
   type ShoppingListResult as ShoppingListResultType,
 } from "@/services/weeklyAdService";
+import {
+  isRewardCode,
+  lookupRewardClaim,
+  redeemRewardClaim,
+  type RewardClaim,
+} from "@/services/redeem.service";
 
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 
@@ -48,27 +61,36 @@ const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
 const INK = SURFACE.page;
 
-type State = "waiting" | "loading" | "result" | "shopping-list" | "used" | "error";
+type State = "waiting" | "loading" | "result" | "shopping-list" | "reward" | "used" | "error";
 
 /** Segundos de inactividad antes de cerrar solo. */
 const IDLE_S = 60;
 
-/** Los dos formatos que la caja sabe leer. */
+/** Los formatos que la caja sabe leer. */
 function isValidCode(v: string) {
-  return (v.startsWith("SL-") && v.length >= 5) || (v.startsWith("SUPER-") && v.length >= 10);
+  return (
+    (v.startsWith("SL-") && v.length >= 5) ||
+    (v.startsWith("SUPER-") && v.length >= 10) ||
+    isRewardCode(v)
+  );
 }
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  /** Tienda del kiosco. Sin esto no se pueden canjear premios (son por tienda). */
+  storeSlug?: string;
+  /** Abre el login de cajera del kiosco cuando hace falta para entregar. */
+  onNeedsLogin?: () => void;
 }
 
-export default function ScanListDialog({ open, onClose }: Props) {
+export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin }: Props) {
   const { user } = useAuth();
   const onCloseRef = useRef(onClose);
   const [state, setState] = useState<State>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [shoppingList, setShoppingList] = useState<ShoppingListResultType | null>(null);
+  const [rewardClaim, setRewardClaim] = useState<RewardClaim | null>(null);
   const [manual, setManual] = useState("");
   const [error, setError] = useState("");
   const [usedInfo, setUsedInfo] = useState<{ at?: string; points?: number; expired?: boolean } | null>(null);
@@ -90,6 +112,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
     setState("waiting");
     setScanResult(null);
     setShoppingList(null);
+    setRewardClaim(null);
     setManual("");
     setError("");
     setUsedInfo(null);
@@ -110,7 +133,15 @@ export default function ScanListDialog({ open, onClose }: Props) {
     setState("loading");
     setError("");
     try {
-      if (value.startsWith("SL-")) {
+      if (isRewardCode(value)) {
+        if (!storeSlug) {
+          setError("Esta tablet no tiene tienda asignada: no puede entregar premios.");
+          setState("error");
+          return;
+        }
+        setRewardClaim(await lookupRewardClaim(value, storeSlug));
+        setState("reward");
+      } else if (value.startsWith("SL-")) {
         const { shoppingList: list } = await fetchShoppingList(value);
         // Un QR es de un solo uso. Antes se abria igual la pantalla de validar y
         // el rechazo recién llegaba al tocar el botón — con el 409 escondido en
@@ -139,7 +170,7 @@ export default function ScanListDialog({ open, onClose }: Props) {
     } finally {
       busyRef.current = false;
     }
-  }, []);
+  }, [storeSlug]);
 
   // ── Cámara ────────────────────────────────────────────────────────────────
   const stopCamera = useCallback(() => {
@@ -260,6 +291,12 @@ export default function ScanListDialog({ open, onClose }: Props) {
       validateShoppingList(qrCode, validatedItems, user?._id || "tablet-default"),
     [user?._id]
   );
+
+  /** La cajera logueada firma la entrega; sin ella el botón ni aparece. */
+  const deliverReward = useCallback(async () => {
+    if (!rewardClaim || !storeSlug || !user?._id) throw new Error("Falta la cajera");
+    return redeemRewardClaim(rewardClaim.redeemCode, storeSlug, user._id);
+  }, [rewardClaim, storeSlug, user?._id]);
 
   const manualOk = isValidCode(manual.trim().toUpperCase());
 
@@ -484,17 +521,20 @@ export default function ScanListDialog({ open, onClose }: Props) {
                   fullWidth
                   value={manual}
                   onChange={(e) => {
-                    const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
-                    setManual(digits ? `SL-${digits}` : "");
+                    // Dos formatos a mano: la lista es numérica (SL-123456) y el
+                    // premio alfanumérico (RW-ABCD2345). Se distingue por lo que
+                    // teclea: si aparece una letra, es un premio.
+                    const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                    const body = raw.startsWith("SL") || raw.startsWith("RW") ? raw.slice(2) : raw;
+                    if (/[A-Z]/.test(body)) setManual(body ? `RW-${body.slice(0, 8)}` : "");
+                    else setManual(body ? `SL-${body.slice(0, 6)}` : "");
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && manualOk) lookup(manual);
                   }}
-                  placeholder="SL-XXXXXX"
+                  placeholder="SL-XXXXXX · RW-XXXXXXXX"
                   inputProps={{
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                    maxLength: 9,
+                    maxLength: 11,
                     style: {
                       fontFamily: "monospace",
                       fontSize: "1.25rem",
@@ -615,6 +655,15 @@ export default function ScanListDialog({ open, onClose }: Props) {
             onValidate={handleValidate}
             onReset={reset}
             onValidatedClose={closeDialog}
+          />
+        )}
+
+        {state === "reward" && rewardClaim && (
+          <RewardClaimResult
+            claim={rewardClaim}
+            onDeliver={user?._id ? deliverReward : undefined}
+            onNeedsLogin={onNeedsLogin}
+            onReset={reset}
           />
         )}
 
