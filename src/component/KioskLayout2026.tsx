@@ -27,6 +27,7 @@ import CashierDrawer from "./cahierDrawer";
 import ScanListDialog from "./ScanListDialog";
 import { useAuth } from "@/context/auth-context";
 import { usePromos } from "@/hooks/usePromos";
+import { printTicketWithImage, printTicketWithQRCodeOnly } from "@/libs/utils/rawBt";
 
 /* ── Medidas nativas del diseño ─────────────────────────────────────────── */
 /* ── Barra superior ────────────────────────────────────────────────────────
@@ -66,6 +67,10 @@ const DEMO = {
    panel es alto y angosto (343×500) y en vertical el hero es una franja ancha
    (768×232). Estirar una sola version en el otro hueco recorta el titular o el
    "1 LUCKY WINNER", que es justo lo que la pieza tiene que comunicar. */
+/* Arte al pie del ticket impreso — el mismo que usaba el flujo viejo. */
+const TICKET_ART =
+  "https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg";
+
 const OPTIN_V = "/optin-vertical.png";
 const OPTIN_H = "/optin-horizontal.png";
 
@@ -699,6 +704,30 @@ export default function KioskLayout2026({ store }: Props) {
     });
   }, []);
 
+  /* Ticket de RawBT.
+     El kiosco 2026 se habia quedado sin impresion: el flujo viejo imprimia
+     dentro de inputModal.tsx, que este layout ya no usa (tiene su propio
+     teclado). Mismas dos variantes de siempre: con QR si el sorteo lo pide,
+     si no el ticket con el arte al pie. Los optin genericos no imprimen. */
+  const printTicket = useCallback(
+    (coupon?: string) => {
+      const optin = String(sweepstake?.optinType ?? "").trim().toLowerCase();
+      if (optin === "generic") return;
+      const common = {
+        storeName: store?.name || "",
+        phone: digits,
+        couponCode: coupon || "XXXXXX",
+        sweepstakeName: sweepstake?.name || "",
+      };
+      if (sweepstake?.hasQr) {
+        printTicketWithQRCodeOnly({ ...common, name: "" });
+      } else {
+        printTicketWithImage(TICKET_ART, common);
+      }
+    },
+    [sweepstake, store?.name, digits]
+  );
+
   const { mutate: register, isPending } = useMutation({
     mutationFn: () =>
       createSweepstake({
@@ -709,8 +738,11 @@ export default function KioskLayout2026({ store }: Props) {
         method: "tablet",
         createdBy: user?._id || "",
       }),
-    onSuccess: () => {
+    onSuccess: (resp) => {
       setThanksOpen(true);
+      // El ticket sale con el numero que se acaba de registrar, antes de
+      // limpiar el teclado: `digits` se vacia dos lineas mas abajo.
+      printTicket(resp?.coupon);
       setDigits("");
       setConsent(false);
     },
