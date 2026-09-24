@@ -26,6 +26,7 @@ import LoginDialogCashiers from "./login-dialog-cashiers";
 import CashierDrawer from "./cahierDrawer";
 import ScanListDialog from "./ScanListDialog";
 import { useAuth } from "@/context/auth-context";
+import { usePromos } from "@/hooks/usePromos";
 
 /* ── Medidas nativas del diseño ─────────────────────────────────────────── */
 /* ── Barra superior ────────────────────────────────────────────────────────
@@ -612,6 +613,36 @@ function Frame({
 // tiene un solo lugar donde escanear.
 const SHOW_SCAN_BANNER = true;
 
+/**
+ * Promos de la tienda rotando en el hueco de ofertas.
+ *
+ * Es el mismo feed que ya mostraba el carrusel viejo (`/promos/active/:store`,
+ * type=tablet). El kiosco 2026 se habia quedado con el arte fijo, asi que las
+ * tiendas con especiales cargados igual mostraban el banner generico.
+ *
+ * Devuelve `undefined` si la tienda no tiene promos: ahi manda el arte de
+ * respaldo del diseno, que es lo que se ve hoy.
+ */
+function useStorePromoArt(storeId?: string, intervalMs = 6000) {
+  const { data } = usePromos("tablet", storeId);
+  // ponytail: solo imagenes — el hueco es un <img>, un mp4 no pinta nada.
+  const list = (data ?? [])
+    .map((p) => p.imageMobile)
+    .filter((src): src is string => !!src && !/\.mp4(\?.*)?$/i.test(src));
+  const key = list.join("|");
+
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    setI(0);
+    const n = key ? key.split("|").length : 0;
+    if (n < 2) return;
+    const t = window.setInterval(() => setI((p) => (p + 1) % n), intervalMs);
+    return () => window.clearInterval(t);
+  }, [key, intervalMs]);
+
+  return list[i] || list[0];
+}
+
 /* ── Componente ─────────────────────────────────────────────────────────── */
 
 interface Props {
@@ -628,6 +659,9 @@ export default function KioskLayout2026({ store }: Props) {
   const { dateShort, timeShort } = useClock();
 
   const { data: sweepstake } = useActiveSweepstake(store?._id);
+
+  /* Especiales de la tienda para el hueco de ofertas; si no hay, el arte fijo. */
+  const promoArt = useStorePromoArt(store?._id);
 
   /* Arte del opt-in: manda lo que Marketing cargue en el sorteo desde el panel
      (Sweepstakes → crear/editar). Los archivos estáticos quedan de respaldo:
@@ -918,7 +952,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
+            <Slot src={promoArt || DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -1117,7 +1151,7 @@ export default function KioskLayout2026({ store }: Props) {
                     el 13% de abajo, justo donde está el sello de "UP TO 30% OFF".
                     Va `contain` con el fondo pintado del mismo rosa clarísimo del
                     banner, así las bandas de 32px no se ven y no se recorta nada. */}
-                <Slot src={DEMO.dealsArt} label="Deals you'll love" fit="contain" bg="#FBF1F4" />
+                <Slot src={promoArt || DEMO.dealsArt} label="Deals you'll love" fit="contain" bg="#FBF1F4" />
               </div>
             </div>
           </div>
