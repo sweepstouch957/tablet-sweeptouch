@@ -379,8 +379,8 @@ function Keypad({ onDigit, onBackspace, onSend, keyH, gap, stacked, sending }: K
         }}
       >
         <IconSend size={stacked ? 26 : 24} />
-        <span style={{ color: "#fff", fontSize: stacked ? 16 : 20, fontWeight: 800, letterSpacing: 1, fontFamily: FONT }}>
-          SEND
+        <span style={{ color: "#fff", fontSize: stacked ? 14 : 18, fontWeight: 800, letterSpacing: 0, whiteSpace: "nowrap", fontFamily: FONT }}>
+          ENVIAR/SEND
         </span>
       </button>
     </div>
@@ -691,7 +691,7 @@ export default function KioskLayout2026({ store }: Props) {
     setDigits((d) => {
       if (d.length >= 10) return d;
       const next = d + n;
-      // Al completar los 10 dígitos se marca la casilla sola, para que el
+      // Al ingresar el quinto dígito se marca la casilla sola, para que el
       // cliente no tenga que buscarla antes de tocar SEND.
       //
       // OJO — esto es una decisión de negocio, no técnica: bajo TCPA el opt-in
@@ -699,7 +699,7 @@ export default function KioskLayout2026({ store }: Props) {
       // en sí, y marcarlo por él es lo mismo que traerlo premarcado. Si algún
       // día hay que defender un registro, lo que queda guardado no lo prueba.
       // Se puede destildar, y el texto legal sigue a la vista.
-      if (next.length === 10) setConsent(true);
+      if (next.length === 5) setConsent(true);
       return next;
     });
   }, []);
