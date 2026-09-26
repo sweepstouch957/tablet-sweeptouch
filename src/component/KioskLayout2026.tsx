@@ -540,8 +540,10 @@ function BottomIcons({
       <button
         type="button"
         onClick={onSupport}
+        // Deshabilitado temporalmente: quitar disabled para reactivar el acceso.
+        disabled
         aria-label="Soporte técnico"
-        style={{ ...half, borderRadius: rounded ? "14px 0 0 0" : 0 }}
+        style={{ ...half, cursor: "default", borderRadius: rounded ? "14px 0 0 0" : 0 }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/kiosk2026/tec-support-icon.svg" alt="Soporte técnico" style={{ height: iconH, width: "auto", display: "block" }} />
