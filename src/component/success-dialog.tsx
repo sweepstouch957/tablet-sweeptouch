@@ -8,11 +8,13 @@ interface ThankYouModalProps {
   open: boolean;
   onClose: () => void;
   isGeneric?: boolean;
+  imageSrc?: string;
 }
 
 export const ThankYouModal: React.FC<ThankYouModalProps> = ({
   open,
   onClose,
+  imageSrc = "/thank-you-popup.svg",
 }) => {
   const autoCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onCloseRef = useRef(onClose);
@@ -62,9 +64,9 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
       <DialogContent sx={{ p: 0, position: "relative", overflow: "visible" }}>
         <Box
           component="img"
-          src="/thank-you-popup.svg"
+          src={imageSrc}
           alt="Thank you for participating"
-          sx={{ display: "block", width: "100%", height: "auto" }}
+          sx={{ display: "block", width: "100%", height: "auto", maxHeight: "calc(100dvh - 64px)", objectFit: "contain" }}
         />
 
         <IconButton

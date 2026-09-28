@@ -20,7 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Store } from "@/services/store.service";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { createSweepstake } from "@/services/sweepstake.service";
-// import { ThankYouModal } from "./success-dialog";
+import { ThankYouModal } from "./success-dialog";
 import { ExperienceSurveyModal } from "./ExperienceSurveyModal";
 import { submitPrercsSurvey } from "@/services/mms.service";
 import { findSurveyCustomerId } from "@/services/survey-customer.service";
@@ -688,7 +688,7 @@ export default function KioskLayout2026({ store }: Props) {
   const [scanOpen, setScanOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  // const [thanksOpen, setThanksOpen] = useState(false);
+  const [thanksOpen, setThanksOpen] = useState(false);
   const [surveyOpen, setSurveyOpen] = useState(false);
   const [surveyCustomerId, setSurveyCustomerId] = useState("");
   const [surveyRegistration, setSurveyRegistration] = useState<{
@@ -810,14 +810,14 @@ export default function KioskLayout2026({ store }: Props) {
             answers: [{ question: "Calificación de la experiencia (1-5)", answer: String(rating) }],
           });
           if (!result.ok) throw new Error("Survey was not saved");
-        }} onComplete={() => {
+        }} onComplete={(rating) => {
           setSurveyOpen(false);
           setSurveyCustomerId("");
           setSurveyRegistration(null);
-          // setThanksOpen(true);
+          setThanksOpen(rating !== null);
         }} />
       )}
-      {/* <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} isGeneric /> */}
+      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} imageSrc="/kiosk2026/survey/thankyou.png" />
       <LoginDialogCashiers open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id} />
       <CashierDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} storeId={store?._id} />
     </>

@@ -27,7 +27,7 @@ export function ExperienceSurveyModal({ onComplete, onSubmit }: {
     const timer = window.setTimeout(() => {
       if (completed.current || submitting.current) return;
       completed.current = true;
-      onCompleteRef.current(rating);
+      onCompleteRef.current(status === "saved" ? rating : null);
     }, status === "saved" ? 1600 : 10000);
     return () => window.clearTimeout(timer);
   }, [rating, status]);
@@ -63,7 +63,7 @@ export function ExperienceSurveyModal({ onComplete, onSubmit }: {
   const close = () => {
     if (completed.current || submitting.current) return;
     completed.current = true;
-    onCompleteRef.current(rating);
+    onCompleteRef.current(status === "saved" ? rating : null);
   };
 
   return (
@@ -74,18 +74,16 @@ export function ExperienceSurveyModal({ onComplete, onSubmit }: {
       aria-describedby="experience-survey-description"
       maxWidth={false}
       transitionDuration={200}
-      sx={{ "& .MuiDialog-container": { boxSizing: "border-box", pb: "6dvh" } }}
       slotProps={{
         backdrop: { sx: { bgcolor: "rgba(0,0,0,.82)" } },
-        paper: { sx: { width: "min(1000px, calc(100vw - 32px))", m: 2, maxHeight: "calc(94dvh - 32px)", bgcolor: "transparent", boxShadow: "none" } },
+        paper: { sx: { width: "min(1000px, calc(100vw - 32px))", m: 2, maxHeight: "calc(100dvh - 32px)", bgcolor: "transparent", boxShadow: "none" } },
       }}
     >
-      <Box sx={{ position: "relative", pt: 1, pb: 1 }}>
+      <Box sx={{ position: "relative" }}>
         <IconButton autoFocus disabled={status === "saving"} onClick={close} aria-label="Close survey and continue" sx={{ position: "absolute", right: 0, top: 0, width: 44, height: 44, zIndex: 1, color: "#ed1c80", bgcolor: "white", "&:hover": { bgcolor: "#fdecf0" } }}>
           <CloseIcon />
         </IconButton>
-        <Box component="img" src="/kiosk2026/survey/thankyou.png" alt="Thank you for joining us!" sx={{ display: "block", width: "min(48%, 460px)", height: "clamp(120px, 43dvh, 350px)", objectFit: "contain", mx: "auto", mb: 2 }} />
-        <Box sx={{ bgcolor: "white", color: "#17182e", borderRadius: "clamp(20px, 4vw, 42px)", px: "clamp(12px, 2.5vw, 30px)", pt: 2, pb: 2.5, textAlign: "center" }}>
+        <Box sx={{ bgcolor: "white", color: "#17182e", borderRadius: "clamp(20px, 4vw, 42px)", px: "clamp(12px, 2.5vw, 30px)", pt: 6, pb: 3, textAlign: "center" }}>
           <Box component="h2" id="experience-survey-title" sx={{ m: 0, fontSize: "clamp(18px, 2.6vw, 32px)", fontWeight: 900, lineHeight: 1.15 }}>
             HOW WAS YOUR EXPERIENCE?
           </Box>
