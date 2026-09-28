@@ -20,7 +20,10 @@ import { useMutation } from "@tanstack/react-query";
 import { Store } from "@/services/store.service";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { createSweepstake } from "@/services/sweepstake.service";
-import { ThankYouModal } from "./success-dialog";
+// import { ThankYouModal } from "./success-dialog";
+import { ExperienceSurveyModal } from "./ExperienceSurveyModal";
+import { submitPrercsSurvey } from "@/services/mms.service";
+import { findSurveyCustomerId } from "@/services/survey-customer.service";
 import PrivacyDialog from "./pannel";
 import LoginDialogCashiers from "./login-dialog-cashiers";
 import CashierDrawer from "./cahierDrawer";
@@ -685,7 +688,14 @@ export default function KioskLayout2026({ store }: Props) {
   const [scanOpen, setScanOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [thanksOpen, setThanksOpen] = useState(false);
+  // const [thanksOpen, setThanksOpen] = useState(false);
+  const [surveyOpen, setSurveyOpen] = useState(false);
+  const [surveyCustomerId, setSurveyCustomerId] = useState("");
+  const [surveyRegistration, setSurveyRegistration] = useState<{
+    phone: string;
+    storeId: string;
+    storeSlug: string;
+  } | null>(null);
   const [error, setError] = useState("");
 
   const addDigit = useCallback((n: string) => {
@@ -741,7 +751,10 @@ export default function KioskLayout2026({ store }: Props) {
         createdBy: user?._id || "",
       }),
     onSuccess: (resp) => {
-      setThanksOpen(true);
+      // Keep the customer identity after the keypad is cleared.
+      setSurveyCustomerId(typeof resp?.customerId === "string" ? resp.customerId : "");
+      setSurveyRegistration({ phone: digits, storeId: store?._id || "", storeSlug: store?.slug || "" });
+      setSurveyOpen(true);
       // El ticket sale con el numero que se acaba de registrar, antes de
       // limpiar el teclado: `digits` se vacia dos lineas mas abajo.
       printTicket(resp?.coupon);
@@ -782,7 +795,29 @@ export default function KioskLayout2026({ store }: Props) {
         onNeedsLogin={() => setLoginOpen(true)}
       />
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} isGeneric />
+      {surveyOpen && (
+        <ExperienceSurveyModal onSubmit={async (rating) => {
+          if (!surveyRegistration?.storeSlug) throw new Error("The store is missing its survey configuration. Please contact staff.");
+          const customerId = surveyCustomerId || await findSurveyCustomerId(
+            surveyRegistration.storeId,
+            surveyRegistration.phone,
+          );
+          setSurveyCustomerId(customerId);
+          const result = await submitPrercsSurvey({
+            customerId,
+            storeSlug: surveyRegistration.storeSlug,
+            kind: "quick",
+            answers: [{ question: "Calificación de la experiencia (1-5)", answer: String(rating) }],
+          });
+          if (!result.ok) throw new Error("Survey was not saved");
+        }} onComplete={() => {
+          setSurveyOpen(false);
+          setSurveyCustomerId("");
+          setSurveyRegistration(null);
+          // setThanksOpen(true);
+        }} />
+      )}
+      {/* <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} isGeneric /> */}
       <LoginDialogCashiers open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id} />
       <CashierDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} storeId={store?._id} />
     </>
