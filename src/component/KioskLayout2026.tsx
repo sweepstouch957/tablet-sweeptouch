@@ -58,8 +58,6 @@ const PORT = { w: 768, h: 1280 };
 const DEMO = {
   logoH: "/kiosk2026/logo-horizontal.webp",
   logoV: "/kiosk2026/logo-vertical.webp",
-  dealsArt: "/kiosk2026/deals-banner.jpeg",
-  bottomV: "/kiosk2026/bottom-promo-v.webp",
 } as const;
 
 /* ── Arte del opt-in (WIN A FREE TV) ─────────────────────────────────────────
@@ -73,6 +71,8 @@ const TICKET_ART =
 
 const OPTIN_V = "/optin-vertical.png";
 const OPTIN_H = "/optin-horizontal.png";
+const PROMO_LANDSCAPE = "/kiosk2026/discounts-tablet-landscape.png";
+const PROMO_PORTRAIT = "/kiosk2026/discounts-tablet-portrait.png";
 
 /* ── Colores del diseño ─────────────────────────────────────────────────── */
 const PINK = "#E6007E";
@@ -830,10 +830,8 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* HERO */}
           <div style={{ height: 232, flex: "0 0 auto", position: "relative" }}>
-            {/* `contain` sobre negro: el arte es 2.36:1 y la franja 3.31:1, así que
-                `cover` se comía casi un tercio del alto — con el "1 LUCKY WINNER"
-                adentro. El fondo del arte ya es negro, así que no se nota borde. */}
-            <Slot src={optinPortrait} label="Gana una TV gratis" fit="contain" bg="#000" />
+            {/* Mostrar el arte completo y rellenar el espacio restante con su fondo. */}
+            <Slot src={optinPortrait} label="Promoción del sorteo" fit="contain" bg="#000" />
           </div>
 
           {/* BANNER QR */}
@@ -986,7 +984,9 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={promoArt || DEMO.bottomV} label="Descuentos exclusivos" fit="contain" />
+            <div style={{ width: "100%", height: "100%", transform: promoArt ? undefined : "scale(1.3)" }}>
+              <Slot src={promoArt || PROMO_PORTRAIT} label="Descuentos exclusivos" fit="contain" bg="#fff" />
+            </div>
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -1115,7 +1115,7 @@ export default function KioskLayout2026({ store }: Props) {
                     es la pieza que invita a registrarse, y es la que está pegada al
                     teclado. Antes tomaba `art[0]` y si la tienda tenía una promo
                     cargada, entraba ahí recortada y desplazaba al opt-in. */}
-                <Slot src={optinLandscape} label="Gana una TV gratis" />
+                <Slot src={optinLandscape} label="Promoción del sorteo" />
               </div>
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
                 <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
@@ -1179,13 +1179,12 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
 
             {/* DERECHA */}
-            <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#FBF1F4", overflow: "hidden" }}>
+            <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#fff", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                {/* El arte es 1187×1325 y el hueco 512×500: `cover` se comería
-                    el 13% de abajo, justo donde está el sello de "UP TO 30% OFF".
-                    Va `contain` con el fondo pintado del mismo rosa clarísimo del
-                    banner, así las bandas de 32px no se ven y no se recorta nada. */}
-                <Slot src={promoArt || DEMO.dealsArt} label="Deals you'll love" fit="contain" bg="#FBF1F4" />
+                {/* Las promos cargadas tienen prioridad; sin imágenes se usa el respaldo horizontal. */}
+                <div style={{ width: "100%", height: "100%", transform: promoArt ? undefined : "scale(1.3)" }}>
+                  <Slot src={promoArt || PROMO_LANDSCAPE} label="Descuentos exclusivos" fit="contain" bg="#fff" />
+                </div>
               </div>
             </div>
           </div>
