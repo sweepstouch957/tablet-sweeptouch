@@ -984,7 +984,7 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <div style={{ width: "100%", height: "100%", transform: promoArt ? undefined : "scale(1.3)" }}>
+            <div style={{ position: "absolute", inset: 0 }}>
               <Slot src={promoArt || PROMO_PORTRAIT} label="Descuentos exclusivos" fit="contain" bg="#fff" />
             </div>
           </div>
