@@ -260,6 +260,10 @@ const IconCheck = ({ size = 14 }: { size?: number }) => (
 );
 
 /** Relleno de un hueco de imagen: la foto real si existe, si no el placeholder. */
+/** ¿Es un video? Cloudinary lo entrega bajo /video/upload/; también por extensión. */
+const isVideoSrc = (src?: string) =>
+  !!src && (/\/video\/upload\//.test(src) || /\.(mp4|webm|mov|m4v)(\?|$)/i.test(src));
+
 function Slot({
   src,
   label,
@@ -267,6 +271,7 @@ function Slot({
   radius = 0,
   bg,
   position,
+  onEnded,
 }: {
   src?: string;
   label: string;
@@ -276,7 +281,32 @@ function Slot({
   bg?: string;
   /** Qué parte se conserva cuando `cover` recorta. */
   position?: string;
+  /** Sólo video: terminó de reproducirse (el carrusel pasa al siguiente). */
+  onEnded?: () => void;
 }) {
+  if (src && isVideoSrc(src)) {
+    return (
+      <video
+        key={src}
+        src={src}
+        autoPlay
+        muted
+        playsInline
+        loop={!onEnded}
+        onEnded={onEnded}
+        aria-label={label}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: fit,
+          objectPosition: position,
+          display: "block",
+          borderRadius: radius,
+          background: bg || "#000",
+        }}
+      />
+    );
+  }
   if (src) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -635,22 +665,27 @@ const SHOW_SCAN_BANNER = true;
  */
 function useStorePromoArt(storeId?: string, intervalMs = 6000) {
   const { data } = usePromos("tablet", storeId);
-  // ponytail: solo imagenes — el hueco es un <img>, un mp4 no pinta nada.
+  // Imágenes y videos: el Slot pinta <video> cuando corresponde. Un video dura lo que dura
+  // (pasa al siguiente al terminar); una imagen, `intervalMs`.
   const list = (data ?? [])
     .map((p) => p.imageMobile)
-    .filter((src): src is string => !!src && !/\.mp4(\?.*)?$/i.test(src));
+    .filter((src): src is string => !!src);
   const key = list.join("|");
 
   const [i, setI] = useState(0);
+  const n = key ? key.split("|").length : 0;
+  const current = list[i] || list[0];
+  const next = useCallback(() => setI((p) => (n ? (p + 1) % n : 0)), [n]);
   useEffect(() => {
     setI(0);
-    const n = key ? key.split("|").length : 0;
-    if (n < 2) return;
-    const t = window.setInterval(() => setI((p) => (p + 1) % n), intervalMs);
+  }, [key]);
+  useEffect(() => {
+    if (n < 2 || isVideoSrc(current)) return;
+    const t = window.setInterval(next, intervalMs);
     return () => window.clearInterval(t);
-  }, [key, intervalMs]);
+  }, [key, intervalMs, n, current, next]);
 
-  return list[i] || list[0];
+  return { src: current, next: n > 1 ? next : undefined };
 }
 
 /* ── Componente ─────────────────────────────────────────────────────────── */
@@ -671,7 +706,7 @@ export default function KioskLayout2026({ store }: Props) {
   const { data: sweepstake } = useActiveSweepstake(store?._id);
 
   /* Especiales de la tienda para el hueco de ofertas; si no hay, el arte fijo. */
-  const promoArt = useStorePromoArt(store?._id);
+  const { src: promoArt, next: nextPromo } = useStorePromoArt(store?._id);
 
   /* Arte del opt-in: manda lo que Marketing cargue en el sorteo desde el panel
      (Sweepstakes → crear/editar). Los archivos estáticos quedan de respaldo:
@@ -1020,7 +1055,7 @@ export default function KioskLayout2026({ store }: Props) {
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
             <div style={{ position: "absolute", inset: 0 }}>
-              <Slot src={promoArt || PROMO_PORTRAIT} label="Descuentos exclusivos" fit="contain" bg="#fff" />
+              <Slot src={promoArt || PROMO_PORTRAIT} label="Descuentos exclusivos" fit="contain" bg="#fff" onEnded={nextPromo} />
             </div>
           </div>
 
@@ -1216,9 +1251,9 @@ export default function KioskLayout2026({ store }: Props) {
             {/* DERECHA */}
             <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#fff", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                {/* Las promos cargadas tienen prioridad; sin imágenes se usa el respaldo horizontal. */}
+                {/* Las promos cargadas (imagen o video) tienen prioridad; sin promos se usa el respaldo horizontal. */}
                 <div style={{ width: "100%", height: "100%", transform: promoArt ? undefined : "scale(1.3)" }}>
-                  <Slot src={promoArt || PROMO_LANDSCAPE} label="Descuentos exclusivos" fit="contain" bg="#fff" />
+                  <Slot src={promoArt || PROMO_LANDSCAPE} label="Descuentos exclusivos" fit="contain" bg="#fff" onEnded={nextPromo} />
                 </div>
               </div>
             </div>
