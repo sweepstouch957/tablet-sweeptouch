@@ -817,7 +817,7 @@ export default function KioskLayout2026({ store }: Props) {
           setThanksOpen(rating !== null);
         }} />
       )}
-      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} imageSrc="/kiosk2026/survey/thankyou.png" />
+      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} imageSrc="/kiosk2026/survey/thankyou-pink-v2.png" pinkCard />
       <LoginDialogCashiers open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id} />
       <CashierDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} storeId={store?._id} />
     </>
