@@ -21,6 +21,9 @@ import { Store } from "@/services/store.service";
 import { useActiveSweepstake } from "@/hooks/useActiveSwepake";
 import { createSweepstake } from "@/services/sweepstake.service";
 import { ThankYouModal } from "./success-dialog";
+import { ExperienceSurveyModal } from "./ExperienceSurveyModal";
+import { submitPrercsSurvey } from "@/services/mms.service";
+import { findSurveyCustomerId } from "@/services/survey-customer.service";
 import PrivacyDialog from "./pannel";
 import LoginDialogCashiers from "./login-dialog-cashiers";
 import CashierDrawer from "./cahierDrawer";
@@ -58,8 +61,6 @@ const PORT = { w: 768, h: 1280 };
 const DEMO = {
   logoH: "/kiosk2026/logo-horizontal.webp",
   logoV: "/kiosk2026/logo-vertical.webp",
-  dealsArt: "/kiosk2026/deals-banner.jpeg",
-  bottomV: "/kiosk2026/bottom-promo-v.webp",
 } as const;
 
 /* ── Arte del opt-in (WIN A FREE TV) ─────────────────────────────────────────
@@ -73,6 +74,8 @@ const TICKET_ART =
 
 const OPTIN_V = "/optin-vertical.png";
 const OPTIN_H = "/optin-horizontal.png";
+const PROMO_LANDSCAPE = "/kiosk2026/discounts-tablet-landscape.png";
+const PROMO_PORTRAIT = "/kiosk2026/discounts-tablet-portrait.png";
 
 /* ── Colores del diseño ─────────────────────────────────────────────────── */
 const PINK = "#E6007E";
@@ -409,8 +412,8 @@ function Keypad({ onDigit, onBackspace, onSend, keyH, gap, stacked, sending }: K
         }}
       >
         <IconSend size={stacked ? 26 : 24} />
-        <span style={{ color: "#fff", fontSize: stacked ? 16 : 20, fontWeight: 800, letterSpacing: 1, fontFamily: FONT }}>
-          SEND
+        <span style={{ color: "#fff", fontSize: stacked ? 14 : 18, fontWeight: 800, letterSpacing: 0, whiteSpace: "nowrap", fontFamily: FONT }}>
+          ENVIAR/SEND
         </span>
       </button>
     </div>
@@ -570,8 +573,10 @@ function BottomIcons({
       <button
         type="button"
         onClick={onSupport}
+        // Deshabilitado temporalmente: quitar disabled para reactivar el acceso.
+        disabled
         aria-label="Soporte técnico"
-        style={{ ...half, borderRadius: rounded ? "14px 0 0 0" : 0 }}
+        style={{ ...half, cursor: "default", borderRadius: rounded ? "14px 0 0 0" : 0 }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/kiosk2026/tec-support-icon.svg" alt="Soporte técnico" style={{ height: iconH, width: "auto", display: "block" }} />
@@ -719,6 +724,13 @@ export default function KioskLayout2026({ store }: Props) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [thanksOpen, setThanksOpen] = useState(false);
+  const [surveyOpen, setSurveyOpen] = useState(false);
+  const [surveyCustomerId, setSurveyCustomerId] = useState("");
+  const [surveyRegistration, setSurveyRegistration] = useState<{
+    phone: string;
+    storeId: string;
+    storeSlug: string;
+  } | null>(null);
   const [error, setError] = useState("");
 
   const addDigit = useCallback((n: string) => {
@@ -726,7 +738,7 @@ export default function KioskLayout2026({ store }: Props) {
     setDigits((d) => {
       if (d.length >= 10) return d;
       const next = d + n;
-      // Al completar los 10 dígitos se marca la casilla sola, para que el
+      // Al ingresar el quinto dígito se marca la casilla sola, para que el
       // cliente no tenga que buscarla antes de tocar SEND.
       //
       // OJO — esto es una decisión de negocio, no técnica: bajo TCPA el opt-in
@@ -734,7 +746,7 @@ export default function KioskLayout2026({ store }: Props) {
       // en sí, y marcarlo por él es lo mismo que traerlo premarcado. Si algún
       // día hay que defender un registro, lo que queda guardado no lo prueba.
       // Se puede destildar, y el texto legal sigue a la vista.
-      if (next.length === 10) setConsent(true);
+      if (next.length === 5) setConsent(true);
       return next;
     });
   }, []);
@@ -774,7 +786,10 @@ export default function KioskLayout2026({ store }: Props) {
         createdBy: user?._id || "",
       }),
     onSuccess: (resp) => {
-      setThanksOpen(true);
+      // Keep the customer identity after the keypad is cleared.
+      setSurveyCustomerId(typeof resp?.customerId === "string" ? resp.customerId : "");
+      setSurveyRegistration({ phone: digits, storeId: store?._id || "", storeSlug: store?.slug || "" });
+      setSurveyOpen(true);
       // El ticket sale con el numero que se acaba de registrar, antes de
       // limpiar el teclado: `digits` se vacia dos lineas mas abajo.
       printTicket(resp?.coupon);
@@ -815,7 +830,29 @@ export default function KioskLayout2026({ store }: Props) {
         onNeedsLogin={() => setLoginOpen(true)}
       />
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
-      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} isGeneric />
+      {surveyOpen && (
+        <ExperienceSurveyModal onSubmit={async (rating) => {
+          if (!surveyRegistration?.storeSlug) throw new Error("The store is missing its survey configuration. Please contact staff.");
+          const customerId = surveyCustomerId || await findSurveyCustomerId(
+            surveyRegistration.storeId,
+            surveyRegistration.phone,
+          );
+          setSurveyCustomerId(customerId);
+          const result = await submitPrercsSurvey({
+            customerId,
+            storeSlug: surveyRegistration.storeSlug,
+            kind: "quick",
+            answers: [{ question: "Calificación de la experiencia (1-5)", answer: String(rating) }],
+          });
+          if (!result.ok) throw new Error("Survey was not saved");
+        }} onComplete={(rating) => {
+          setSurveyOpen(false);
+          setSurveyCustomerId("");
+          setSurveyRegistration(null);
+          setThanksOpen(rating !== null);
+        }} />
+      )}
+      <ThankYouModal open={thanksOpen} onClose={() => setThanksOpen(false)} imageSrc="/kiosk2026/survey/thankyou.png" />
       <LoginDialogCashiers open={loginOpen} onClose={() => setLoginOpen(false)} storeId={store?._id} />
       <CashierDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} storeId={store?._id} />
     </>
@@ -863,10 +900,8 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* HERO */}
           <div style={{ height: 232, flex: "0 0 auto", position: "relative" }}>
-            {/* `contain` sobre negro: el arte es 2.36:1 y la franja 3.31:1, así que
-                `cover` se comía casi un tercio del alto — con el "1 LUCKY WINNER"
-                adentro. El fondo del arte ya es negro, así que no se nota borde. */}
-            <Slot src={optinPortrait} label="Gana una TV gratis" fit="contain" bg="#000" />
+            {/* Mostrar el arte completo y rellenar el espacio restante con su fondo. */}
+            <Slot src={optinPortrait} label="Promoción del sorteo" fit="contain" bg="#000" />
           </div>
 
           {/* BANNER QR */}
@@ -1019,7 +1054,9 @@ export default function KioskLayout2026({ store }: Props) {
 
           {/* PROMO INFERIOR */}
           <div style={{ flex: 1, minHeight: 0, margin: "0 20px", position: "relative", overflow: "hidden", background: "#fff" }}>
-            <Slot src={promoArt || DEMO.bottomV} label="Descuentos exclusivos" fit="contain" onEnded={nextPromo} />
+            <div style={{ position: "absolute", inset: 0 }}>
+              <Slot src={promoArt || PROMO_PORTRAIT} label="Descuentos exclusivos" fit="contain" bg="#fff" onEnded={nextPromo} />
+            </div>
           </div>
 
           <div style={{ marginTop: 12 }}>
@@ -1148,7 +1185,7 @@ export default function KioskLayout2026({ store }: Props) {
                     es la pieza que invita a registrarse, y es la que está pegada al
                     teclado. Antes tomaba `art[0]` y si la tienda tenía una promo
                     cargada, entraba ahí recortada y desplazaba al opt-in. */}
-                <Slot src={optinLandscape} label="Gana una TV gratis" />
+                <Slot src={optinLandscape} label="Promoción del sorteo" />
               </div>
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}>
                 <BottomIcons height={42} iconH={26} onCashier={openCashier} onSupport={openSupport} rounded />
@@ -1212,13 +1249,12 @@ export default function KioskLayout2026({ store }: Props) {
             </div>
 
             {/* DERECHA */}
-            <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#FBF1F4", overflow: "hidden" }}>
+            <div style={{ width: 470, flex: "0 0 auto", position: "relative", background: "#fff", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0 }}>
-                {/* El arte es 1187×1325 y el hueco 512×500: `cover` se comería
-                    el 13% de abajo, justo donde está el sello de "UP TO 30% OFF".
-                    Va `contain` con el fondo pintado del mismo rosa clarísimo del
-                    banner, así las bandas de 32px no se ven y no se recorta nada. */}
-                <Slot src={promoArt || DEMO.dealsArt} label="Deals you'll love" fit="contain" bg="#FBF1F4" onEnded={nextPromo} />
+                {/* Las promos cargadas (imagen o video) tienen prioridad; sin promos se usa el respaldo horizontal. */}
+                <div style={{ width: "100%", height: "100%", transform: promoArt ? undefined : "scale(1.3)" }}>
+                  <Slot src={promoArt || PROMO_LANDSCAPE} label="Descuentos exclusivos" fit="contain" bg="#fff" onEnded={nextPromo} />
+                </div>
               </div>
             </div>
           </div>

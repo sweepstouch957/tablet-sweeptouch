@@ -1,0 +1,132 @@
+  .faces {
+    display: flex;
+    justify-content: space-between;
+    gap: clamp(8px, 2vw, 28px);
+  }
+
+  .face-btn {
+    min-width: 0;
+    padding: 0;
+    flex: 1;
+    background: none; border: 0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .35s, filter .35s;
+    /* entrada con rebote, escalonada */
+    opacity: 0;
+    animation: dropIn .7s cubic-bezier(.34,1.56,.64,1) forwards;
+    animation-delay: calc(var(--i) * .12s);
+  }
+  .face-btn span {
+    color: #17182e;
+    font-size: clamp(12px, 1.6vw, 18px);
+    font-weight: 600;
+  }
+
+  .face-btn svg {
+    width: 100%;
+    max-width: 150px;
+    overflow: visible;
+    transform-origin: center bottom;
+    transition: transform .25s;
+  }
+  .face-btn:hover svg,
+  .face-btn:focus-visible svg { transform: scale(1.06); }
+
+  /* partes internas animables */
+  .eye, .brow, .mouth, .happy-eye, .face-core {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .happy-eye { transform-origin: center bottom; }
+
+  /* ===== En reposo: solo Good y Very Good, efecto sutil ===== */
+  /* Good: parpadeo lento + sonrisa que respira */
+  .face-btn[data-value="4"] .eye   { animation: blink 5s infinite 1.5s; }
+  .face-btn[data-value="4"] .mouth { animation: smile 3.5s ease-in-out infinite; }
+  /* Very Good: ojitos felices que saltan suave + boca que respira */
+  .face-btn[data-value="5"] .happy-eye   { animation: hop 2.8s ease-in-out infinite; }
+  .face-btn[data-value="5"] .happy-eye.r { animation-delay: .12s; }
+  .face-btn[data-value="5"] .mouth       { animation: smile 2.8s ease-in-out infinite; }
+  /* Very Poor, Poor y Okay: parpadeo + gesto sutil */
+  .face-btn[data-value="1"] .eye { animation: blink 4.6s infinite .3s; }
+  .face-btn[data-value="2"] .eye { animation: blink 5.4s infinite 2.2s; }
+  .face-btn[data-value="3"] .eye { animation: blink 4.2s infinite 3.4s; }
+  /* Very Poor: cejas fruncidas y boca que tiembla un poquito */
+  .face-btn[data-value="1"] .brow.left  { transform-origin: right center; animation: browL 3s ease-in-out infinite; }
+  .face-btn[data-value="1"] .brow.right { transform-origin: left center;  animation: browR 3s ease-in-out infinite; }
+  .face-btn[data-value="1"] .mouth      { animation: frown 3s ease-in-out infinite; }
+  /* Poor: boca que se encoge con desÃ¡nimo */
+  .face-btn[data-value="2"] .mouth { animation: frown 3.6s ease-in-out infinite .6s; }
+  /* Okay: boca que se desliza de lado, tipo "mmm" */
+  .face-btn[data-value="3"] .mouth { animation: meh 4s ease-in-out infinite; }
+
+  /* ===== SelecciÃ³n: rebote con squash & stretch ===== */
+  .faces.has-choice .face-btn:not(.selected) { animation: none; opacity: .3; filter: grayscale(.6); }
+  .face-btn:focus-visible { outline: 3px solid #ed1c80; outline-offset: 5px; border-radius: 12px; }
+  .face-btn:disabled { cursor: default; }
+  .face-btn [fill="#ed1c80"] { transition: fill .35s; }
+  .faces.has-choice .face-btn:not(.selected) [fill="#ed1c80"] { fill: #d9d9d9; }
+  .face-btn.selected svg { transform: scale(1.1); }
+  /* Good y Very Good: rebote inicial y luego balanceo leve */
+  .face-btn.selected[data-value="4"] svg,
+  .face-btn.selected[data-value="5"] svg {
+    animation:
+      bounceIn .9s cubic-bezier(.28,.84,.42,1) forwards,
+      sway 2.4s ease-in-out .9s infinite;
+  }
+  /* la carita elegida cobra vida mientras estÃ¡ seleccionada */
+  .face-btn.selected[data-value="4"] .eye       { animation: blink 2.2s infinite .5s; }
+  .face-btn.selected[data-value="5"] .happy-eye { animation: hop 1.2s ease-in-out infinite .9s; }
+  .face-btn.selected[data-value="4"] .mouth,
+  .face-btn.selected[data-value="5"] .mouth     { animation: smile 1.2s ease-in-out infinite .9s; }
+  /* Very Poor, Poor y Okay: sin rebote, solo se agrandan un poco */
+
+  /* ===== Keyframes ===== */
+  @keyframes dropIn {
+    0%   { opacity: 0; transform: translateY(-40px) scale(.6); }
+    100% { opacity: 1; transform: none; }
+  }
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%           { transform: scaleY(.1); }
+  }
+  @keyframes smile {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.05, 1.08); }
+  }
+  @keyframes browL { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-5deg); } }
+  @keyframes browR { 0%,100% { transform: rotate(0); } 50% { transform: rotate(5deg); } }
+  @keyframes frown {
+    0%, 100% { transform: scale(1, 1); }
+    50%      { transform: scale(.94, 1.08) translateY(1px); }
+  }
+  @keyframes meh {
+    0%, 20%, 100% { transform: translateX(0) rotate(0); }
+    40%, 55%      { transform: translateX(-3px) rotate(-3deg); }
+    75%, 85%      { transform: translateX(3px) rotate(3deg); }
+  }
+  @keyframes hop {
+    0%, 60%, 100% { transform: translateY(0); }
+    30%           { transform: translateY(-4px); }
+  }
+  /* salto principal: agacha â†’ sale disparada â†’ cae aplastada â†’ rebota â†’ se asienta */
+  @keyframes bounceIn {
+    0%   { transform: translateY(0)     scale(1, 1); }
+    12%  { transform: translateY(0)     scale(1.12, .86); }
+    35%  { transform: translateY(-38px) scale(.92, 1.12); }
+    55%  { transform: translateY(0)     scale(1.18, .88); }
+    68%  { transform: translateY(-14px) scale(1.08, 1.14); }
+    82%  { transform: translateY(0)     scale(1.16, 1.06); }
+    100% { transform: translateY(0)     scale(1.12, 1.12); }
+  }
+  /* balanceo leve de izquierda a derecha tras el rebote */
+  @keyframes sway {
+    0%, 100% { transform: scale(1.12) rotate(0deg); }
+    25%      { transform: scale(1.12) rotate(-5deg); }
+    75%      { transform: scale(1.12) rotate(5deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faces *, .faces *::before, .faces *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
