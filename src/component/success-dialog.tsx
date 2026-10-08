@@ -9,12 +9,14 @@ interface ThankYouModalProps {
   onClose: () => void;
   isGeneric?: boolean;
   imageSrc?: string;
+  pinkCard?: boolean;
 }
 
 export const ThankYouModal: React.FC<ThankYouModalProps> = ({
   open,
   onClose,
   imageSrc = "/thank-you-popup.svg",
+  pinkCard = false,
 }) => {
   const autoCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onCloseRef = useRef(onClose);
@@ -50,13 +52,15 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
       TransitionComponent={Fade}
       transitionDuration={500}
       slotProps={{
+        backdrop: { sx: pinkCard ? { bgcolor: "rgba(0,0,0,.65)", backdropFilter: "blur(6px)" } : {} },
         paper: {
           sx: {
-            width: "min(585px, calc(100vw - 32px))",
+            width: pinkCard ? "min(900px, calc(100vw - 48px), calc((100dvh - 48px) * 1.5))" : "min(585px, calc(100vw - 32px))",
             m: 2,
-            overflow: "visible",
-            bgcolor: "transparent",
-            boxShadow: "none",
+            overflow: pinkCard ? "hidden" : "visible",
+            borderRadius: pinkCard ? "32px" : undefined,
+            bgcolor: pinkCard ? "#ff087b" : "transparent",
+            boxShadow: pinkCard ? "0 24px 80px rgba(0,0,0,.4)" : "none",
           },
         },
       }}
@@ -74,11 +78,13 @@ export const ThankYouModal: React.FC<ThankYouModalProps> = ({
           aria-label="Close"
           sx={{
             position: "absolute",
-            top: 8,
-            right: 8,
-            color: "white",
-            bgcolor: "#f43789",
-            "&:hover": { bgcolor: "#e32574" },
+            top: pinkCard ? 16 : 8,
+            right: pinkCard ? 16 : 8,
+            width: pinkCard ? 48 : undefined,
+            height: pinkCard ? 48 : undefined,
+            color: pinkCard ? "#ed087b" : "white",
+            bgcolor: pinkCard ? "white" : "#f43789",
+            "&:hover": { bgcolor: pinkCard ? "#ffe5f1" : "#e32574" },
           }}
         >
           <CloseIcon />
