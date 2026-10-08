@@ -759,7 +759,10 @@ export default function KioskLayout2026({ store }: Props) {
   const printTicket = useCallback(
     (coupon?: string) => {
       const optin = String(sweepstake?.optinType ?? "").trim().toLowerCase();
-      if (optin === "generic") return;
+      // printTicket lo define el panel; sin definir, lo de siempre.
+      const print = sweepstake?.printTicket ?? optin !== "generic";
+      if (!print) return;
+      const opts = { template: sweepstake?.ticketTemplate, copies: sweepstake?.ticketCopies };
       const common = {
         storeName: store?.name || "",
         phone: digits,
@@ -767,9 +770,9 @@ export default function KioskLayout2026({ store }: Props) {
         sweepstakeName: sweepstake?.name || "",
       };
       if (sweepstake?.hasQr) {
-        printTicketWithQRCodeOnly({ ...common, name: "" });
+        printTicketWithQRCodeOnly({ ...common, name: "" }, opts);
       } else {
-        printTicketWithImage(TICKET_ART, common);
+        printTicketWithImage(TICKET_ART, common, opts);
       }
     },
     [sweepstake, store?.name, digits]
