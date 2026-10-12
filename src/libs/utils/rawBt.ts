@@ -246,19 +246,15 @@ export async function printTicketWithQRCodeOnly(data: {
   sweepstakeName: string;
   name?: string;
 }, opts: TicketOpts = {}) {
-  const qrData = {
-    phone: data.phone,
-    coupon: data.couponCode,
-  };
-  // Generar QR code como canvas
+  // ponytail: el QR lleva sólo el teléfono por ahora; si el escáner necesita
+  // cupón u otro dato, volver a un JSON aquí.
   const qrCanvas = document.createElement("canvas");
-  await QRCode.toCanvas(qrCanvas, JSON.stringify(qrData), {
+  await QRCode.toCanvas(qrCanvas, data.phone, {
     errorCorrectionLevel: "H",
     margin: 1,
     scale: 4,
   });
 
-  // Crear canvas principal
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -267,55 +263,38 @@ export async function printTicketWithQRCodeOnly(data: {
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
 
-  const custom = opts.template?.trim() ? fillTicketTemplate(opts.template, data, now) : null;
-  canvas.width = 576;
-  canvas.height = custom ? 280 + custom.length * 25 : 600;
+  // Texto primero (plantilla del panel o el de siempre) y el QR al final.
+  const lines = opts.template?.trim()
+    ? fillTicketTemplate(opts.template, data, now)
+    : [
+        data.sweepstakeName.toUpperCase(),
+        `CODE: ${data.couponCode}`,
+        data.storeName.toUpperCase(),
+        `PHONE: ${data.phone}`,
+        ...(data.name ? [`NAME: ${data.name}`] : []),
+        `DATE: ${date}`,
+        `TIME: ${time}`,
+        "GOOD LUCK!",
+      ];
 
-  // 🎨 Fondo blanco
+  const lineHeight = 25;
+  const qrSize = 200;
+  canvas.width = 576;
+  canvas.height = 40 + lines.length * lineHeight + 20 + qrSize + 30;
+
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 🎯 Centro de texto
-  const centerText = (text: string, y: number, font = "24px monospace") => {
-    ctx.font = font;
-    const textWidth = ctx.measureText(text).width;
-    ctx.fillText(text, (canvas.width - textWidth) / 2, y);
-  };
-
   ctx.fillStyle = "black";
-  let y = 40;
-  centerText(data.sweepstakeName.toUpperCase(), y, "bold 26px monospace");
-  y += 25;
-  centerText("Your ticket QR code:", y, "20px monospace");
-
-  // 📦 QR code
-  y += 15;
-  ctx.drawImage(qrCanvas, (canvas.width - 180) / 2, y, 180, 180);
-  y += 200;
-
   ctx.font = "20px monospace";
-  if (custom) {
-    custom.forEach((line) => {
-      centerText(line, y);
-      y += 25;
-    });
-    sendToRawBT(canvas.toDataURL("image/png"), opts.copies);
-    return;
-  }
-  centerText(`CODE: ${data.couponCode}`, y);
-  y += 25;
-  centerText(data.storeName.toUpperCase(), y);
-  y += 25;
-  centerText(`PHONE: ${data.phone}`, y);
-  y += 25;
-  centerText(`NAME: ${data?.name}`, y);
-  y += 25;
-  centerText(`DATE: ${date}`, y);
-  y += 25;
-  centerText(`TIME: ${time}`, y);
-  y += 25;
-  centerText("GOOD LUCK!", y);
+  let y = 40;
+  lines.forEach((line) => {
+    const textWidth = ctx.measureText(line).width;
+    ctx.fillText(line, (canvas.width - textWidth) / 2, y);
+    y += lineHeight;
+  });
 
+  ctx.drawImage(qrCanvas, (canvas.width - qrSize) / 2, y, qrSize, qrSize);
 
   sendToRawBT(canvas.toDataURL("image/png"), opts.copies);
 }
