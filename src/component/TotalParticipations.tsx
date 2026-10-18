@@ -22,7 +22,11 @@ import { BRAND, MAGENTA, STATE, SURFACE } from "@/libs/brand";
 
 const fetchTodayParticipation = async (userId: string) => {
   const { data } = await api.get(`/sweepstakes/participants/today/${userId}`);
-  return data.total || 0;
+  return {
+    total: data.total || 0,
+    newNumbers: data.newNumbers || 0,
+    invalidPhones: data.invalidPhones || 0,
+  };
 };
 
 type Props = { storeId?: string };
@@ -32,7 +36,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
   const [openCode, setOpenCode] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const { data: todayCount = 0, isLoading: loadingToday } = useQuery({
+  const { data: today, isLoading: loadingToday } = useQuery({
     queryKey: ["participations", "today", user?._id],
     queryFn: () => fetchTodayParticipation(user!._id),
     enabled: !!user?._id,
@@ -64,7 +68,7 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
       >
         <CardContent sx={{ p: 2.5 }}>
           <Typography variant="body2" fontWeight={700} sx={{ opacity: 0.85, mb: 0.5 }}>
-            Participaciones de Hoy
+            Registros de Hoy
           </Typography>
 
           <Box display="flex" alignItems="center" gap={1.5} mt={0.5}>
@@ -72,13 +76,39 @@ export default function TodayParticipationCard({ storeId: _storeId }: Props) {
               <CircularProgress size={32} sx={{ color: "white" }} />
             ) : (
               <Typography fontSize="3rem" fontWeight="900" lineHeight={1}>
-                {todayCount}
+                {today?.total ?? 0}
               </Typography>
             )}
             <Typography fontSize="1rem" fontWeight={500} sx={{ opacity: 0.85 }}>
-              participaciones
+              registros
             </Typography>
           </Box>
+          {!loadingToday && today && (
+            <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={1} mt={1.5}>
+              {[
+                { label: "Nuevos", value: today.newNumbers },
+                { label: "Existentes", value: today.total - today.newNumbers },
+                { label: "Inválidos", value: today.invalidPhones },
+              ].map((s) => (
+                <Box
+                  key={s.label}
+                  sx={{
+                    background: "rgba(255,255,255,0.15)",
+                    borderRadius: 2,
+                    py: 1,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography fontSize="1.4rem" fontWeight={900} lineHeight={1}>
+                    {s.value}
+                  </Typography>
+                  <Typography fontSize="0.7rem" sx={{ opacity: 0.85 }}>
+                    {s.label}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
 
           {/* Access code button */}
           <Button
