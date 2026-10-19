@@ -104,6 +104,62 @@ export function printImageWithRawBT(imageUrl: string) {
   };
 }
 
+/* Ticket editable desde el panel (sorteo.ticketTemplate). Mismo texto que el
+   DEFAULT_TICKET_TEMPLATE del panel admin: si se cambia uno, cambiar el otro. */
+export const DEFAULT_TICKET_TEMPLATE = [
+  "==============================",
+  "{store}",
+  "==============================",
+  "PHONE : {phone}",
+  "COUPON: {coupon}",
+  "DATE  : {date}",
+  "TIME  : {time}",
+  "==============================",
+  "{sweepstake}",
+  "==============================",
+  "GOOD LUCK",
+].join("\n");
+
+export interface TicketOpts {
+  /** Vacío = las líneas de siempre. */
+  template?: string;
+  /** Copias por registro (algunos eventos piden 2). */
+  copies?: number;
+}
+
+export function fillTicketTemplate(
+  template: string,
+  data: { storeName: string; phone: string; couponCode: string; sweepstakeName: string },
+  now = new Date()
+): string[] {
+  const vars: Record<string, string> = {
+    store: data.storeName.toUpperCase(),
+    phone: data.phone,
+    coupon: data.couponCode,
+    date: now.toLocaleDateString(),
+    time: now.toLocaleTimeString(),
+    sweepstake: data.sweepstakeName.toUpperCase(),
+  };
+  return template
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\{(\w+)\}/g, (m, k) => vars[k] ?? m));
+}
+
+/* RawBT toma un iframe por trabajo; varios en el mismo tick se pisan, así que
+   las copias salen espaciadas. */
+function sendToRawBT(base64Image: string, copies = 1) {
+  const n = Math.min(Math.max(Math.floor(copies) || 1, 1), 5);
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = `rawbt:${base64Image}`;
+      document.body.appendChild(iframe);
+      setTimeout(() => iframe.remove(), 2000);
+    }, i * 2500);
+  }
+}
+
 export function printTicketWithImage(
   imageUrl: string,
   data: {
@@ -111,7 +167,8 @@ export function printTicketWithImage(
     phone: string;
     couponCode: string;
     sweepstakeName: string;
-  }
+  },
+  opts: TicketOpts = {}
 ) {
   const img = new Image();
   img.crossOrigin = "anonymous";
@@ -129,7 +186,7 @@ export function printTicketWithImage(
     const store = match?.[1]?.trim() || data.storeName;
     const address = match?.[2]?.trim() || "";
 
-    const lines = [
+    const lines = opts.template?.trim() ? fillTicketTemplate(opts.template, data, now) : [
       "==============================",
       store.toUpperCase(),
       address,
@@ -174,15 +231,7 @@ export function printTicketWithImage(
     ctx.drawImage(img, imageX, y + imageSpacing, 180, imageHeight);
 
     // Imprimir
-    const base64Image = canvas.toDataURL("image/png");
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = `rawbt:${base64Image}`;
-    document.body.appendChild(iframe);
-
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 2000);
+    sendToRawBT(canvas.toDataURL("image/png"), opts.copies);
   };
 
   img.onerror = () => {
@@ -196,20 +245,16 @@ export async function printTicketWithQRCodeOnly(data: {
   couponCode: string;
   sweepstakeName: string;
   name?: string;
-}) {
-  const qrData = {
-    phone: data.phone,
-    coupon: data.couponCode,
-  };
-  // Generar QR code como canvas
+}, opts: TicketOpts = {}) {
+  // ponytail: el QR lleva sólo el teléfono por ahora; si el escáner necesita
+  // cupón u otro dato, volver a un JSON aquí.
   const qrCanvas = document.createElement("canvas");
-  await QRCode.toCanvas(qrCanvas, JSON.stringify(qrData), {
+  await QRCode.toCanvas(qrCanvas, data.phone, {
     errorCorrectionLevel: "H",
     margin: 1,
     scale: 4,
   });
 
-  // Crear canvas principal
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -218,52 +263,38 @@ export async function printTicketWithQRCodeOnly(data: {
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
 
-  canvas.width = 576;
-  canvas.height = 600;
+  // Texto primero (plantilla del panel o el de siempre) y el QR al final.
+  const lines = opts.template?.trim()
+    ? fillTicketTemplate(opts.template, data, now)
+    : [
+        data.sweepstakeName.toUpperCase(),
+        `CODE: ${data.couponCode}`,
+        data.storeName.toUpperCase(),
+        `PHONE: ${data.phone}`,
+        ...(data.name ? [`NAME: ${data.name}`] : []),
+        `DATE: ${date}`,
+        `TIME: ${time}`,
+        "GOOD LUCK!",
+      ];
 
-  // 🎨 Fondo blanco
+  const lineHeight = 25;
+  const qrSize = 200;
+  canvas.width = 576;
+  canvas.height = 40 + lines.length * lineHeight + 20 + qrSize + 30;
+
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 🎯 Centro de texto
-  const centerText = (text: string, y: number, font = "24px monospace") => {
-    ctx.font = font;
-    const textWidth = ctx.measureText(text).width;
-    ctx.fillText(text, (canvas.width - textWidth) / 2, y);
-  };
-
   ctx.fillStyle = "black";
-  let y = 40;
-  centerText(data.sweepstakeName.toUpperCase(), y, "bold 26px monospace");
-  y += 25;
-  centerText("Your ticket QR code:", y, "20px monospace");
-
-  // 📦 QR code
-  y += 15;
-  ctx.drawImage(qrCanvas, (canvas.width - 180) / 2, y, 180, 180);
-  y += 200;
-
   ctx.font = "20px monospace";
-  centerText(`CODE: ${data.couponCode}`, y);
-  y += 25;
-  centerText(data.storeName.toUpperCase(), y);
-  y += 25;
-  centerText(`PHONE: ${data.phone}`, y);
-  y += 25;
-  centerText(`NAME: ${data?.name}`, y);
-  y += 25;
-  centerText(`DATE: ${date}`, y);
-  y += 25;
-  centerText(`TIME: ${time}`, y);
-  y += 25;
-  centerText("GOOD LUCK!", y);
+  let y = 40;
+  lines.forEach((line) => {
+    const textWidth = ctx.measureText(line).width;
+    ctx.fillText(line, (canvas.width - textWidth) / 2, y);
+    y += lineHeight;
+  });
 
+  ctx.drawImage(qrCanvas, (canvas.width - qrSize) / 2, y, qrSize, qrSize);
 
-  const base64Image = canvas.toDataURL("image/png");
-
-  // Primera impresión
-  const iframe1 = document.createElement("iframe");
-  iframe1.style.display = "none";
-  iframe1.src = `rawbt:${base64Image}`;
-  document.body.appendChild(iframe1);
+  sendToRawBT(canvas.toDataURL("image/png"), opts.copies);
 }

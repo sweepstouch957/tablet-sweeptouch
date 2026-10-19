@@ -410,6 +410,7 @@ export default function KioskLayoutRed({ store }: Props) {
         sweepstakeName={data?.name || ""}
         type={data?.optinType}
         hasQR={data?.hasQr}
+        ticket={{ print: data?.printTicket, copies: data?.ticketCopies, template: data?.ticketTemplate }}
       />
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </Box>

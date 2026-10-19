@@ -40,6 +40,8 @@ interface PhoneInputModalProps {
   /** Aviso opcional de alta exitosa. Opcional porque los paneles ya no necesitan reaccionar. */
   onSuccessRegister?: () => void;
   userId?: string;
+  /** Config de ticket del sorteo (printTicket/ticketCopies/ticketTemplate). */
+  ticket?: { print?: boolean; copies?: number; template?: string };
 }
 
 const keypad = [
@@ -72,6 +74,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   type = '',
   hasQR,
   userId,
+  ticket,
 }) => {
   const [phone, setPhone] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -145,7 +148,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
         setShowThanks(true);
       }
 
-      if (type !== 'generic') {
+      const ticketOpts = { template: ticket?.template, copies: ticket?.copies };
+      if (ticket?.print ?? type !== 'generic') {
         if (hasQR) {
           printTicketWithQRCodeOnly({
             storeName: storeName,
@@ -153,7 +157,7 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             couponCode: resp.coupon || 'XXXXXX',
             sweepstakeName,
             name: customerName || '',
-          });
+          }, ticketOpts);
         } else {
           printTicketWithImage(
             'https://res.cloudinary.com/dg9gzic4s/image/upload/v1751982268/chiquitoy_ioyhpp.jpg',
@@ -162,7 +166,8 @@ export const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
               phone: phone,
               couponCode: resp.coupon || 'XXXXXX',
               sweepstakeName,
-            }
+            },
+            ticketOpts
           );
         }
       }
