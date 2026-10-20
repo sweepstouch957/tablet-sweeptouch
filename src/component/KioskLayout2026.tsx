@@ -690,6 +690,65 @@ function useStorePromoArt(storeId?: string, intervalMs = 6000) {
 
 /* ── Componente ─────────────────────────────────────────────────────────── */
 
+function PromoScreensaver({ src, paused }: {
+  src: string;
+  paused: boolean;
+}) {
+  const [visible, setVisible] = useState(true);
+  const [fade, setFade] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const restart = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setFade(true);
+        setVisible((current) => !current);
+      }, 7000);
+    };
+    restart();
+    document.addEventListener("pointerdown", restart, true);
+    document.addEventListener("keydown", restart, true);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("pointerdown", restart, true);
+      document.removeEventListener("keydown", restart, true);
+    };
+  }, [visible, paused]);
+
+  const shown = visible && !paused;
+
+  return (
+    <button
+      type="button"
+      tabIndex={shown ? 0 : -1}
+      aria-hidden={!shown}
+      aria-label="Cerrar protector de pantalla y registrar tu número"
+      onClick={(event) => {
+        event.stopPropagation();
+        setFade(false);
+        setVisible(false);
+      }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 2000,
+        width: "100%", height: "100%", margin: 0, padding: 0,
+        border: 0, background: "#000", cursor: "pointer",
+        opacity: shown ? 1 : 0,
+        visibility: shown ? "visible" : "hidden",
+        pointerEvents: shown ? "auto" : "none",
+        transition: fade && !paused
+          ? `opacity 1200ms ease-in-out, visibility 0s ${shown ? "0s" : "1200ms"}`
+          : "none",
+      }}
+    >
+      <span style={{ display: "block", width: "100%", height: "100%", pointerEvents: "none" }}>
+        <Slot src={src} label="Promociones de la tienda" fit="contain" />
+      </span>
+    </button>
+  );
+}
+
 interface Props {
   store?: Store;
 }
@@ -863,6 +922,18 @@ export default function KioskLayout2026({ store }: Props) {
 
   const errorLine = error ? (
     <div style={{ color: PINK, fontSize: 13, fontWeight: 700, marginTop: 6 }}>{error}</div>
+  ) : null;
+
+  const screensaver = [
+    "c-town-supermarket-444-20th-ave-paterson-nj-07513-usa",
+    "extra-jumbo-by-antillana-312-audubon-ave-new-york-ny-10033-usa",
+    "city-fresh-market-2115-broadway-astoria-ny-11106",
+  ].includes(store?.slug ?? "") ? (
+    <PromoScreensaver
+      key={store?._id}
+      src={promoArt || (portrait ? PROMO_PORTRAIT : PROMO_LANDSCAPE)}
+      paused={privacyOpen || scanOpen || loginOpen || drawerOpen || thanksOpen || surveyOpen || isPending}
+    />
   ) : null;
 
   /* ══ VERTICAL ══════════════════════════════════════════════════════════ */
@@ -1067,6 +1138,7 @@ export default function KioskLayout2026({ store }: Props) {
           </div>
         </Frame>
         {dialogs}
+        {screensaver}
       </>
     );
   }
@@ -1352,6 +1424,7 @@ export default function KioskLayout2026({ store }: Props) {
 
       </Frame>
       {dialogs}
+      {screensaver}
     </>
   );
 }
