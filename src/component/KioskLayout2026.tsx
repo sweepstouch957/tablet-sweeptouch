@@ -926,8 +926,6 @@ export default function KioskLayout2026({ store }: Props) {
 
   const screensaver = [
     "c-town-supermarket-444-20th-ave-paterson-nj-07513-usa",
-    "extra-jumbo-by-antillana-312-audubon-ave-new-york-ny-10033-usa",
-    "city-fresh-market-2115-broadway-astoria-ny-11106",
   ].includes(store?.slug ?? "") ? (
     <PromoScreensaver
       key={store?._id}
