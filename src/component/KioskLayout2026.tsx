@@ -695,13 +695,17 @@ function PromoScreensaver({ src, paused }: {
   paused: boolean;
 }) {
   const [visible, setVisible] = useState(true);
+  const [fade, setFade] = useState(false);
 
   useEffect(() => {
     if (paused) return;
     let timer: ReturnType<typeof setTimeout>;
     const restart = () => {
       clearTimeout(timer);
-      timer = setTimeout(() => setVisible((current) => !current), 7000);
+      timer = setTimeout(() => {
+        setFade(true);
+        setVisible((current) => !current);
+      }, 7000);
     };
     restart();
     document.addEventListener("pointerdown", restart, true);
@@ -713,20 +717,29 @@ function PromoScreensaver({ src, paused }: {
     };
   }, [visible, paused]);
 
-  if (!visible || paused) return null;
+  const shown = visible && !paused;
 
   return (
     <button
       type="button"
+      tabIndex={shown ? 0 : -1}
+      aria-hidden={!shown}
       aria-label="Cerrar protector de pantalla y registrar tu número"
       onClick={(event) => {
         event.stopPropagation();
+        setFade(false);
         setVisible(false);
       }}
       style={{
         position: "fixed", inset: 0, zIndex: 2000,
         width: "100%", height: "100%", margin: 0, padding: 0,
         border: 0, background: "#000", cursor: "pointer",
+        opacity: shown ? 1 : 0,
+        visibility: shown ? "visible" : "hidden",
+        pointerEvents: shown ? "auto" : "none",
+        transition: fade && !paused
+          ? `opacity 1200ms ease-in-out, visibility 0s ${shown ? "0s" : "1200ms"}`
+          : "none",
       }}
     >
       <span style={{ display: "block", width: "100%", height: "100%", pointerEvents: "none" }}>
