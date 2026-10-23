@@ -37,6 +37,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import WeeklyAdResult from "./WeeklyAdResult";
 import ShoppingListResult from "./ShoppingListResult";
 import RewardClaimResult from "./RewardClaimResult";
+import ReferralCouponResult from "./ReferralCouponResult";
 import { useAuth } from "@/context/auth-context";
 import {
   scanWeeklyAdBarcode,
@@ -50,6 +51,10 @@ import {
   isRewardCode,
   lookupRewardClaim,
   redeemRewardClaim,
+  isReferralCouponCode,
+  lookupReferralCoupon,
+  redeemReferralCoupon,
+  type ReferralCoupon,
   type RewardClaim,
 } from "@/services/redeem.service";
 
@@ -61,7 +66,7 @@ const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
 const INK = SURFACE.page;
 
-type State = "waiting" | "loading" | "result" | "shopping-list" | "reward" | "used" | "error";
+type State = "waiting" | "loading" | "result" | "shopping-list" | "reward" | "coupon" | "used" | "error";
 
 /** Segundos de inactividad antes de cerrar solo. */
 const IDLE_S = 60;
@@ -71,7 +76,8 @@ function isValidCode(v: string) {
   return (
     (v.startsWith("SL-") && v.length >= 5) ||
     (v.startsWith("SUPER-") && v.length >= 10) ||
-    isRewardCode(v)
+    isRewardCode(v) ||
+    isReferralCouponCode(v)
   );
 }
 
@@ -80,17 +86,20 @@ interface Props {
   onClose: () => void;
   /** Tienda del kiosco. Sin esto no se pueden canjear premios (son por tienda). */
   storeSlug?: string;
+  /** Para los cupones de referidos (RF-): el cupón tiene que ser de ESTA tienda. */
+  storeId?: string;
   /** Abre el login de cajera del kiosco cuando hace falta para entregar. */
   onNeedsLogin?: () => void;
 }
 
-export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin }: Props) {
+export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNeedsLogin }: Props) {
   const { user } = useAuth();
   const onCloseRef = useRef(onClose);
   const [state, setState] = useState<State>("waiting");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [shoppingList, setShoppingList] = useState<ShoppingListResultType | null>(null);
   const [rewardClaim, setRewardClaim] = useState<RewardClaim | null>(null);
+  const [coupon, setCoupon] = useState<ReferralCoupon | null>(null);
   const [manual, setManual] = useState("");
   const [error, setError] = useState("");
   const [usedInfo, setUsedInfo] = useState<{ at?: string; points?: number; expired?: boolean } | null>(null);
@@ -113,6 +122,7 @@ export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin 
     setScanResult(null);
     setShoppingList(null);
     setRewardClaim(null);
+    setCoupon(null);
     setManual("");
     setError("");
     setUsedInfo(null);
@@ -133,7 +143,15 @@ export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin 
     setState("loading");
     setError("");
     try {
-      if (isRewardCode(value)) {
+      if (isReferralCouponCode(value)) {
+        if (!storeId) {
+          setError("Esta tablet no tiene tienda asignada: no puede canjear cupones.");
+          setState("error");
+          return;
+        }
+        setCoupon(await lookupReferralCoupon(value, storeId));
+        setState("coupon");
+      } else if (isRewardCode(value)) {
         if (!storeSlug) {
           setError("Esta tablet no tiene tienda asignada: no puede entregar premios.");
           setState("error");
@@ -297,6 +315,11 @@ export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin 
     if (!rewardClaim || !storeSlug || !user?._id) throw new Error("Falta la cajera");
     return redeemRewardClaim(rewardClaim.redeemCode, storeSlug, user._id);
   }, [rewardClaim, storeSlug, user?._id]);
+
+  const deliverCoupon = useCallback(async () => {
+    if (!coupon || !storeId || !user?._id) throw new Error("Falta la cajera");
+    return redeemReferralCoupon(coupon.code, storeId, user._id);
+  }, [coupon, storeId, user?._id]);
 
   const manualOk = isValidCode(manual.trim().toUpperCase());
 
@@ -655,6 +678,15 @@ export default function ScanListDialog({ open, onClose, storeSlug, onNeedsLogin 
             onValidate={handleValidate}
             onReset={reset}
             onValidatedClose={closeDialog}
+          />
+        )}
+
+        {state === "coupon" && coupon && (
+          <ReferralCouponResult
+            coupon={coupon}
+            onDeliver={user?._id ? deliverCoupon : undefined}
+            onNeedsLogin={onNeedsLogin}
+            onReset={reset}
           />
         )}
 

@@ -49,3 +49,43 @@ export async function redeemRewardClaim(
   });
   return data.claim as RewardClaim;
 }
+
+// ─── Cupón del programa de referidos (RF-XXXXXX): "invita a 5 amigos y gana $10 OFF" ────
+// Lo emite sweepstakes-service; el cliente lo trae como QR desde su /me. Mismo trato que
+// el premio RW-: se mira, se muestra de quién es, y la cajera logueada lo quema.
+export interface ReferralCoupon {
+  id: string;
+  code: string;
+  title: string;
+  amount: number;
+  minPurchase: number;
+  terms: string;
+  round: number;
+  status: "pending" | "redeemed" | "cancelled";
+  expired: boolean;
+  expiresAt: string | null;
+  redeemedAt: string | null;
+  storeId: string;
+  customerName: string;
+  customerPhone: string;
+}
+
+export function isReferralCouponCode(value: string) {
+  return /^RF-\d{6}$/.test(value.trim().toUpperCase());
+}
+
+export async function lookupReferralCoupon(code: string, storeId: string): Promise<ReferralCoupon> {
+  const { data } = await api.get(`/sweepstakes/referral-reward/program/coupon/${encodeURIComponent(code)}`, {
+    params: { storeId },
+  });
+  return data.coupon as ReferralCoupon;
+}
+
+export async function redeemReferralCoupon(code: string, storeId: string, cashierId: string): Promise<ReferralCoupon> {
+  const { data } = await api.post(`/sweepstakes/rewards/referral/${encodeURIComponent(code)}/redeem`, {
+    storeId,
+    redeemedBy: cashierId,
+  });
+  const r = data.data || {};
+  return { ...r, id: String(r._id || ""), expired: false, storeId: String(r.store || storeId), customerName: "", customerPhone: "" } as ReferralCoupon;
+}
