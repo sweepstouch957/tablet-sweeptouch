@@ -547,7 +547,15 @@ export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNe
                     // Dos formatos a mano: la lista es numérica (SL-123456) y el
                     // premio alfanumérico (RW-ABCD2345). Se distingue por lo que
                     // teclea: si aparece una letra, es un premio.
+                    // Tres formatos a mano: lista SL-123456 (numérica), premio RW-ABCD2345
+                    // (alfanumérico) y cupón de referidos RF-123456 (numérico, se teclea con
+                    // el prefijo RF para distinguirlo de la lista).
                     const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+                    if (raw.startsWith("RF")) {
+                      const d = raw.slice(2).replace(/\D/g, "");
+                      setManual(`RF-${d.slice(0, 6)}`);
+                      return;
+                    }
                     const body = raw.startsWith("SL") || raw.startsWith("RW") ? raw.slice(2) : raw;
                     if (/[A-Z]/.test(body)) setManual(body ? `RW-${body.slice(0, 8)}` : "");
                     else setManual(body ? `SL-${body.slice(0, 6)}` : "");
