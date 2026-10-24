@@ -8,8 +8,6 @@ import React, { useState } from "react";
 import { Box, Button, Chip, CircularProgress, Stack, Typography } from "@mui/material";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import BlockRoundedIcon from "@mui/icons-material/BlockRounded";
-import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
-import LockPersonRoundedIcon from "@mui/icons-material/LockPersonRounded";
 import { BRAND, MAGENTA, SURFACE, STATE, TYPE, FONT, RADIUS } from "@/libs/brand";
 import type { ReferralCoupon } from "@/services/redeem.service";
 
@@ -27,7 +25,7 @@ interface Props {
 const when = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleString("es-US", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
 
-export default function ReferralCouponResult({ coupon: initial, onDeliver, onReset, onNeedsLogin }: Props) {
+export default function ReferralCouponResult({ coupon: initial, onDeliver, onReset }: Props) {
   const [coupon, setCoupon] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -57,18 +55,23 @@ export default function ReferralCouponResult({ coupon: initial, onDeliver, onRes
       ) : dead ? (
         <BlockRoundedIcon sx={{ fontSize: 60, color: STATE.warn }} />
       ) : (
-        <LocalOfferRoundedIcon sx={{ fontSize: 60, color: PINK }} />
+        <Box
+          component="img"
+          src="/kiosk2026/referral-coupon.png"
+          alt="Cupón de $10 OFF"
+          sx={{ width: 240, maxWidth: "100%", height: "auto", objectFit: "contain" }}
+        />
       )}
 
       <Stack gap={0.5}>
-        <Typography sx={{ ...TYPE.caption, fontFamily: FONT, color: SURFACE.textMuted, letterSpacing: ".08em" }}>
+        <Typography sx={{ fontSize: 20, lineHeight: 1.4, fontFamily: FONT, color: "#000", letterSpacing: ".04em" }}>
           {coupon.customerName || "Cliente"}
           {coupon.customerPhone ? ` · ${coupon.customerPhone}` : ""}
         </Typography>
         <Typography sx={{ ...TYPE.h2, fontFamily: FONT, color: SURFACE.text, fontWeight: 900 }}>
           {coupon.title}
         </Typography>
-        <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textBody, letterSpacing: ".1em" }}>
+        <Typography sx={{ fontSize: 20, lineHeight: 1.4, fontFamily: FONT, color: "#000", letterSpacing: ".1em" }}>
           {coupon.code}
         </Typography>
       </Stack>
@@ -83,7 +86,7 @@ export default function ReferralCouponResult({ coupon: initial, onDeliver, onRes
         }}
       />
 
-      <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted, maxWidth: 420 }}>
+      <Typography sx={{ fontSize: 22, lineHeight: 1.5, fontFamily: FONT, color: "#000", maxWidth: 620 }}>
         Cupón del programa de referidos (invitó a sus amigos).
         {coupon.minPurchase > 0 ? ` Aplica en compras de $${coupon.minPurchase} o más.` : ""}
         {coupon.expiresAt ? ` Vence ${when(coupon.expiresAt)}.` : ""}
@@ -97,7 +100,7 @@ export default function ReferralCouponResult({ coupon: initial, onDeliver, onRes
       )}
 
       {redeemed ? (
-        <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textBody, maxWidth: 420 }}>
+        <Typography sx={{ fontSize: 20, lineHeight: 1.5, fontFamily: FONT, color: "#000", maxWidth: 620 }}>
           {coupon.redeemedAt ? `Este cupón ya se usó el ${when(coupon.redeemedAt)}.` : "Cupón canjeado."} Cada código vale una sola vez.
         </Typography>
       ) : dead ? null : onDeliver ? (
@@ -111,19 +114,10 @@ export default function ReferralCouponResult({ coupon: initial, onDeliver, onRes
         >
           Aplicar {coupon.title} y canjear
         </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          onClick={onNeedsLogin}
-          startIcon={<LockPersonRoundedIcon />}
-          sx={{ mt: 0.5, px: 3, borderRadius: `${RADIUS.md}px`, fontFamily: FONT, fontWeight: 800, color: PINK, borderColor: PINK }}
-        >
-          Inicia sesión de cajera para canjear
-        </Button>
-      )}
+      ) : null}
 
       <Box>
-        <Button onClick={onReset} sx={{ fontFamily: FONT, color: SURFACE.textMuted, textTransform: "none" }}>
+        <Button onClick={onReset} sx={{ fontFamily: FONT, fontSize: 20, color: "#000", textTransform: "none" }}>
           Escanear otro código
         </Button>
       </Box>
