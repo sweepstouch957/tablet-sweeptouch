@@ -651,7 +651,6 @@ function Frame({
 // encuesta en su telefono, se queda con un QR de premio (RW-) y en caja lo pasa
 // por aca. El mismo visor lee las listas del Pre-RCS (SL-), asi que la cajera
 // tiene un solo lugar donde escanear.
-const SHOW_SCAN_BANNER = true;
 
 /**
  * Promos de la tienda rotando en el hueco de ofertas.
@@ -754,6 +753,7 @@ interface Props {
 }
 
 export default function KioskLayout2026({ store }: Props) {
+  const showScanBanner = store?.slug === "key-food-supermarket-885-gerard-ave-bronx-ny-10452";
   const router = useRouter();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -977,6 +977,7 @@ export default function KioskLayout2026({ store }: Props) {
           </div>
 
           {/* BANNER QR */}
+          {showScanBanner && (
           <div
             style={{
               flex: "0 0 auto",
@@ -1038,6 +1039,8 @@ export default function KioskLayout2026({ store }: Props) {
             </button>
             </div>
           </div>
+
+          )}
 
           {/* TARJETA DE REGISTRO */}
           <div
@@ -1337,87 +1340,28 @@ export default function KioskLayout2026({ store }: Props) {
             el archivo: arriba partia en dos la lectura del kiosco — logo,
             franja, y recien el teclado. Abajo cierra la pantalla y queda a la
             altura de la mano, que es donde el cliente busca el boton. */}
-        {SHOW_SCAN_BANNER && (
-        <div
-          style={{
-            // Compactada: 111px eran demasiado aire arriba y abajo para dos
-            // renglones de texto. 84 deja la franja como un cintillo y le
-            // devuelve alto al cuerpo, que es donde está el teclado.
-            height: 84,
-            flex: "0 0 auto",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 26,
-            padding: "0 40px",
-            background: PINK,
-          }}
-        >
-          <div
-            style={{
-              width: 74,
-              height: 48,
-              borderRadius: 12,
-              background: "rgba(255,255,255,0.35)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flex: "0 0 auto",
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/kiosk2026/list-icon.png" alt="Lista de compras" style={{ width: 60, height: "auto", display: "block" }} />
-          </div>
-          <div style={{ flex: "0 1 auto", minWidth: 0 }}>
-            <div
-              style={{
-                color: "#fff",
-                fontSize: 29,
-                fontWeight: 900,
-                fontStyle: "italic",
-                letterSpacing: "0.3px",
-                lineHeight: 1,
-                textShadow: "0 1px 2px rgba(0,0,0,0.15)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              GOT A REWARD OR LIST?
-            </div>
-            <div style={{ color: "#f2f2f2", fontSize: 16, lineHeight: 1.15, marginTop: 2, whiteSpace: "nowrap" }}>
-              Canjea tu premio o tu lista · Scan your reward or list at the register
-            </div>
-          </div>
-          {/* QR y botón viajan juntos, con su propio gap chico. Si se dejaban
-              sueltos en la franja tomaban el gap general (26px) y quedaban
-              lejos; agrupados se leen como "icono + acción" sin pegarse. */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "0 0 auto" }}>
-          <QrScan size={58} onClick={() => setScanOpen(true)} />
-
+        {showScanBanner && (
           <button
             type="button"
             onClick={() => setScanOpen(true)}
+            aria-label="Escanear mi QR de referido"
             style={{
+              display: "block",
+              width: "100%",
               flex: "0 0 auto",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 16,
-              background: "#f1f1f1",
-              border: "1px solid #dcdcdc",
-              borderRadius: 16,
-              padding: "0 30px",
+              padding: 0,
+              border: 0,
+              background: PINK,
               cursor: "pointer",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
-              height: 58,
-              width: 220,
             }}
           >
-            <span style={{ color: PINK, fontSize: 18, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
-              SCAN & REDEEM
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/kiosk2026/referral-banner.png"
+              alt="Thanks for referring! Get $10 off. Escanea aqu? el QR que recibiste por referir. Scan my QR."
+              style={{ display: "block", width: "100%", height: "auto" }}
+            />
           </button>
-          </div>
-        </div>
         )}
 
       </Frame>
