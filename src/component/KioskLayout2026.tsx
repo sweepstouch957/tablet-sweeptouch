@@ -1011,7 +1011,7 @@ export default function KioskLayout2026({ store }: Props) {
                 GOT A REWARD OR LIST?
               </div>
               <div style={{ color: "#f2f2f2", fontSize: 14.5, lineHeight: 1.15, marginTop: 2 }}>
-                Canjea tu premio o tu lista acá
+                Canjea tu cupón, tu premio o tu lista acá
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 9, flex: "0 0 auto" }}>

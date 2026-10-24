@@ -555,7 +555,7 @@ export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNe
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && manualOk) lookup(manual);
                   }}
-                  placeholder="SL-XXXXXX · RW-XXXXXXXX"
+                  placeholder="RF-XXXXXX · SL-XXXXXX · RW-XXXXXXXX"
                   inputProps={{
                     maxLength: 11,
                     style: {
