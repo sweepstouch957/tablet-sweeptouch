@@ -1342,27 +1342,59 @@ export default function KioskLayout2026({ store }: Props) {
             franja, y recien el teclado. Abajo cierra la pantalla y queda a la
             altura de la mano, que es donde el cliente busca el boton. */}
         {showScanBanner && (
-          <button
-            type="button"
-            onClick={() => setScanOpen(true)}
-            aria-label="Escanear mi QR de referido"
+          <div
             style={{
-              display: "block",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
               width: "100%",
+              height: 84,
               flex: "0 0 auto",
-              padding: 0,
-              border: 0,
+              padding: "0 20px",
+              boxSizing: "border-box",
               background: PINK,
-              cursor: "pointer",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/kiosk2026/referral-banner.png"
-              alt="Thanks for referring! Get $10 off. Escanea aqu? el QR que recibiste por referir. Scan my QR."
-              style={{ display: "block", width: "100%", height: "auto" }}
+              src="/kiosk2026/referral-coupon.png"
+              alt="Cupón de $10 OFF"
+              style={{ display: "block", width: 156, height: 78, objectFit: "contain", flex: "0 0 auto" }}
             />
-          </button>
+            <div style={{ flex: 1, minWidth: 0, display: "flex", justifyContent: "flex-start" }}>
+              <div style={{ textAlign: "left" }}>
+              <div style={{ color: "#fff", fontSize: 32, fontWeight: 900, lineHeight: 1.1, whiteSpace: "nowrap" }}>
+                THANKS FOR REFERRING! GET $10 OFF
+              </div>
+              <div style={{ color: "#000", fontSize: 26, fontWeight: 800, lineHeight: 1.2, marginTop: 2, whiteSpace: "nowrap" }}>
+                Escanea aquí el QR que recibiste por referir.
+              </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "0 0 auto" }}>
+              <QrScan size={58} onClick={() => setScanOpen(true)} />
+              <button
+                type="button"
+                onClick={() => setScanOpen(true)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 58,
+                  width: 220,
+                  background: "#f1f1f1",
+                  border: "1px solid #dcdcdc",
+                  borderRadius: 16,
+                  cursor: "pointer",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
+                }}
+              >
+                <span style={{ color: PINK, fontSize: 18, fontWeight: 900, fontStyle: "italic", letterSpacing: 0.5, whiteSpace: "nowrap" }}>
+                  SCAN & REDEEM
+                </span>
+              </button>
+            </div>
+          </div>
         )}
 
       </Frame>
