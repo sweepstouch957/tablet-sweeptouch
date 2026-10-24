@@ -889,6 +889,7 @@ export default function KioskLayout2026({ store }: Props) {
         open={scanOpen}
         onClose={() => setScanOpen(false)}
         storeSlug={store?.slug}
+        storeId={store?._id}
         onNeedsLogin={() => setLoginOpen(true)}
       />
       <PrivacyDialog open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
