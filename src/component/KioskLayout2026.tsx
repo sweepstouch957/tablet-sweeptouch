@@ -28,6 +28,8 @@ import PrivacyDialog from "./pannel";
 import LoginDialogCashiers from "./login-dialog-cashiers";
 import CashierDrawer from "./cahierDrawer";
 import ScanListDialog from "./ScanListDialog";
+import SupportModal from "./support/SupportModal";
+import { useSupportSession } from "@/hooks/useSupportSession";
 import { useAuth } from "@/context/auth-context";
 import { usePromos } from "@/hooks/usePromos";
 import { printTicketWithImage, printTicketWithQRCodeOnly } from "@/libs/utils/rawBt";
@@ -573,10 +575,8 @@ function BottomIcons({
       <button
         type="button"
         onClick={onSupport}
-        // Deshabilitado temporalmente: quitar disabled para reactivar el acceso.
-        disabled
         aria-label="Soporte técnico"
-        style={{ ...half, cursor: "default", borderRadius: rounded ? "14px 0 0 0" : 0 }}
+        style={{ ...half, borderRadius: rounded ? "14px 0 0 0" : 0 }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/kiosk2026/tec-support-icon.svg" alt="Soporte técnico" style={{ height: iconH, width: "auto", display: "block" }} />
@@ -662,7 +662,7 @@ function Frame({
  * Devuelve `undefined` si la tienda no tiene promos: ahi manda el arte de
  * respaldo del diseno, que es lo que se ve hoy.
  */
-function useStorePromoArt(storeId?: string, intervalMs = 6000) {
+function useStorePromoArt(storeId?: string, intervalMs = 6000, paused = false) {
   const { data } = usePromos("tablet", storeId);
   // Imágenes y videos: el Slot pinta <video> cuando corresponde. Un video dura lo que dura
   // (pasa al siguiente al terminar); una imagen, `intervalMs`.
@@ -679,10 +679,10 @@ function useStorePromoArt(storeId?: string, intervalMs = 6000) {
     setI(0);
   }, [key]);
   useEffect(() => {
-    if (n < 2 || isVideoSrc(current)) return;
+    if (paused || n < 2 || isVideoSrc(current)) return;
     const t = window.setInterval(next, intervalMs);
     return () => window.clearInterval(t);
-  }, [key, intervalMs, n, current, next]);
+  }, [key, intervalMs, n, current, next, paused]);
 
   return { src: current, next: n > 1 ? next : undefined };
 }
@@ -706,7 +706,15 @@ export default function KioskLayout2026({ store }: Props) {
   const { data: sweepstake } = useActiveSweepstake(store?._id);
 
   /* Especiales de la tienda para el hueco de ofertas; si no hay, el arte fijo. */
-  const { src: promoArt, next: nextPromo } = useStorePromoArt(store?._id);
+  /* Soporte tecnico. El modal se monta fuera del `Frame` (ver `dialogs`); la
+     pantalla /control-soporte sigue existiendo pero ya no se entra por ahi.
+     Va declarado ACA ARRIBA porque `useStorePromoArt` lo necesita para pausarse:
+     con el modal encima nadie ve la rotacion y el intervalo solo competiria con
+     la camara por el hilo. */
+  const support = useSupportSession();
+  const [supportOpen, setSupportOpen] = useState(false);
+
+  const { src: promoArt, next: nextPromo } = useStorePromoArt(store?._id, 6000, supportOpen);
 
   /* Arte del opt-in: manda lo que Marketing cargue en el sorteo desde el panel
      (Sweepstakes → crear/editar). Los archivos estáticos quedan de respaldo:
@@ -817,7 +825,7 @@ export default function KioskLayout2026({ store }: Props) {
   }, [digits, consent, register]);
 
   const openCashier = () => (user ? setDrawerOpen(true) : setLoginOpen(true));
-  const openSupport = () => router.push("/control-soporte");
+  const openSupport = () => setSupportOpen(true);
 
   /* El marco ahora vive fuera del componente (ver `Frame` arriba): definido
      acá adentro, cada tecla creaba un tipo de componente nuevo y React
@@ -826,6 +834,27 @@ export default function KioskLayout2026({ store }: Props) {
 
   const dialogs = (
     <>
+      {/* Soporte tecnico. Va con los dialogos a proposito: todo esto se
+          renderiza fuera del `Frame`, que esta escalado con `transform` y
+          encogeria cualquier cosa montada adentro. */}
+      <SupportModal
+        open={supportOpen}
+        storeSlug={store?.slug || ""}
+        storeName={store?.name || store?.slug || ""}
+        session={support.session}
+        elapsedMs={support.elapsedMs}
+        onStart={support.start}
+        onPatch={support.patch}
+        onGoTo={support.goTo}
+        onEnd={() => {
+          support.end();
+          setSupportOpen(false);
+        }}
+        firstQuestionStep={support.firstQuestionStep}
+        buildReport={support.buildReport}
+        onMinimize={() => setSupportOpen(false)}
+        onDismiss={() => setSupportOpen(false)}
+      />
       <ScanListDialog
         open={scanOpen}
         onClose={() => setScanOpen(false)}
