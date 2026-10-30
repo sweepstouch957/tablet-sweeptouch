@@ -17,7 +17,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Dialog,
 } from "@mui/material";
+import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
+import PostcardEntry from "./PostcardEntry";
 import QrCodeScannerRoundedIcon from "@mui/icons-material/QrCodeScannerRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { BRAND, MAGENTA, NEUTRAL, SURFACE, TYPE, FONT, RADIUS } from "@/libs/brand";
@@ -32,17 +35,20 @@ interface CashierDrawerProps {
   onClose: () => void;
   onOpenLoginDialog?: () => void;
   storeId?: string;
+  storeSlug?: string;
 }
 
 const CashierDrawer: React.FC<CashierDrawerProps> = ({
   open,
   onClose,
   storeId,
+  storeSlug,
 }) => {
   const { user, logout, login } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [openManualLogin, setOpenManualLogin] = useState(false);
   const [openScan, setOpenScan] = useState(false);
+  const [openPostcard, setOpenPostcard] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedCashier, setSelectedCashier] = useState<any | null>(null);
 
@@ -139,6 +145,28 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
               Suma puntos para el cliente y para ti
             </Typography>
 
+            {/* Para quien llega con el postcard en papel o sin teléfono: la
+                cajera arma la lista con lo que lleva, sin escanear nada. */}
+            {storeSlug && (
+              <Button
+                variant="outlined"
+                fullWidth
+                startIcon={<PlaylistAddRoundedIcon />}
+                onClick={() => setOpenPostcard(true)}
+                sx={{
+                  py: 1.5,
+                  borderRadius: `${RADIUS.md}px`,
+                  fontFamily: FONT,
+                  fontWeight: 500,
+                  fontSize: "1rem",
+                  color: BRAND.magenta,
+                  borderColor: BRAND.magenta,
+                }}
+              >
+                Hacer lista del cliente
+              </Button>
+            )}
+
             <Button
               variant="outlined"
               fullWidth
@@ -210,7 +238,17 @@ const CashierDrawer: React.FC<CashierDrawerProps> = ({
         )}
       </Drawer>
 
-      <ScanListDialog open={openScan} onClose={() => setOpenScan(false)} />
+      <ScanListDialog open={openScan} onClose={() => setOpenScan(false)} storeSlug={storeSlug} storeId={storeId} />
+      <Dialog open={openPostcard} onClose={() => setOpenPostcard(false)} maxWidth="md" fullWidth>
+        {openPostcard && storeSlug && (
+          <PostcardEntry
+            storeSlug={storeSlug}
+            cashierId={user?._id}
+            onDone={() => setOpenPostcard(false)}
+            onReset={() => setOpenPostcard(false)}
+          />
+        )}
+      </Dialog>
 
       {/* Modal con tabla de cajeras */}
       <Modal

@@ -38,6 +38,7 @@ import WeeklyAdResult from "./WeeklyAdResult";
 import ShoppingListResult from "./ShoppingListResult";
 import RewardClaimResult from "./RewardClaimResult";
 import ReferralCouponResult from "./ReferralCouponResult";
+import PostcardEntry from "./PostcardEntry";
 import { useAuth } from "@/context/auth-context";
 import {
   scanWeeklyAdBarcode,
@@ -66,7 +67,10 @@ const PINK = BRAND.magenta;
 const PINK_HOVER = MAGENTA[75];
 const INK = SURFACE.page;
 
-type State = "waiting" | "loading" | "result" | "shopping-list" | "reward" | "coupon" | "used" | "error";
+type State = "waiting" | "loading" | "result" | "shopping-list" | "reward" | "coupon" | "postcard" | "used" | "error";
+
+/** QR impreso en el postcard: el link de la tienda (…/postal?slug=…), no un código. */
+const isPostcardQr = (v: string) => v.includes("/POSTAL?SLUG=");
 
 /** Segundos de inactividad antes de cerrar solo. */
 const IDLE_S = 60;
@@ -76,6 +80,7 @@ function isValidCode(v: string) {
   return (
     (v.startsWith("SL-") && v.length >= 5) ||
     (v.startsWith("SUPER-") && v.length >= 10) ||
+    isPostcardQr(v) ||
     isRewardCode(v) ||
     isReferralCouponCode(v)
   );
@@ -143,7 +148,15 @@ export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNe
     setState("loading");
     setError("");
     try {
-      if (isReferralCouponCode(value)) {
+      if (isPostcardQr(value)) {
+        // Se usa la tienda de la tablet: la compra se registra donde ocurre.
+        if (!storeSlug) {
+          setError("Esta tablet no tiene tienda asignada: no puede registrar postcards.");
+          setState("error");
+          return;
+        }
+        setState("postcard");
+      } else if (isReferralCouponCode(value)) {
         if (!storeId) {
           setError("Esta tablet no tiene tienda asignada: no puede canjear cupones.");
           setState("error");
@@ -188,7 +201,7 @@ export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNe
     } finally {
       busyRef.current = false;
     }
-  }, [storeSlug]);
+  }, [storeSlug, storeId]);
 
   // ── Cámara ────────────────────────────────────────────────────────────────
   const stopCamera = useCallback(() => {
@@ -674,6 +687,16 @@ export default function ScanListDialog({ open, onClose, storeSlug, storeId, onNe
             onValidate={handleValidate}
             onReset={reset}
             onValidatedClose={closeDialog}
+          />
+        )}
+
+        {state === "postcard" && storeSlug && (
+          <PostcardEntry
+            storeSlug={storeSlug}
+            cashierId={user?._id}
+            onNeedsLogin={onNeedsLogin}
+            onDone={closeDialog}
+            onReset={reset}
           />
         )}
 
