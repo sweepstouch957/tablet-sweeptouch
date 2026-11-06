@@ -98,6 +98,8 @@ export default function RewardClaimResult({ claim: initial, onDeliver, onReset, 
       <Typography sx={{ ...TYPE.small, fontFamily: FONT, color: SURFACE.textMuted, maxWidth: 420 }}>
         {claim.sourceType === "survey"
           ? "Lo ganó contestando la encuesta de la tienda."
+          : claim.sourceType === "game"
+            ? "Lo ganó en Raspa y gana (QR de la tienda)."
           : claim.pointsSpent > 0
             ? `Canjeado con ${claim.pointsSpent} puntos.`
             : "Premio de la tienda."}
